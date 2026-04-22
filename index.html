@@ -1,0 +1,2340 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>臨床力をつくる宿題リスト</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a1628;
+    --text-win: rgba(0,0,0,0.75);
+    --accent: #4a9eff;
+    --correct: #4aff7f;
+    --wrong: #ff4a4a;
+    --gold: #ffc832;
+    --homework-bg: rgba(255,200,50,0.1);
+    --homework-border: #ffc832;
+    --evidence-bg: rgba(74,158,255,0.1);
+  }
+  html, body { width:100%; height:100%; background:var(--bg); color:#fff; font-family:'Noto Sans JP',sans-serif; overflow:hidden; }
+  #app {
+    width:100%; max-width:480px; margin:0 auto;
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+    position:relative; overflow:hidden;
+  }
+
+  /* ===== GAME BACKGROUND ===== */
+  #game-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    display: none;
+    pointer-events: none;
+    /* 仮背景：整体院風グラデーション + 格子模様 */
+    background:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px) center / 30px 30px,
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px) center / 30px 30px,
+      linear-gradient(180deg, #0d1b2a 0%, #1b2a3a 30%, #243447 60%, #1b2a3a 100%);
+  }
+  #game-bg.has-img {
+    background: url('./bg.png') center/cover no-repeat;
+    filter: brightness(0.4);
+  }
+  #game-bg.visible { display: block; }
+  .novel-scene { position: relative; z-index: 10; }
+  .novel-win { position: relative; z-index: 100; }
+
+  /* ===== BACK BUTTON ===== */
+  #back-btn {
+    position: fixed;
+    top: 12px; left: calc(50% - 240px + 12px);
+    z-index: 50;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 10px;
+    color: #aaa;
+    font-size: 0.85rem;
+    font-family: 'Noto Sans JP', sans-serif;
+    padding: 7px 13px;
+    cursor: pointer;
+    display: none;
+    backdrop-filter: blur(4px);
+    transition: color 0.2s, border-color 0.2s;
+  }
+  #back-btn:hover { color: #fff; border-color: rgba(255,255,255,0.5); }
+  @media (max-width: 480px) { #back-btn { left: 12px; } }
+
+  /* ===== SCREEN ===== */
+  .screen {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  .screen.active { opacity:1; pointer-events:all; }
+
+  /* ===== TITLE ===== */
+  #screen-title { align-items:center; justify-content:flex-start; gap:18px; padding:32px 24px 40px; }
+  .title-episode { font-size:0.85rem; color:var(--accent); letter-spacing:0.15em; }
+  .title-main { font-size:1.45rem; font-weight:900; text-align:center; line-height:1.4; }
+  .title-sub { font-size:1.05rem; color:var(--gold); font-weight:700; text-align:center; }
+  .title-subtitle { font-size:0.9rem; color:#8899aa; text-align:center; margin-top:4px; }
+  .title-icon { font-size:4.5rem; filter:drop-shadow(0 0 20px rgba(74,158,255,0.6)); }
+  .btn-primary {
+    background:var(--accent); color:#fff; font-size:1.1rem; font-weight:700;
+    font-family:'Noto Sans JP',sans-serif; border:none; border-radius:12px;
+    padding:14px 40px; cursor:pointer; transition:transform 0.1s;
+    box-shadow:0 4px 20px rgba(74,158,255,0.4); width:100%;
+  }
+  .btn-primary:active { transform:scale(0.97); }
+  .progress-info { font-size:0.8rem; color:#aaa; text-align:center; }
+
+  /* カリキュラム */
+  .curriculum-box { width:100%; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:14px; padding:16px; }
+  .curriculum-title { font-size:0.75rem; color:var(--accent); font-weight:700; letter-spacing:0.1em; margin-bottom:10px; }
+  .curr-step { display:flex; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:0.85rem; }
+  .curr-step:last-child { border-bottom:none; }
+  .curr-icon { font-size:0.9rem; flex-shrink:0; }
+  .curr-label { flex:1; }
+  .curr-step.locked .curr-label { color:#777; }
+  .curr-step.now .curr-label { color:#fff; font-weight:700; }
+  .curr-step.done .curr-label { color:#777; text-decoration:line-through; }
+  .badge-salon { font-size:0.65rem; background:rgba(255,200,50,0.15); border:1px solid var(--gold); color:var(--gold); border-radius:6px; padding:2px 6px; white-space:nowrap; }
+  .badge-now { font-size:0.65rem; background:rgba(74,158,255,0.2); border:1px solid var(--accent); color:var(--accent); border-radius:6px; padding:2px 6px; white-space:nowrap; }
+
+  /* ===== DIALOGUE ===== */
+  #screen-dialogue { flex-direction:column; overflow-y:hidden; }
+  .scene-area {
+    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:20px; gap:12px; min-height:0;
+  }
+  #screen-dialogue .scene-area { overflow:hidden; }
+  #screen-choices .scene-area { overflow-y:auto; justify-content:flex-start; padding-top:52px; }
+  .character-icon { display:flex; flex-direction:column; align-items:center; gap:8px; }
+  .char-emoji { font-size:4.5rem; filter:drop-shadow(0 0 12px rgba(74,158,255,0.3)); }
+  .char-img { width:60px; height:60px; border-radius:50%; object-fit:cover; background:#fff; flex-shrink:0; }
+  .char-img-sm { width:50px; height:50px; border-radius:50%; object-fit:cover; background:#fff; }
+  .char-duo { display:flex; justify-content:center; gap:16px; align-items:center; }
+  .char-name { font-size:0.8rem; background:rgba(74,158,255,0.2); border:1px solid var(--accent); border-radius:20px; padding:3px 12px; color:var(--accent); }
+  .text-window {
+    background:var(--text-win); border-top:2px solid var(--accent);
+    padding:20px;
+    padding-bottom: max(20px, calc(16px + env(safe-area-inset-bottom, 0px)));
+    min-height:140px; position:relative; flex-shrink:0; backdrop-filter:blur(4px);
+  }
+  .text-window .speaker-name { font-size:0.8rem; color:var(--accent); font-weight:700; margin-bottom:8px; letter-spacing:0.05em; }
+  .text-window .dialogue-text { font-size:1rem; line-height:1.7; min-height:3.4em; white-space:pre-wrap; }
+  .tap-hint { position:absolute; bottom:12px; right:16px; font-size:0.75rem; color:#aaa; animation:blink 1.2s ease infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+  /* ===== CHOICES ===== */
+  #screen-choices { flex-direction:column; }
+  .choice-prompt { font-size:1rem; font-weight:700; text-align:center; margin-bottom:16px; color:var(--accent); }
+  .choice-answer-box { background:var(--text-win); border:1px solid var(--accent); border-radius:12px; padding:16px; margin-bottom:16px; font-size:0.95rem; line-height:1.7; min-height:80px; width:100%; white-space:pre-wrap; display:none; }
+  .choice-answer-box.visible { display:block; }
+  .choices-list { display:flex; flex-direction:column; gap:10px; width:100%; }
+  .btn-choice { background:transparent; color:#fff; border:2px solid var(--accent); border-radius:12px; padding:14px 16px; font-size:0.95rem; font-family:'Noto Sans JP',sans-serif; font-weight:700; cursor:pointer; text-align:left; transition:background 0.2s; }
+  .btn-choice:disabled { opacity:0.5; cursor:default; }
+  .btn-choice.answered { background:rgba(74,158,255,0.25); }
+  .choices-next { margin-top:16px; display:none; width:100%; }
+  .choices-next.visible { display:block; }
+  .btn-next-full { width:100%; background:var(--accent); color:#fff; border:none; border-radius:12px; padding:14px; font-size:1rem; font-family:'Noto Sans JP',sans-serif; font-weight:700; cursor:pointer; transition:transform 0.1s; }
+  .btn-next-full:active { transform:scale(0.98); }
+
+  /* ===== HOMEWORK ===== */
+  .phase-label { font-size:0.8rem; color:var(--accent); letter-spacing:0.12em; text-align:center; padding-top:10px; }
+  .homework-card { background:var(--homework-bg); border:2px solid var(--homework-border); border-radius:16px; padding:20px; line-height:1.8; font-size:0.95rem; }
+  .homework-card .hw-title { font-size:1rem; font-weight:700; color:var(--homework-border); margin-bottom:8px; }
+  .btn-done { width:100%; background:var(--homework-border); color:#0a1628; border:none; border-radius:12px; padding:14px; font-size:1.05rem; font-family:'Noto Sans JP',sans-serif; font-weight:900; cursor:pointer; transition:transform 0.1s, opacity 0.2s; }
+  .btn-done:active { transform:scale(0.97); }
+  .btn-done:disabled { opacity:0.4; cursor:default; }
+
+  .btn-nobook { width:100%; background:transparent; color:#aaa; border:1px dashed #555; border-radius:12px; padding:11px; font-size:0.9rem; font-family:'Noto Sans JP',sans-serif; cursor:pointer; transition:border-color 0.2s, color 0.2s; }
+  .btn-nobook:hover { border-color:var(--gold); color:var(--gold); }
+  .nobook-card { background:rgba(255,200,50,0.07); border:1px solid var(--gold); border-radius:14px; padding:16px; font-size:0.88rem; line-height:1.75; display:none; }
+  .nobook-card.visible { display:block; }
+  .nobook-card .nobook-title { color:var(--gold); font-weight:700; margin-bottom:6px; }
+  .btn-salon-small { display:inline-block; margin-top:10px; background:var(--gold); color:#0a1628; border:none; border-radius:10px; padding:9px 18px; font-size:0.9rem; font-family:'Noto Sans JP',sans-serif; font-weight:700; cursor:pointer; text-decoration:none; }
+
+  /* 根拠カード */
+  .evidence-card { background:var(--evidence-bg); border:2px solid var(--accent); border-radius:16px; padding:20px; font-size:0.9rem; line-height:1.8; transform:translateX(120%); transition:transform 0.5s cubic-bezier(0.16,1,0.3,1); }
+  .evidence-card.slide-in { transform:translateX(0); }
+  .evidence-card .ev-title { font-size:1rem; font-weight:700; color:var(--accent); margin-bottom:8px; }
+
+  /* ===== QUIZ ===== */
+  .quiz-character { display:flex; align-items:center; gap:12px; margin-bottom:4px; }
+  .quiz-char-emoji { font-size:3rem; }
+  .quiz-char-info { flex:1; }
+  .quiz-char-name { font-size:0.8rem; color:var(--accent); font-weight:700; }
+  .quiz-question { font-size:1rem; font-weight:700; line-height:1.6; }
+  .quiz-options { display:flex; flex-direction:column; gap:10px; }
+  .quiz-option-wrap { display:flex; flex-direction:column; }
+  .btn-quiz { background:transparent; color:#fff; border:2px solid var(--accent); border-radius:12px; padding:14px 16px; font-size:0.95rem; font-family:'Noto Sans JP',sans-serif; font-weight:700; cursor:pointer; text-align:left; transition:background 0.2s, border-color 0.2s, color 0.2s; }
+  .btn-quiz:disabled { cursor:default; }
+  .btn-quiz.correct { background:rgba(74,255,127,0.2); border-color:var(--correct); color:var(--correct); }
+  .btn-quiz.incorrect { background:rgba(255,74,74,0.15); border-color:var(--wrong); color:var(--wrong); }
+  /* 不正解時の解説テキスト */
+  .wrong-explanation {
+    font-size:0.85rem; color:#ff9999;
+    opacity:0; max-height:0; overflow:hidden;
+    transition:opacity 0.3s ease, max-height 0.3s ease;
+    padding:0 4px; line-height:1.6;
+  }
+  .wrong-explanation.show { opacity:1; max-height:120px; margin-top:6px; margin-bottom:2px; }
+  .quiz-feedback { font-size:0.9rem; line-height:1.75; padding:14px; border-radius:12px; display:none; }
+  .quiz-feedback.show { display:block; }
+  .quiz-feedback.ok { background:rgba(74,255,127,0.08); border:1px solid var(--correct); color:var(--correct); }
+  .quiz-feedback.ng { background:rgba(255,74,74,0.08); border:1px solid var(--wrong); color:#fff; }
+  .quiz-feedback.ng .hint-text { color:#ddd; font-size:0.88rem; margin-bottom:8px; }
+  .quiz-next { display:none; }
+  .quiz-next.show { display:block; }
+
+  /* ===== これだ!! OVERLAY ===== */
+  @keyframes shake {
+    0%,100% { transform:translateX(0); }
+    25%      { transform:translateX(-3px); }
+    75%      { transform:translateX(3px); }
+  }
+  #koredayo-overlay { position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; pointer-events:none; opacity:0; transition:opacity 0.2s; }
+  #koredayo-overlay.flash-bg { background:#ffffff; }
+  #koredayo-overlay.shake { animation:shake 0.3s ease 2; }
+  .koredayo-text { font-size:5rem; font-weight:900; color:var(--gold); text-shadow:0 0 40px rgba(255,200,50,0.9), 4px 4px 0 #000; letter-spacing:0.05em; }
+
+  /* ===== STEP INDICATOR ===== */
+  #step-dots {
+    position: fixed;
+    top: 10px;
+    left: 50%; transform: translateX(-50%);
+    z-index: 60;
+    display: flex; gap: 12px; align-items: center;
+    pointer-events: none;
+  }
+  .step-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+  .step-dot.active {
+    background: var(--accent);
+    box-shadow: 0 0 8px rgba(74,158,255,0.8);
+  }
+  .step-dot.done {
+    background: rgba(74,158,255,0.4);
+  }
+
+  /* ===== CLEAR ===== */
+  #screen-clear { align-items:center; justify-content:flex-start; gap:18px; padding:32px 24px 40px; }
+  .clear-episode { font-size:0.85rem; color:var(--accent); letter-spacing:0.15em; }
+  .clear-title { font-size:2rem; font-weight:900; color:var(--gold); text-align:center; text-shadow:0 0 20px rgba(255,200,50,0.6); }
+  .stars-row { display:flex; gap:12px; font-size:2.5rem; filter:drop-shadow(0 0 8px rgba(255,200,50,0.7)); }
+  .star { opacity:0; transition:opacity 0.4s ease, transform 0.4s ease; transform:scale(0.3); }
+  .star.show { opacity:1; transform:scale(1); }
+  .progress-gains { width:100%; display:flex; flex-direction:column; gap:10px; }
+  .gain-bar { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:14px 16px; display:flex; align-items:center; gap:12px; }
+  .gain-label { flex:1; font-size:0.9rem; font-weight:700; }
+  .gain-value { font-size:1rem; font-weight:900; color:var(--correct); }
+  .gain-track { height:6px; background:rgba(255,255,255,0.1); border-radius:3px; flex:2; overflow:hidden; }
+  .gain-fill { height:100%; background:var(--correct); border-radius:3px; width:0; transition:width 1s ease 0.5s; }
+
+  /* EP2チラ見せ */
+  .ep2-teaser { width:100%; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.12); border-radius:16px; padding:18px; position:relative; overflow:hidden; }
+  .ep2-teaser::before { content:''; position:absolute; inset:0; background:linear-gradient(180deg, transparent 40%, rgba(10,22,40,0.95) 100%); pointer-events:none; }
+  .ep2-label { font-size:0.72rem; color:var(--accent); letter-spacing:0.12em; margin-bottom:6px; }
+  .ep2-title { font-size:1rem; font-weight:900; color:var(--gold); margin-bottom:10px; }
+  .ep2-dialogue { font-size:0.88rem; line-height:1.7; color:#ccc; margin-bottom:12px; }
+  .btn-ep2-lock { background:rgba(255,200,50,0.1); border:2px solid var(--gold); color:var(--gold); border-radius:12px; padding:12px; font-size:0.95rem; font-family:'Noto Sans JP',sans-serif; font-weight:700; cursor:default; text-align:center; display:block; }
+  .ep2-hint { font-size:0.75rem; color:#888; line-height:1.5; text-align:center; margin-top:8px; }
+
+  .btn-salon { background:transparent; color:var(--accent); border:2px solid var(--accent); border-radius:12px; padding:13px 30px; font-size:0.95rem; font-family:'Noto Sans JP',sans-serif; font-weight:700; cursor:pointer; text-decoration:none; display:block; text-align:center; width:100%; transition:background 0.2s; }
+  .btn-salon:hover { background:rgba(74,158,255,0.15); }
+  /* リプレイボタン */
+  .btn-replay { width:100%; background:transparent; color:var(--accent); border:2px solid var(--accent); border-radius:12px; padding:13px; font-size:1rem; font-family:'Noto Sans JP',sans-serif; font-weight:700; cursor:pointer; transition:background 0.2s; }
+  .btn-replay:hover { background:rgba(74,158,255,0.15); }
+  .btn-retry { background:transparent; color:#777; border:1px solid #444; border-radius:12px; padding:10px 24px; font-size:0.85rem; font-family:'Noto Sans JP',sans-serif; cursor:pointer; width:100%; text-align:center; }
+
+  /* ===== モード選択 ===== */
+  .mode-selector { width:100%; display:flex; flex-direction:column; gap:10px; }
+  .btn-mode {
+    width:100%; display:flex; align-items:center; gap:14px;
+    background:rgba(255,255,255,0.04); border:1.5px solid rgba(255,255,255,0.15);
+    border-radius:14px; padding:14px 16px;
+    font-family:'Noto Sans JP',sans-serif; cursor:pointer;
+    text-align:left; transition:background 0.2s, border-color 0.2s;
+  }
+  .btn-mode.playable:hover { background:rgba(74,158,255,0.12); border-color:var(--accent); }
+  .btn-mode.playable:active { transform:scale(0.98); }
+  .btn-mode.beginner { border-color:rgba(74,255,127,0.4); }
+  .btn-mode.beginner:hover { background:rgba(74,255,127,0.08); border-color:var(--correct); }
+  .btn-mode.intermediate { border-color:rgba(255,200,50,0.4); }
+  .btn-mode.intermediate:hover { background:rgba(255,200,50,0.08); border-color:var(--gold); }
+  .btn-mode.locked { opacity:0.5; cursor:pointer; }
+  .mode-icon { font-size:1.7rem; flex-shrink:0; }
+  .mode-name { font-size:0.95rem; font-weight:700; color:#fff; }
+  .mode-name .lock-badge { font-size:0.75rem; vertical-align:middle; margin-left:4px; }
+  .mode-desc { font-size:0.75rem; color:#888; margin-top:2px; }
+  .salon-unlock-card {
+    width:100%; background:rgba(255,200,50,0.08); border:1px solid var(--gold);
+    border-radius:12px; padding:14px 16px; font-size:0.88rem; line-height:1.7; color:#ccc;
+  }
+
+  /* インライン宿題（初学者モード用）*/
+  .inline-hw-sep { font-size:0.82rem; color:var(--accent); text-align:center; padding:10px 0 4px; font-weight:700; }
+  .retry-hint { font-size:0.85rem; color:var(--correct); text-align:center; padding:10px 0; font-weight:700; animation:blink 1.5s ease infinite; }
+
+  /* モード別クリアメッセージ */
+  .clear-mode-msg { width:100%; border-radius:16px; padding:18px; font-size:0.9rem; line-height:1.85; }
+  .clear-mode-msg.beginner-msg { background:rgba(74,255,127,0.07); border:1.5px solid var(--correct); }
+  .clear-mode-msg.intermediate-msg { background:rgba(255,200,50,0.07); border:1.5px solid var(--gold); }
+  .clear-mode-msg .cmsg-title { font-size:1rem; font-weight:900; margin-bottom:8px; }
+  .beginner-msg .cmsg-title { color:var(--correct); }
+  .intermediate-msg .cmsg-title { color:var(--gold); }
+  .preview-problem { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:12px; margin-top:10px; font-size:0.82rem; line-height:1.7; color:#bbb; }
+  .accuracy-badge { display:inline-block; background:rgba(74,255,127,0.15); border:1px solid var(--correct); border-radius:8px; padding:3px 10px; font-size:0.85rem; font-weight:700; color:var(--correct); margin-left:6px; }
+
+  /* 臨床メモカード */
+  .clinical-memo {
+    background: rgba(74,158,255,0.07);
+    border: 2px solid var(--accent);
+    border-radius:16px; padding:18px;
+    font-size:0.9rem; line-height:1.85;
+    display:none;
+    transform: translateY(12px);
+    opacity: 0;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+  }
+  .clinical-memo.show { display:block; }
+  .clinical-memo.animate { transform:translateY(0); opacity:1; }
+  .clinical-memo .memo-title { font-size:1rem; font-weight:700; color:var(--accent); margin-bottom:8px; }
+  .memo-salon-link { color:var(--gold); font-size:0.85rem; margin-top:8px; display:block; }
+
+  /* ===== MINI QUIZ ===== */
+  @keyframes fadeInUp {
+    from { opacity:0; transform:translateY(6px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  .mq-question-text {
+    font-size:1.1rem; font-weight:700; color:#fff; line-height:1.6; margin-bottom:8px;
+  }
+  .mq-iine {
+    font-size:1.1rem; font-weight:900; color:var(--correct);
+    opacity:0; pointer-events:none;
+    transition:opacity 0.3s ease;
+    text-align:center; padding:8px 0;
+  }
+  .mq-iine.show { opacity:1; }
+  .mq-complete-msg {
+    text-align:center; padding:24px 0; display:flex; flex-direction:column; gap:16px; align-items:center;
+    animation: fadeInUp 0.4s ease;
+  }
+  .mq-complete-emoji { font-size:2.2rem; }
+  .mq-complete-text { font-size:1rem; font-weight:700; color:var(--accent); line-height:1.6; }
+
+  /* レーダーチャート */
+  .radar-section { width:100%; display:flex; flex-direction:column; gap:12px; }
+  .radar-canvas-wrap { display:flex; justify-content:center; }
+  .power-list { display:flex; flex-direction:column; gap:7px; }
+  .power-row { display:flex; align-items:center; gap:8px; font-size:0.85rem; }
+  .power-name { flex:0 0 90px; color:#ccc; }
+  .power-stars { flex:1; color:var(--gold); letter-spacing:0.08em; font-size:1rem; }
+  .power-score { font-size:0.75rem; color:#777; }
+  .power-lock { flex:1; color:#555; font-size:0.8rem; }
+  .radar-salon-cta { background:rgba(255,200,50,0.07); border:1px solid var(--gold); border-radius:12px; padding:14px 16px; }
+  .radar-salon-cta .cta-text { font-size:0.85rem; color:#ccc; line-height:1.7; margin-bottom:10px; }
+
+  /* ===== ONBOARDING ===== */
+  #screen-onboarding {
+    justify-content:flex-start; align-items:stretch;
+    padding: 0;
+  }
+  .ob-progress-wrap {
+    padding: 20px 24px 0;
+    flex-shrink: 0;
+  }
+  .ob-progress-track {
+    width:100%; height:4px; background:rgba(255,255,255,0.1); border-radius:2px; overflow:hidden;
+  }
+  .ob-progress-fill {
+    height:100%; background:var(--accent); border-radius:2px;
+    transition: width 0.4s ease;
+  }
+  .ob-progress-label {
+    font-size:0.75rem; color:#888; text-align:right; margin-top:4px;
+  }
+  .ob-body {
+    flex:1; display:flex; flex-direction:column; justify-content:center;
+    padding: 24px;
+    gap: 24px;
+    opacity:0;
+    transition: opacity 0.3s ease;
+  }
+  .ob-body.fade-in { opacity:1; }
+  .ob-question {
+    font-size:1.2rem; font-weight:700; color:#fff; text-align:center; line-height:1.6;
+  }
+  .ob-options {
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .btn-ob {
+    width:100%; background:transparent; color:#fff;
+    border:2px solid var(--accent); border-radius:8px;
+    padding:13px 16px; font-size:0.95rem; font-family:'Noto Sans JP',sans-serif;
+    font-weight:700; cursor:pointer; text-align:center;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .btn-ob.selected { background:var(--accent); color:#fff; }
+
+  /* オンボーディング結果画面 */
+  #screen-onboarding-result { align-items:center; justify-content:center; gap:20px; }
+  .ob-result-title { font-size:1.3rem; font-weight:900; color:var(--gold); text-align:center; line-height:1.5; }
+  .ob-result-card {
+    width:100%; background:rgba(74,158,255,0.07); border:1.5px solid var(--accent);
+    border-radius:16px; padding:18px; display:flex; flex-direction:column; gap:10px;
+  }
+  .ob-result-row { font-size:0.9rem; line-height:1.7; }
+  .ob-result-row span { color:var(--accent); font-weight:700; }
+  .ob-result-recommend { color:var(--gold); font-weight:700; }
+
+  ::-webkit-scrollbar { width:4px; }
+  ::-webkit-scrollbar-thumb { background:rgba(74,158,255,0.3); border-radius:2px; }
+  .pad20 {
+    padding:20px;
+    padding-bottom: max(28px, calc(20px + env(safe-area-inset-bottom, 0px)));
+    display:flex; flex-direction:column; gap:16px;
+  }
+
+  /* ===== GOAL POWERS ===== */
+  .goal-powers { display:flex; flex-direction:column; gap:8px; margin:12px 0; border:1px solid rgba(74,158,255,0.3); border-radius:8px; padding:12px 14px; background:rgba(74,158,255,0.05); }
+  .goal-power-row { display:flex; align-items:center; gap:8px; font-size:0.9rem; }
+  .goal-power-num { color:#8899aa; width:22px; flex-shrink:0; }
+  .goal-power-name { color:#cde; flex:1; }
+  .goal-power-stars { color:#8899aa; letter-spacing:2px; font-size:0.85rem; }
+  .goal-power-lock { color:#8899aa; font-size:1rem; }
+
+  /* ===== NOVEL GAME LAYOUT ===== */
+  :root { --game-bg: linear-gradient(180deg, #1a2a3a 0%, #2a3a4a 50%, #1a2a3a 100%); }
+
+  .novel-screen {
+    background: transparent !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 0 !important;
+    gap: 0 !important;
+  }
+  .novel-scene {
+    flex-shrink: 0;
+    height: 38vh;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 32px;
+    padding-bottom: 16px;
+    position: relative;
+  }
+  /* ダイアログ画面はインタラクティブ領域がないのでシーンを大きく */
+  #screen-dialogue .novel-scene { height: 65vh; }
+  #screen-dialogue .novel-char { width: 150px; height: 150px; }
+  .novel-interactive {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding: 8px 16px 24px;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .novel-win {
+    flex-shrink: 0;
+    margin-top: auto;
+    height: 25vh;
+    min-height: 100px;
+    background: rgba(0,10,30,0.85);
+    border-top: 3px solid var(--accent);
+    border-left: 3px solid var(--accent);
+    border-right: 3px solid var(--accent);
+    border-radius: 12px 12px 0 0;
+    padding: 46px 16px 10px;
+    position: relative;
+    overflow-y: auto;
+    backdrop-filter: blur(4px);
+  }
+  .novel-speaker {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background: var(--accent);
+    color: #fff;
+    padding: 3px 14px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    z-index: 10;
+    white-space: nowrap;
+  }
+  .novel-char {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #fff;
+    flex-shrink: 0;
+    transition: opacity 0.3s ease, filter 0.3s ease;
+  }
+  .novel-char.dim { opacity: 0.5; filter: brightness(0.6); }
+  .novel-char-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .novel-phase-label {
+    font-size: 0.72rem;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    margin-bottom: 6px;
+  }
+  .novel-context-text { font-size: 0.9rem; line-height: 1.65; }
+  /* novel-win内テキスト */
+  .novel-win .dialogue-text { font-size:0.9rem; line-height:1.65; white-space:pre-wrap; }
+  .novel-win .tap-hint { position:absolute; bottom:8px; right:14px; font-size:0.72rem; color:#aaa; animation:blink 1.2s ease infinite; }
+  .novel-win .choice-prompt { font-size:0.85rem; font-weight:700; color:var(--accent); margin-bottom:6px; }
+  .novel-win .choice-answer-box { font-size:0.85rem; line-height:1.65; white-space:pre-wrap; display:none; }
+  .novel-win .choice-answer-box.visible { display:block; }
+
+  /* ===== CARD OVERLAY ===== */
+  #card-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.65);
+    padding: 20px;
+  }
+  #card-overlay.show { display: flex; }
+  #card-overlay-inner {
+    background: rgba(0,10,30,0.95);
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    padding: 16px;
+    max-width: min(440px, 100%);
+    width: 100%;
+    max-height: 60vh;
+    overflow-y: auto;
+    position: relative;
+    animation: fadeInUp 0.3s ease;
+  }
+  #card-overlay-close {
+    position: absolute;
+    top: 10px; right: 12px;
+    background: transparent;
+    border: none;
+    color: #aaa;
+    font-size: 1.2rem;
+    cursor: pointer;
+    line-height: 1;
+    font-family: 'Noto Sans JP', sans-serif;
+  }
+  /* 選択肢ボタンのfont-size調整 */
+  .btn-quiz { font-size: 0.85rem !important; }
+  .btn-choice { font-size: 0.85rem !important; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ゲーム背景レイヤー -->
+  <div id="game-bg"></div>
+
+  <!-- 戻るボタン（グローバル） -->
+  <button id="back-btn" onclick="goBack()">◀ 戻る</button>
+
+  <!-- ========== ONBOARDING ========== -->
+  <div id="screen-onboarding" class="screen">
+    <div class="ob-progress-wrap">
+      <div class="ob-progress-track">
+        <div class="ob-progress-fill" id="ob-progress-fill"></div>
+      </div>
+      <div class="ob-progress-label" id="ob-progress-label"></div>
+    </div>
+    <div class="ob-body" id="ob-body"></div>
+  </div>
+
+  <!-- ========== ONBOARDING RESULT ========== -->
+  <div id="screen-onboarding-result" class="screen pad20">
+    <div style="text-align:center">
+      <div class="char-duo" style="margin-bottom:12px">
+        <img class="char-img" src="./12.png" alt="ぼん学長">
+        <img class="char-img" src="./9.png" alt="タコくん">
+      </div>
+      <div class="ob-result-title">あなた専用の<br>学習プランができました！</div>
+    </div>
+    <div class="ob-result-card" id="ob-result-card"></div>
+    <button class="btn-primary" onclick="sfxClick(); finishOnboarding()">▶ はじめる</button>
+  </div>
+
+  <!-- ========== SPLASH ========== -->
+  <div id="screen-splash" class="screen pad20" style="justify-content:center;align-items:center;gap:20px">
+    <div style="text-align:center">
+      <div class="char-duo" style="margin-bottom:12px">
+        <img style="width:80px;height:80px;border-radius:50%;object-fit:cover;background:#fff" src="./11.png" alt="ぼん学長">
+        <img style="width:80px;height:80px;border-radius:50%;object-fit:cover;background:#fff" src="./5.png" alt="タコくん">
+      </div>
+      <div style="font-size:2.5rem;font-weight:bold;color:#fff;line-height:1.2">つぼーん</div>
+      <div style="font-size:0.85rem;color:#8899aa;margin-top:6px">— カラダに触れるすべての人へ —</div>
+    </div>
+    <div class="progress-info" id="saved-progress-msg"></div>
+    <button class="btn-primary" onclick="sfxClick(); goToEpisode()">▶ はじめる</button>
+  </div>
+
+  <!-- ========== EPISODE ========== -->
+  <div id="screen-episode" class="screen pad20" style="justify-content:center;align-items:center;gap:16px">
+    <div style="text-align:center">
+      <div style="font-size:1.5rem;font-weight:bold;color:#4a9eff">Episode 1</div>
+      <div style="font-size:1.3rem;font-weight:bold;color:#ffc832;margin-top:6px">「肩こりの真犯人を探せ」</div>
+    </div>
+    <img src="./1.png" alt="ぶったくん" style="width:160px;height:160px;object-fit:contain">
+    <button class="btn-primary" onclick="sfxClick(); goToMode()">▶ 捜査開始</button>
+  </div>
+
+  <!-- ========== GOAL ========== -->
+  <div id="screen-goal" class="screen novel-screen">
+    <div class="novel-scene" style="height:32vh">
+      <img src="./11.png" alt="ぼん学長" class="novel-char" style="width:150px;height:150px">
+    </div>
+    <div class="novel-win" style="height:auto;flex:1;min-height:0;overflow-y:auto;padding-top:64px">
+      <div class="novel-speaker">ぼん学長</div>
+      <div class="novel-text" style="margin-bottom:16px;white-space:pre-line;line-height:1.8">おまえの目標はひとつ。
+
+5つの力をすべて★5にして
+"一人前の施術家"になることだ。
+
+全エピソードをクリアした者には
+【つぼーんマスター】の称号を与える。
+
+まずは最初の患者を救うところからだ。</div>
+      <div class="goal-powers">
+        <div class="goal-power-row"><span class="goal-power-num">①</span><span class="goal-power-name">触れる力</span><span class="goal-power-stars">☆☆☆☆☆</span></div>
+        <div class="goal-power-row"><span class="goal-power-num">②</span><span class="goal-power-name">見立てる力</span><span class="goal-power-stars">☆☆☆☆☆</span></div>
+        <div class="goal-power-row"><span class="goal-power-num">③</span><span class="goal-power-name">選ぶ力</span><span class="goal-power-stars">☆☆☆☆☆</span></div>
+        <div class="goal-power-row"><span class="goal-power-num">④</span><span class="goal-power-name">施す力</span><span class="goal-power-lock">🔒</span></div>
+        <div class="goal-power-row"><span class="goal-power-num">⑤</span><span class="goal-power-name">伝える力</span><span class="goal-power-lock">🔒</span></div>
+      </div>
+      <button class="btn-primary" style="margin-top:16px;width:100%" onclick="sfxClick(); finishGoal()">▶ 最初の患者を救いに行く</button>
+    </div>
+  </div>
+
+  <!-- ========== MODE ========== -->
+  <div id="screen-mode" class="screen pad20">
+    <div style="text-align:center;margin-bottom:12px">
+      <img src="./14.png" alt="ぼん学長" style="width:80px;height:80px;border-radius:50%;object-fit:cover;background:#fff">
+      <div style="font-size:1.1rem;font-weight:bold;color:#fff;margin-top:8px">どのモードで挑む？</div>
+    </div>
+    <div class="mode-selector">
+      <button class="btn-mode playable beginner" onclick="setModeAndStart('beginner')">
+        <span class="mode-icon">🔰</span>
+        <div>
+          <div class="mode-name">初学者モード</div>
+          <div class="mode-desc">学生・未経験者向け｜ヒントあり</div>
+        </div>
+      </button>
+      <button class="btn-mode playable intermediate" onclick="setModeAndStart('intermediate')">
+        <span class="mode-icon">⚡</span>
+        <div>
+          <div class="mode-name">初級者モード</div>
+          <div class="mode-desc">臨床1〜3年目向け｜ヒントなし</div>
+        </div>
+      </button>
+      <button class="btn-mode locked" onclick="showSalonUnlock('mid')">
+        <span class="mode-icon">🔥</span>
+        <div>
+          <div class="mode-name">中級者モード <span class="lock-badge">🔒</span></div>
+          <div class="mode-desc">サロン会員限定｜複合症例</div>
+        </div>
+      </button>
+      <button class="btn-mode locked" onclick="showSalonUnlock('adv')">
+        <span class="mode-icon">💀</span>
+        <div>
+          <div class="mode-name">上級者モード <span class="lock-badge">🔒</span></div>
+          <div class="mode-desc">サロン会員限定｜指導者レベル</div>
+        </div>
+      </button>
+    </div>
+    <div class="salon-unlock-card" id="salon-unlock-card" style="display:none">
+      <span id="salon-unlock-text"></span><br>
+      <span style="color:var(--gold);font-size:0.85rem;margin-top:8px;display:block">🔜 オンラインサロン開設準備中<br>開設時にはLINEでお知らせします</span>
+    </div>
+  </div>
+
+  <!-- ========== DIALOGUE ========== -->
+  <div id="screen-dialogue" class="screen novel-screen">
+    <div class="novel-scene">
+      <div class="novel-char-wrap">
+        <img class="novel-char" id="dialogue-img" src="./1.png" alt="ぶったくん">
+        <div class="char-name" id="dialogue-charname">ぶったくん</div>
+      </div>
+    </div>
+    <div class="novel-win" id="text-window" onclick="handleDialogueTap()">
+      <div class="novel-speaker" id="speaker-name">ぶったくん</div>
+      <div class="dialogue-text" id="dialogue-text"></div>
+      <div class="tap-hint" id="tap-hint">▼</div>
+    </div>
+  </div>
+
+  <!-- ========== CHOICES ========== -->
+  <div id="screen-choices" class="screen novel-screen">
+    <div class="novel-scene">
+      <div class="novel-char-wrap">
+        <img class="novel-char" src="./2.png" alt="ぶったくん">
+        <div class="char-name">ぶったくん</div>
+      </div>
+    </div>
+    <div class="novel-interactive">
+      <div class="choices-list" id="choices-list"></div>
+      <div class="choices-next" id="choices-next">
+        <button class="btn-next-full" onclick="sfxClick(); goToPhase3()">📋 情報が揃った！次へ</button>
+      </div>
+    </div>
+    <div class="novel-win">
+      <div class="novel-speaker">ぼん学長</div>
+      <div class="choice-prompt">まずは聞き込みだ。<br>ぶったくんに質問してみろ。</div>
+      <div class="novel-context-text" style="color:rgba(255,200,80,0.9);font-size:0.85rem;margin-top:8px">ぶったくん：「何でも聞いてください…つらいんです…」</div>
+      <div class="choice-answer-box" id="choice-answer-box"></div>
+    </div>
+  </div>
+
+  <!-- ========== HOMEWORK 1 ========== -->
+  <div id="screen-homework1" class="screen novel-screen">
+    <div class="novel-scene">
+      <div class="novel-char-wrap">
+        <img class="novel-char" id="hw1-char-img" src="./14.png" alt="ぼん学長">
+      </div>
+    </div>
+    <div class="novel-interactive">
+      <div class="homework-card">
+        <div class="hw-title">📖 宿題</div>
+        <div>筋肉パーフェクト事典 第2章を読んで<br><strong>僧帽筋の起始・停止・作用</strong>を確認しよう</div>
+      </div>
+      <button class="btn-done" id="btn-done1" onclick="unlockEvidence1()">✅ 読んだ！</button>
+      <button class="btn-nobook" id="btn-nobook1" onclick="toggleNobook(1)">📱 本を持っていない</button>
+      <div class="nobook-card" id="nobook-card1">
+        <div class="nobook-title">💡 本がなくても大丈夫</div>
+        参考書3冊の合計は約7,700円。<br>
+        オンラインサロンなら月550円〜で<br><strong>同じ内容を動画で学べます。</strong><br><br>
+        <span style="color:#ffc832">🔜 オンラインサロン開設準備中</span><br>
+        開設時にはLINEでお知らせします。<br>
+        → 概要欄からLINE登録しておいてください
+      </div>
+      <div class="evidence-card" id="evidence1">
+        <div class="ev-title">🔓 根拠を入手！</div>
+        <div>
+          <strong style="color:var(--gold)">【僧帽筋上部線維】</strong><br>
+          起始：外後頭隆起、項靭帯<br>停止：鎖骨外側1/3<br>作用：肩甲骨の挙上<br><br>
+          → デスクワークで常に収縮<br>
+          → <strong style="color:var(--wrong)">肩こりの原因になりうる</strong>
+        </div>
+      </div>
+      <button class="btn-next-full" id="btn-tohomework1-next" style="display:none" onclick="sfxClick(); goToMiniQuiz()">📝 確認テストへ！</button>
+    </div>
+    <div class="novel-win">
+      <div class="novel-speaker">ぼん学長</div>
+      <div class="novel-phase-label">Phase 3 — 宿題</div>
+      <div class="novel-context-text" id="hw1-win-text">容疑者を絞るには"根拠"が必要だ。<br>まずは容疑者リストを確認しろ。</div>
+    </div>
+  </div>
+
+  <!-- ========== MINI QUIZ ========== -->
+  <div id="screen-miniquiz" class="screen novel-screen">
+    <div class="novel-scene">
+      <div class="novel-char-wrap">
+        <img class="novel-char" id="mq-char-img" src="./14.png" alt="ぼん学長">
+      </div>
+      <div class="novel-char-wrap">
+        <img class="novel-char" id="mq-tako-img" src="./7.png" alt="タコくん">
+      </div>
+    </div>
+    <div class="novel-interactive">
+      <div id="mq-question-wrap">
+        <div class="mq-question-text" id="mq-question"></div>
+        <div class="quiz-options" id="mq-options"></div>
+        <div class="mq-iine" id="mq-iine"></div>
+        <div id="mq-feedback"></div>
+      </div>
+    </div>
+    <div class="novel-win">
+      <div class="novel-speaker">ぼん学長</div>
+      <div class="novel-phase-label">Phase 3.5 — 確認テスト</div>
+      <div class="novel-context-text" id="mq-intro-text">根拠を叩き込んだか？<br>ちゃんと覚えてるか確認するぞ。</div>
+    </div>
+  </div>
+
+  <!-- ========== QUIZ 1 ========== -->
+  <div id="screen-quiz1" class="screen novel-screen">
+    <div class="novel-scene">
+      <div class="novel-char-wrap">
+        <img class="novel-char" id="quiz1-char-img" src="./11.png" alt="ぼん学長">
+      </div>
+      <div class="novel-char-wrap">
+        <img class="novel-char" id="quiz1-tako-img" src="./7.png" alt="タコくん">
+      </div>
+    </div>
+    <div class="novel-interactive">
+      <div class="quiz-options" id="quiz1-options"></div>
+      <div class="quiz-feedback" id="quiz1-feedback"></div>
+      <!-- 初学者モード：不正解後に出現するインライン宿題 -->
+      <div id="quiz1-inline-hw" style="display:none">
+        <div class="inline-hw-sep">📖 根拠を確認して、もう一度挑戦しよう</div>
+        <div class="homework-card">
+          <div class="hw-title">📖 宿題</div>
+          <div>筋肉パーフェクト事典 第2章を読んで<br><strong>僧帽筋の起始・停止・作用</strong>を確認しよう</div>
+        </div>
+        <button class="btn-done" id="btn-inline-done1" onclick="unlockInlineEvidence1()">✅ 読んだ！</button>
+        <div class="evidence-card" id="inline-evidence1">
+          <div class="ev-title">🔓 根拠を入手！</div>
+          <div>
+            <strong style="color:var(--gold)">【僧帽筋上部線維】</strong><br>
+            起始：外後頭隆起、項靭帯<br>停止：鎖骨外側1/3<br>作用：肩甲骨の挙上<br><br>
+            → デスクワークで常に収縮<br>
+            → <strong style="color:var(--wrong)">肩こりの原因になりうる</strong>
+          </div>
+        </div>
+        <div id="quiz1-retry-hint" class="retry-hint" style="display:none">根拠を確認した！もう一度選んでみよう 👆</div>
+      </div>
+      <!-- 臨床メモ（正解後に表示） -->
+      <div class="clinical-memo" id="quiz1-memo">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <img class="char-img" src="./12.png" alt="ぼん学長">
+          <div class="memo-title" style="margin-bottom:0">🩺 ぼん学長の臨床メモ</div>
+        </div>
+        よくやった。俺の経験を教えておく。<br>
+        僧帽筋上部が犯人のときは、<br>
+        まず<strong>合谷</strong>で全体の緊張を緩めてから<br>
+        <strong>肩井</strong>でピンポイントに攻める。<br>
+        鍼でも指圧でも、この"順番"が大事だ。<br>
+        <span class="memo-salon-link">→ 詳しい手技はオンラインサロンで解説予定です</span>
+      </div>
+      <div class="quiz-next" id="quiz1-next">
+        <button class="btn-next-full" onclick="sfxClick(); goToPhase5()">次のフェーズへ</button>
+      </div>
+    </div>
+    <div class="novel-win">
+      <div class="novel-speaker">ぼん学長</div>
+      <div class="novel-phase-label">Phase 4 — 鑑別（法廷）</div>
+      <div class="novel-context-text">容疑者は4人。<br>ぶったくんの肩こりの真犯人はどいつだ？</div>
+    </div>
+  </div>
+
+  <!-- ========== HOMEWORK 2 ========== -->
+  <div id="screen-homework2" class="screen novel-screen">
+    <div class="novel-scene">
+      <div class="novel-char-wrap">
+        <img class="novel-char" id="quiz2-char-img" src="./11.png" alt="ぼん学長">
+      </div>
+      <div class="novel-char-wrap">
+        <img class="novel-char" id="quiz2-tako-img" src="./7.png" alt="タコくん">
+      </div>
+    </div>
+    <div class="novel-interactive">
+      <div class="quiz-options" id="quiz2-options"></div>
+      <div class="quiz-feedback" id="quiz2-feedback"></div>
+      <div class="homework-card" id="homework2-card" style="display:none">
+        <div class="hw-title">📖 宿題</div>
+        <div>ツボ単で<strong>肩井の取穴法</strong>を確認しよう</div>
+      </div>
+      <button class="btn-done" id="btn-done2" style="display:none" onclick="unlockEvidence2()">✅ 読んだ！</button>
+      <button class="btn-nobook" id="btn-nobook2" style="display:none" onclick="toggleNobook(2)">📱 本を持っていない</button>
+      <div class="nobook-card" id="nobook-card2">
+        <div class="nobook-title">💡 本がなくても大丈夫</div>
+        「ツボ単」は約2,640円。<br><br>
+        <span style="color:#ffc832">🔜 オンラインサロン開設準備中</span><br>
+        開設時にはLINEでお知らせします。
+      </div>
+      <div class="evidence-card" id="evidence2">
+        <div class="ev-title">🔓 根拠を入手！</div>
+        <div>
+          <strong style="color:var(--gold)">肩井（GB21）</strong><br>
+          部位：大椎と肩峰を結ぶ線の中点<br>解剖：僧帽筋上、深部に棘上筋<br><br>
+          <strong style="color:var(--correct)">なぜ効く：</strong><br>
+          僧帽筋のトリガーポイントに一致
+        </div>
+      </div>
+      <button class="btn-next-full" id="btn-tohomework2-next" style="display:none" onclick="sfxClick(); goToClear()">🏆 クリアへ！</button>
+    </div>
+    <div class="novel-win">
+      <div class="novel-speaker">ぼん学長</div>
+      <div class="novel-phase-label">Phase 5 — 治療選択</div>
+      <div class="novel-context-text">犯人は分かった。最後の仕上げだ。<br>僧帽筋上部の弱点を突くツボを選べ！</div>
+    </div>
+  </div>
+
+  <!-- ========== CLEAR ========== -->
+  <div id="screen-clear" class="screen pad20">
+    <div style="text-align:center">
+      <div class="clear-episode">EPISODE 1</div>
+      <div class="clear-title">CLEAR！</div>
+      <div class="char-duo" style="margin-top:10px">
+        <img class="char-img" src="./12.png" alt="ぼん学長">
+        <img class="char-img" src="./4.png" alt="ぶったくん">
+        <img class="char-img" src="./9.png" alt="タコくん">
+      </div>
+    </div>
+    <div class="stars-row" style="justify-content:center">
+      <span class="star" id="star1">⭐</span>
+      <span class="star" id="star2">⭐</span>
+      <span class="star" id="star3">⭐</span>
+    </div>
+
+    <!-- モード別メッセージ（JSで内容を動的セット） -->
+    <div id="clear-mode-msg" class="clear-mode-msg" style="display:none"></div>
+
+    <!-- クリア台詞 -->
+    <div style="width:100%;display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <img class="char-img" src="./4.png" alt="ぶったくん" style="flex-shrink:0">
+        <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:10px 14px;font-size:0.9rem;line-height:1.7">
+          先生…！肩が軽くなりました！<br>ありがとうございます！！
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;flex-direction:row-reverse">
+        <img class="char-img" src="./12.png" alt="ぼん学長" style="flex-shrink:0">
+        <div style="background:rgba(74,158,255,0.1);border:1px solid var(--accent);border-radius:12px;padding:10px 14px;font-size:0.9rem;line-height:1.7;text-align:right">
+          ぶったくんの肩こり、解決だ。<br>おまえの"触れる力"と"選ぶ力"が成長したぞ。
+        </div>
+      </div>
+    </div>
+
+    <!-- レーダーチャート -->
+    <div class="radar-section">
+      <div class="radar-canvas-wrap">
+        <canvas id="radar-canvas" width="260" height="230"></canvas>
+      </div>
+      <div class="power-list">
+        <div class="power-row">
+          <div class="power-name">① 触れる力</div>
+          <div class="power-stars">★★☆☆☆</div>
+          <div class="power-score">2/5</div>
+        </div>
+        <div class="power-row">
+          <div class="power-name">② 見立てる力</div>
+          <div class="power-stars">☆☆☆☆☆</div>
+          <div class="power-score">0/5</div>
+        </div>
+        <div class="power-row">
+          <div class="power-name">③ 選ぶ力</div>
+          <div class="power-stars">★☆☆☆☆</div>
+          <div class="power-score">1/5</div>
+        </div>
+        <div class="power-row">
+          <div class="power-name">④ 施す力</div>
+          <div class="power-lock">🔒 オンラインサロンで解放予定（鍼・指圧・ストレッチ対応）</div>
+        </div>
+        <div class="power-row">
+          <div class="power-name">⑤ 伝える力</div>
+          <div class="power-lock">🔒 オンラインサロンで解放予定（患者さんへの説明力）</div>
+        </div>
+      </div>
+      <div class="radar-salon-cta">
+        <div class="cta-text">④⑤を伸ばすには実技動画・ケーススタディが必要です<br><br><span style="color:#ffc832">🔜 オンラインサロン開設準備中<br>開設時にはLINEでお知らせします</span></div>
+      </div>
+    </div>
+
+    <!-- 学習ステップ一覧 -->
+    <div class="curriculum-box" style="margin-top:8px">
+      <div class="curriculum-title">① 触れる力（解剖学）— 学習ステップ</div>
+      <div class="curr-step done"><span class="curr-icon">✅</span><span class="curr-label">STEP 1 肩甲骨のランドマーク</span></div>
+      <div class="curr-step done"><span class="curr-icon">✅</span><span class="curr-label">STEP 2 僧帽筋の起始・停止・作用</span></div>
+      <div class="curr-step locked"><span class="curr-icon">🔒</span><span class="curr-label">STEP 3 僧帽筋の触診と臨床応用</span><span class="badge-salon">サロン</span></div>
+      <div class="curr-step locked" style="opacity:0.6"><span class="curr-icon">🔓</span><span class="curr-label">STEP 4 三角筋の3部位</span></div>
+      <div class="curr-step locked"><span class="curr-icon">🔒</span><span class="curr-label">STEP 5 三角筋の触診と臨床応用</span><span class="badge-salon">サロン</span></div>
+    </div>
+
+    <!-- リプレイボタン -->
+    <button class="btn-replay" onclick="sfxClick(); replayGame()">🔄 もう一度挑戦する</button>
+
+    <div class="ep2-teaser">
+      <div class="ep2-label">NEXT — EPISODE 2</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px">
+        <div style="display:flex;align-items:flex-start;gap:10px">
+          <img class="char-img-sm" src="./3.png" alt="ぶったくん" style="flex-shrink:0;margin-top:2px">
+          <div class="ep2-dialogue" style="margin:0">先生…実はもう1つ相談が…<br>最近、毎日夕方になると<br>頭の後ろがズキズキして…</div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;flex-direction:row-reverse">
+          <img class="char-img-sm" src="./11.png" alt="ぼん学長" style="flex-shrink:0;margin-top:2px">
+          <div style="font-size:0.88rem;line-height:1.6;color:#ccc;text-align:right">次の患者が待っている。<br><strong style="color:var(--gold)">Episode 2 — 頭痛の正体を暴け</strong></div>
+        </div>
+      </div>
+      <div>
+        <div class="btn-ep2-lock">▶ 続きをプレイ 🔒</div>
+        <div class="ep2-hint"><span style="color:#ffc832">🔜 EP2はオンラインサロン開設後に配信予定</span><br>LINE登録で配信通知を受け取る</div>
+      </div>
+    </div>
+    <button class="btn-retry" onclick="sfxClick(); resetGame()">最初からやり直す</button>
+  </div>
+
+</div>
+
+<!-- ========== CARD OVERLAY ========== -->
+<div id="card-overlay" onclick="closeCardOverlay(event)">
+  <div id="card-overlay-inner">
+    <button id="card-overlay-close" onclick="closeCardOverlay()">✕</button>
+    <div id="card-overlay-body"></div>
+  </div>
+</div>
+
+<!-- ステップインジケーター -->
+<div id="step-dots">
+  <div class="step-dot" id="dot-0"></div>
+  <div class="step-dot" id="dot-1"></div>
+  <div class="step-dot" id="dot-2"></div>
+  <div class="step-dot" id="dot-3"></div>
+  <div class="step-dot" id="dot-4"></div>
+</div>
+
+<!-- これだ!! OVERLAY -->
+<div id="koredayo-overlay">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+    <div class="char-duo">
+      <img class="char-img" style="width:72px;height:72px" src="./12.png" alt="ぼん学長">
+      <img class="char-img" style="width:72px;height:72px" src="./8.png" alt="タコくん">
+    </div>
+    <div class="koredayo-text">これだ！！</div>
+  </div>
+</div>
+
+<script>
+// =====================================================
+// モバイル対応：実際の表示高さを --vh に設定
+// =====================================================
+function updateVH() {
+  document.documentElement.style.setProperty('--vh', window.innerHeight * 0.01 + 'px');
+}
+updateVH();
+window.addEventListener('resize', updateVH);
+window.addEventListener('orientationchange', () => setTimeout(updateVH, 200));
+
+// =====================================================
+// SOUND ENGINE（Web Audio API）
+// =====================================================
+let _actx = null;
+function actx() {
+  if (!_actx) {
+    try { _actx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) { return null; }
+  }
+  try { if (_actx.state !== 'running') _actx.resume(); } catch(e) {}
+  return _actx;
+}
+
+let _audioUnlocked = false;
+function unlockAudio() {
+  if (_audioUnlocked) return;
+  const c = actx();
+  if (!c) return;
+  try {
+    const buf = c.createBuffer(1, 1, c.sampleRate);
+    const src = c.createBufferSource();
+    src.buffer = buf;
+    src.connect(c.destination);
+    src.start(0);
+    c.resume().then(() => { _audioUnlocked = true; });
+  } catch(e) {}
+}
+document.addEventListener('touchstart', unlockAudio, { passive: true });
+document.addEventListener('touchend',   unlockAudio, { passive: true });
+
+let blipCounter = 0;
+function sfxBlip(charType) {
+  blipCounter++;
+  if (blipCounter % 2 !== 0) return;
+  try {
+    const c = actx();
+    const osc = c.createOscillator();
+    const gain = c.createGain();
+    osc.connect(gain); gain.connect(c.destination);
+    const freqMap = { patient: 740, you: 600, senior: 480 };
+    osc.frequency.value = freqMap[charType] || 600;
+    osc.type = 'square';
+    gain.gain.setValueAtTime(0.04, c.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.04);
+    osc.start(c.currentTime);
+    osc.stop(c.currentTime + 0.04);
+  } catch(e) {}
+}
+
+function sfxClick() {
+  try {
+    const c = actx();
+    const osc = c.createOscillator();
+    const gain = c.createGain();
+    osc.connect(gain); gain.connect(c.destination);
+    osc.frequency.value = 900;
+    osc.type = 'sine';
+    gain.gain.setValueAtTime(0.08, c.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.06);
+    osc.start(c.currentTime); osc.stop(c.currentTime + 0.06);
+  } catch(e) {}
+}
+
+function sfxCorrect() {
+  try {
+    const c = actx();
+    const notes = [523.25, 659.25, 783.99, 1046.5];
+    notes.forEach((freq, i) => {
+      const osc = c.createOscillator();
+      const gain = c.createGain();
+      osc.connect(gain); gain.connect(c.destination);
+      osc.frequency.value = freq;
+      osc.type = 'sine';
+      const t = c.currentTime + i * 0.09;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.18, t + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+      osc.start(t); osc.stop(t + 0.22);
+    });
+  } catch(e) {}
+}
+
+function sfxWrong() {
+  try {
+    const c = actx();
+    const osc = c.createOscillator();
+    const gain = c.createGain();
+    osc.connect(gain); gain.connect(c.destination);
+    osc.frequency.setValueAtTime(280, c.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(90, c.currentTime + 0.45);
+    osc.type = 'sawtooth';
+    gain.gain.setValueAtTime(0.14, c.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.45);
+    osc.start(c.currentTime); osc.stop(c.currentTime + 0.45);
+  } catch(e) {}
+}
+
+function sfxKoredayo() {
+  try {
+    const c = actx();
+    const osc1 = c.createOscillator();
+    const gain1 = c.createGain();
+    osc1.connect(gain1); gain1.connect(c.destination);
+    osc1.frequency.setValueAtTime(180, c.currentTime);
+    osc1.frequency.exponentialRampToValueAtTime(55, c.currentTime + 0.35);
+    osc1.type = 'sine';
+    gain1.gain.setValueAtTime(0.5, c.currentTime);
+    gain1.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.35);
+    osc1.start(c.currentTime); osc1.stop(c.currentTime + 0.35);
+    const osc2 = c.createOscillator();
+    const gain2 = c.createGain();
+    osc2.connect(gain2); gain2.connect(c.destination);
+    osc2.frequency.setValueAtTime(1200, c.currentTime);
+    osc2.frequency.exponentialRampToValueAtTime(900, c.currentTime + 0.15);
+    osc2.type = 'square';
+    gain2.gain.setValueAtTime(0.12, c.currentTime);
+    gain2.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.15);
+    osc2.start(c.currentTime); osc2.stop(c.currentTime + 0.15);
+  } catch(e) {}
+}
+
+function sfxSlide() {
+  try {
+    const c = actx();
+    const osc = c.createOscillator();
+    const gain = c.createGain();
+    osc.connect(gain); gain.connect(c.destination);
+    osc.frequency.setValueAtTime(220, c.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(880, c.currentTime + 0.2);
+    osc.type = 'sine';
+    gain.gain.setValueAtTime(0.12, c.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.25);
+    osc.start(c.currentTime); osc.stop(c.currentTime + 0.25);
+  } catch(e) {}
+}
+
+function sfxStar(i) {
+  try {
+    const c = actx();
+    const freq = 880 + i * 220;
+    const osc = c.createOscillator();
+    const gain = c.createGain();
+    osc.connect(gain); gain.connect(c.destination);
+    osc.frequency.setValueAtTime(freq, c.currentTime);
+    osc.frequency.linearRampToValueAtTime(freq * 1.5, c.currentTime + 0.12);
+    osc.type = 'sine';
+    gain.gain.setValueAtTime(0.13, c.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.18);
+    osc.start(c.currentTime); osc.stop(c.currentTime + 0.18);
+  } catch(e) {}
+}
+
+function sfxTransition() {
+  try {
+    const c = actx();
+    const osc = c.createOscillator();
+    const gain = c.createGain();
+    osc.connect(gain); gain.connect(c.destination);
+    osc.frequency.setValueAtTime(600, c.currentTime);
+    osc.frequency.linearRampToValueAtTime(400, c.currentTime + 0.12);
+    osc.type = 'sine';
+    gain.gain.setValueAtTime(0.06, c.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.12);
+    osc.start(c.currentTime); osc.stop(c.currentTime + 0.12);
+  } catch(e) {}
+}
+
+// =====================================================
+// STATE
+// =====================================================
+const STORAGE_KEY = 'rinsho_ep1_v4';
+
+let state = {
+  phase: 'splash',
+  mode: null,
+  choicesAnswered: new Set(),
+  evidence1Unlocked: false,
+  evidence2Unlocked: false,
+  quiz1Done: false,
+  quiz2Done: false,
+  cleared: false,
+  quiz1FirstCorrect: null,
+  quiz2FirstCorrect: null,
+  inlineHw1Shown: false,
+  inlineHw1Done: false,
+};
+
+// 不正解カウント（セッション内のみ管理）
+let quiz1WrongCount = 0;
+let quiz2WrongCount = 0;
+
+function saveState() {
+  const s = { ...state, choicesAnswered: [...state.choicesAnswered] };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+}
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const s = JSON.parse(raw);
+    s.choicesAnswered = new Set(s.choicesAnswered || []);
+    state = s;
+  } catch(e) {}
+}
+
+// =====================================================
+// BACK BUTTON
+// =====================================================
+function getBackTargetMap() {
+  return {
+    dialogue:  () => { showScreenWithSound('mode'); },
+    choices:   () => { showScreenWithSound('dialogue'); dlgIdx = 0; showDialogue(0); },
+    homework1: () => goToChoices(),
+    miniquiz:  () => goToPhase3(),
+    quiz1:     () => state.mode === 'intermediate' ? goToChoices() : goToMiniQuiz(),
+    homework2: () => goToQuiz1(),
+  };
+}
+
+function updateBackBtn() {
+  const btn = document.getElementById('back-btn');
+  btn.style.display = getBackTargetMap()[state.phase] ? 'block' : 'none';
+}
+
+function goBack() {
+  sfxClick();
+  const map = getBackTargetMap();
+  if (map[state.phase]) map[state.phase]();
+}
+
+// =====================================================
+// SCREEN
+// =====================================================
+const GAME_SCREENS = new Set(['dialogue','choices','homework1','miniquiz','quiz1','homework2']);
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('screen-' + id);
+  if (el) setTimeout(() => el.classList.add('active'), 20);
+  updateBackBtn();
+  updateStepDots(id);
+  document.getElementById('game-bg').classList.toggle('visible', GAME_SCREENS.has(id));
+}
+
+// bg.png が存在すれば has-img クラスを付与
+(function() {
+  const img = new Image();
+  img.onload = () => document.getElementById('game-bg').classList.add('has-img');
+  img.src = './bg.png';
+}());
+
+function showScreenWithSound(id) {
+  sfxTransition();
+  showScreen(id);
+}
+
+// =====================================================
+// TYPEWRITER
+// =====================================================
+let typeTimer = null, typeFullText = '', typeEl = null;
+let typeIdx = 0, typeDone = false, typeCharType = 'you';
+
+function typewrite(element, text, charType) {
+  if (typeTimer) clearInterval(typeTimer);
+  blipCounter = 0;
+  typeEl = element; typeFullText = text; typeIdx = 0; typeDone = false;
+  typeCharType = charType || 'you';
+  element.textContent = '';
+  document.getElementById('tap-hint').style.display = 'none';
+  typeTimer = setInterval(() => {
+    typeIdx++;
+    typeEl.textContent = typeFullText.slice(0, typeIdx);
+    if (typeFullText[typeIdx - 1] !== '\n') sfxBlip(typeCharType);
+    if (typeIdx >= typeFullText.length) {
+      clearInterval(typeTimer); typeTimer = null; typeDone = true;
+      document.getElementById('tap-hint').style.display = '';
+    }
+  }, 30);
+}
+
+function skipType() {
+  if (typeTimer) { clearInterval(typeTimer); typeTimer = null; }
+  if (typeEl) typeEl.textContent = typeFullText;
+  typeDone = true;
+  document.getElementById('tap-hint').style.display = '';
+}
+
+// =====================================================
+// CHARACTER IMAGE URLS
+// =====================================================
+const CHARS = {
+  bon:   {
+    question: './11.png',  // 指立て（通常）
+    correct:  './12.png',  // 星目・万歳（大喜び）
+    wrong:    './13.png',  // イラッ
+    mini:     './14.png',  // ？マーク（考え中）
+    clear:    './15.png',  // 居眠り
+  },
+  tako:  {
+    normal:   './5.png',   // 通常（ニコニコ）
+    correct:  './9.png',   // 大喜び
+    wrong:    './6.png',   // 悲しみ
+    thinking: './7.png',   // もやもや（出題中・選択前）
+    excited:  './8.png',   // ガッツ（これだ！！）
+  },
+  butta: {
+    arrive:   './1.png',   // 通常（ニコニコ）
+    symptom:  './2.png',   // 泣き（痛そう）
+    after:    './4.png',   // びっくり（治療後）
+  },
+};
+
+// =====================================================
+// DIALOGUE DATA
+// =====================================================
+const dialogues = [
+  { imgSrc: CHARS.butta.symptom, name: 'ぶったくん', speaker: 'ぶったくん', charType: 'patient',
+    text: '先生、助けてください…！\n肩が重くて動けないんです…\n毎日デスクワークで、夕方になると特にひどくて…' },
+  { imgSrc: CHARS.bon.question,  name: 'ぼん学長', speaker: 'ぼん学長', charType: 'npc',
+    text: 'よし、俺たちの出番だ。\nこの肩こりの"真犯人"を突き止めて\nぶったくんを救うぞ！' },
+  { imgSrc: CHARS.tako.normal,   name: 'タコくん', speaker: 'タコくん', charType: 'you',
+    text: 'はい、学長！\nまずは何から調べますか？' },
+];
+
+const choiceData = [
+  { label: 'どこが一番痛い？',    answer: 'ここ…肩の上あたりが重くて。\n首の付け根から肩先にかけてです' },
+  { label: 'いつから痛い？',      answer: '3ヶ月くらい前から。\n在宅ワークが増えてからですね…' },
+  { label: 'どんな時に痛くなる？', answer: 'パソコンを2〜3時間やった後がひどくて。\n夕方になると頭痛もしてきます' },
+];
+
+// =====================================================
+// QUIZ DATA
+// =====================================================
+const quiz1Data = {
+  options: ['A. 三角筋', 'B. 僧帽筋上部', 'C. 肩甲挙筋', 'D. 棘上筋'],
+  correct: 1,
+  correctMsg: '犯人は僧帽筋上部だ！\nこいつがぶったくんを苦しめていたんだ！',
+  wrongExplanations: [
+    '三角筋は肩の丸みを作る筋肉。腕を上げる動作で使うため、肩こりの"重だるさ"とは症状が異なります',
+    null,
+    '惜しい！肩甲挙筋も肩こりの原因にはなりますが、今回の症状（肩上部の広範囲な張り）は僧帽筋上部がより疑わしいです',
+    '棘上筋は腕を横に上げるときに使う筋肉。五十肩との関連が深く、デスクワークの肩こりとは原因が異なります',
+  ],
+};
+
+const quiz2Data = {
+  options: ['A. 合谷', 'B. 足三里', 'C. 肩井', 'D. 委中'],
+  correct: 2,
+  correctMsg: '肩井だ！これでぶったくんを治療できる！',
+  wrongExplanations: [
+    '合谷（LI4）は万能ツボですが大腸経。全身の緊張緩和には使えますが、僧帽筋の局所ポイントとしては別のツボが最適です',
+    '足三里（ST36）は胃経のツボ。消化器系や全身の疲労回復が得意で、肩こりの局所治療には向きません',
+    null,
+    '委中（BL40）は膀胱経で"腰背は委中に求む"と言われるツボ。腰痛には抜群ですが、肩こりには経絡が異なります',
+  ],
+};
+
+// =====================================================
+// DIALOGUE
+// =====================================================
+let dlgIdx = 0;
+
+function showDialogue(idx) {
+  if (idx >= dialogues.length) { goToChoices(); return; }
+  dlgIdx = idx;
+  const d = dialogues[idx];
+  document.getElementById('dialogue-img').src = d.imgSrc;
+  document.getElementById('dialogue-img').alt = d.name;
+  document.getElementById('dialogue-charname').textContent = d.name;
+  document.getElementById('speaker-name').textContent = d.speaker;
+  typewrite(document.getElementById('dialogue-text'), d.text, d.charType);
+}
+
+function handleDialogueTap() {
+  if (!typeDone) { skipType(); return; }
+  sfxClick();
+  showDialogue(dlgIdx + 1);
+}
+
+// =====================================================
+// PHASES
+// =====================================================
+function setModeAndStart(mode) {
+  sfxClick();
+  if (state.mode !== mode) {
+    state = {
+      phase: 'dialogue', mode,
+      choicesAnswered: new Set(),
+      evidence1Unlocked: false, evidence2Unlocked: false,
+      quiz1Done: false, quiz2Done: false, cleared: false,
+      quiz1FirstCorrect: null, quiz2FirstCorrect: null,
+      inlineHw1Shown: false, inlineHw1Done: false,
+    };
+  } else {
+    state.phase = 'dialogue';
+  }
+  saveState();
+  showScreenWithSound('dialogue');
+  dlgIdx = 0; showDialogue(0);
+}
+
+function showSalonUnlock(type) {
+  sfxClick();
+  const card = document.getElementById('salon-unlock-card');
+  const text = document.getElementById('salon-unlock-text');
+  const msgs = {
+    mid: 'サロンに入ると中級者モードが解放されます',
+    adv: 'サロンに入ると上級者モードが解放されます',
+  };
+  text.textContent = msgs[type] || '';
+  card.style.display = card.style.display === 'none' ? 'block' : 'none';
+}
+
+function startGame() { setModeAndStart('beginner'); }
+
+function goToChoices() {
+  state.phase = 'choices'; saveState();
+  showScreenWithSound('choices');
+  renderChoices();
+}
+
+function renderChoices() {
+  const list = document.getElementById('choices-list');
+  list.innerHTML = '';
+  const box = document.getElementById('choice-answer-box');
+  box.textContent = ''; box.classList.remove('visible');
+
+  choiceData.forEach((c, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'btn-choice';
+    btn.textContent = c.label;
+    if (state.choicesAnswered.has(i)) { btn.classList.add('answered'); btn.disabled = true; }
+    btn.onclick = () => { sfxClick(); selectChoice(i); };
+    list.appendChild(btn);
+  });
+  checkChoicesDone();
+}
+
+function selectChoice(i) {
+  state.choicesAnswered.add(i); saveState();
+  const box = document.getElementById('choice-answer-box');
+  box.classList.add('visible'); box.textContent = '';
+  blipCounter = 0;
+  let idx = 0; const text = choiceData[i].answer;
+  const t = setInterval(() => {
+    idx++; box.textContent = text.slice(0, idx);
+    if (text[idx-1] !== '\n') sfxBlip('patient');
+    if (idx >= text.length) clearInterval(t);
+  }, 30);
+  document.querySelectorAll('#choices-list .btn-choice')[i].classList.add('answered');
+  document.querySelectorAll('#choices-list .btn-choice')[i].disabled = true;
+  checkChoicesDone();
+}
+
+function checkChoicesDone() {
+  if (state.choicesAnswered.size >= 3)
+    document.getElementById('choices-next').classList.add('visible');
+}
+
+// ===== PHASE 3: HOMEWORK 1 =====
+function goToPhase3() {
+  if (state.mode === 'intermediate') { goToQuiz1(); return; }
+  state.phase = 'homework1'; saveState();
+  showScreenWithSound('homework1');
+  if (state.evidence1Unlocked) restoreHomework1();
+}
+
+function restoreHomework1() {
+  document.getElementById('btn-done1').disabled = true;
+  document.getElementById('btn-nobook1').style.display = 'none';
+  document.getElementById('evidence1').classList.add('slide-in');
+  document.getElementById('btn-tohomework1-next').style.display = 'block';
+  document.getElementById('hw1-char-img').src = './11.png';
+  document.getElementById('hw1-win-text').innerHTML = '僧帽筋上部…こいつが怪しいな。<br>本当にこいつが犯人か、確認テストだ。';
+}
+
+function unlockEvidence1() {
+  sfxClick();
+  state.evidence1Unlocked = true; saveState();
+  document.getElementById('btn-done1').disabled = true;
+  document.getElementById('btn-nobook1').style.display = 'none';
+  document.getElementById('nobook-card1').classList.remove('visible');
+  setTimeout(() => {
+    sfxSlide();
+    showCardOverlay(document.getElementById('evidence1').innerHTML, () => {
+      document.getElementById('btn-tohomework1-next').style.display = 'block';
+      document.getElementById('hw1-char-img').src = './11.png';
+      document.getElementById('hw1-win-text').innerHTML = '僧帽筋上部…こいつが怪しいな。<br>本当にこいつが犯人か、確認テストだ。';
+    });
+  }, 100);
+}
+
+// ===== MINI QUIZ (Phase 3.5) =====
+const miniQuizData = [
+  {
+    intro: '根拠を叩き込んだか？\nちゃんと覚えてるか確認するぞ。',
+    q: '僧帽筋上部の起始は___である',
+    options: ['A. 外後頭隆起・項靭帯', 'B. 肩甲棘', 'C. 烏口突起', 'D. 鎖骨外側端'],
+    correct: 0,
+    correctMsg: 'その通り！外後頭隆起から鎖骨まで走る大きな筋肉だ',
+    wrongMsgs: [
+      null,
+      '肩甲棘は僧帽筋の"中部"の停止部。上部とは異なります',
+      '烏口突起は小胸筋や烏口腕筋の付着部です',
+      '鎖骨外側端は僧帽筋上部の"停止"であり起始ではありません',
+    ],
+  },
+  {
+    intro: 'もう1問いくぞ',
+    q: '僧帽筋上部はデスクワーク中に"弛緩"している',
+    options: ['A. ○ 正しい', 'B. × 間違い'],
+    correct: 1,
+    correctMsg: '正解！常に"収縮"しているからこそ肩こりの原因になる',
+    wrongMsgs: [
+      'デスクワーク中は肩が上がり、僧帽筋上部は常に収縮しています。だから疲労して肩こりになるんです',
+      null,
+    ],
+  },
+];
+
+let mqIdx = 0;
+
+function goToMiniQuiz() {
+  mqIdx = 0;
+  state.phase = 'miniquiz'; saveState();
+  showScreenWithSound('miniquiz');
+  renderMiniQuiz();
+}
+
+function renderMiniQuiz() {
+  const q = miniQuizData[mqIdx];
+  document.getElementById('mq-intro-text').textContent = q.intro;
+  document.getElementById('mq-question').textContent = q.q;
+
+  const container = document.getElementById('mq-options');
+  container.innerHTML = '';
+  const iineEl = document.getElementById('mq-iine');
+  iineEl.textContent = '';
+  iineEl.classList.remove('show');
+  document.getElementById('mq-feedback').innerHTML = '';
+
+  q.options.forEach((opt, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'quiz-option-wrap';
+    const btn = document.createElement('button');
+    btn.className = 'btn-quiz'; btn.textContent = opt;
+    btn.onclick = () => answerMiniQuiz(i);
+    const exp = document.createElement('div');
+    exp.className = 'wrong-explanation';
+    exp.id = 'mq-exp-' + i;
+    wrap.appendChild(btn);
+    wrap.appendChild(exp);
+    container.appendChild(wrap);
+  });
+}
+
+function answerMiniQuiz(i) {
+  sfxClick();
+  const q = miniQuizData[mqIdx];
+  const btns = document.querySelectorAll('#mq-options .btn-quiz');
+
+  if (i === q.correct) {
+    btns.forEach(b => b.disabled = true);
+    btns[i].classList.add('correct');
+    document.getElementById('mq-char-img').src = CHARS.bon.correct;
+    document.getElementById('mq-tako-img').src = CHARS.tako.correct;
+    sfxCorrect();
+
+    const iineEl = document.getElementById('mq-iine');
+    iineEl.textContent = '✨ いいね！';
+    setTimeout(() => iineEl.classList.add('show'), 10);
+
+    document.getElementById('mq-feedback').innerHTML =
+      `<div style="color:var(--correct);font-size:0.88rem;margin-top:6px;line-height:1.6">${q.correctMsg}</div>`;
+
+    setTimeout(() => {
+      mqIdx++;
+      if (mqIdx < miniQuizData.length) {
+        document.getElementById('mq-char-img').src = CHARS.bon.mini;
+        document.getElementById('mq-tako-img').src = CHARS.tako.thinking;
+        renderMiniQuiz();
+      } else {
+        showMiniQuizComplete();
+      }
+    }, 1000);
+  } else {
+    btns[i].classList.add('incorrect');
+    btns[i].disabled = true;
+    document.getElementById('mq-char-img').src = CHARS.bon.wrong;
+    document.getElementById('mq-tako-img').src = CHARS.tako.wrong;
+    sfxWrong();
+    const expEl = document.getElementById('mq-exp-' + i);
+    if (expEl && q.wrongMsgs[i]) {
+      expEl.textContent = q.wrongMsgs[i];
+      setTimeout(() => expEl.classList.add('show'), 10);
+    }
+  }
+}
+
+function showMiniQuizComplete() {
+  document.getElementById('mq-char-img').src = CHARS.bon.correct;
+  document.getElementById('mq-intro-text').textContent = 'いいぞ！準備は整った。\nいよいよ"真犯人"を指名する時間だ。';
+  document.getElementById('mq-question-wrap').innerHTML = `
+    <div class="mq-complete-msg">
+      <div class="mq-complete-text">基礎確認OK！<br>法廷へ向かえ</div>
+      <button class="btn-next-full" onclick="sfxClick(); goToQuiz1()">⚖️ Phase 4 — 鑑別へ</button>
+    </div>
+  `;
+}
+
+// ===== PHASE 4: QUIZ 1 =====
+function goToQuiz1() {
+  state.phase = 'quiz1'; saveState();
+  quiz1WrongCount = 0;
+  showScreenWithSound('quiz1');
+  renderQuiz1();
+}
+
+function renderQuiz1() {
+  const container = document.getElementById('quiz1-options');
+  container.innerHTML = '';
+  quiz1Data.options.forEach((opt, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'quiz-option-wrap';
+    const btn = document.createElement('button');
+    btn.className = 'btn-quiz'; btn.textContent = opt;
+    btn.onclick = () => answerQuiz1(i);
+    const exp = document.createElement('div');
+    exp.className = 'wrong-explanation';
+    exp.id = 'quiz1-exp-' + i;
+    wrap.appendChild(btn);
+    wrap.appendChild(exp);
+    container.appendChild(wrap);
+  });
+  if (state.quiz1Done) {
+    const btns = container.querySelectorAll('.btn-quiz');
+    btns.forEach(b => b.disabled = true);
+    btns[quiz1Data.correct].classList.add('correct');
+    document.getElementById('quiz1-char-img').src = CHARS.bon.correct;
+    document.getElementById('quiz1-tako-img').src = CHARS.tako.correct;
+    const fb = document.getElementById('quiz1-feedback');
+    fb.className = 'quiz-feedback show ok'; fb.textContent = quiz1Data.correctMsg;
+    showClinicalMemo();
+  }
+}
+
+// =====================================================
+// CARD OVERLAY
+// =====================================================
+let _cardOverlayCb = null;
+
+function showCardOverlay(html, afterCloseFn) {
+  document.getElementById('card-overlay-body').innerHTML = html;
+  document.getElementById('card-overlay').classList.add('show');
+  _cardOverlayCb = afterCloseFn || null;
+}
+
+function closeCardOverlay(e) {
+  if (e && e.target.id !== 'card-overlay' && e.target.id !== 'card-overlay-close') return;
+  document.getElementById('card-overlay').classList.remove('show');
+  if (_cardOverlayCb) { _cardOverlayCb(); _cardOverlayCb = null; }
+}
+
+function showClinicalMemo() {
+  const memo = document.getElementById('quiz1-memo');
+  showCardOverlay(memo.innerHTML);
+  document.getElementById('quiz1-next').classList.add('show');
+}
+
+function answerQuiz1(i) {
+  sfxClick();
+  const btns = document.querySelectorAll('#quiz1-options .btn-quiz');
+
+  if (i === quiz1Data.correct) {
+    // 正解：全ボタン無効化・これだ演出
+    btns.forEach(b => b.disabled = true);
+    btns[i].classList.add('correct');
+    document.getElementById('quiz1-char-img').src = CHARS.bon.correct;
+    document.getElementById('quiz1-tako-img').src = CHARS.tako.correct;
+    if (state.quiz1FirstCorrect === null) { state.quiz1FirstCorrect = true; }
+    state.quiz1Done = true; saveState();
+    sfxCorrect();
+    showKoredayo(() => {
+      const fb = document.getElementById('quiz1-feedback');
+      fb.className = 'quiz-feedback show ok'; fb.textContent = quiz1Data.correctMsg;
+      showClinicalMemo();
+      document.getElementById('quiz1-next').classList.add('show');
+    });
+  } else {
+    // 不正解：選んだボタンのみ赤く・無効化、他は押せるまま
+    btns[i].classList.add('incorrect');
+    btns[i].disabled = true;
+    document.getElementById('quiz1-char-img').src = CHARS.bon.wrong;
+    document.getElementById('quiz1-tako-img').src = CHARS.tako.wrong;
+    if (state.quiz1FirstCorrect === null) { state.quiz1FirstCorrect = false; saveState(); }
+    sfxWrong();
+    quiz1WrongCount++;
+
+    // 解説テキストをボタン直下にフェードイン
+    const expEl = document.getElementById('quiz1-exp-' + i);
+    if (expEl && quiz1Data.wrongExplanations[i]) {
+      expEl.textContent = quiz1Data.wrongExplanations[i];
+      setTimeout(() => expEl.classList.add('show'), 10);
+    }
+
+    // 3回以上不正解でヒント追加表示
+    if (quiz1WrongCount >= 3) {
+      const fb = document.getElementById('quiz1-feedback');
+      if (!fb.classList.contains('show')) {
+        fb.className = 'quiz-feedback show ng';
+        fb.innerHTML = '<div class="hint-text">💡 ヒントが欲しい？ サロンの解説動画で詳しく学べます</div>';
+      }
+    }
+
+    // 初学者モード（intermediate）の追加処理
+    if (state.mode === 'intermediate' && !state.inlineHw1Shown) {
+      state.inlineHw1Shown = true; saveState();
+      setTimeout(() => {
+        document.getElementById('quiz1-inline-hw').style.display = 'block';
+        if (state.inlineHw1Done) restoreInlineHw1();
+      }, 600);
+    }
+  }
+}
+
+// インライン宿題①：読んだ！ボタン
+function unlockInlineEvidence1() {
+  sfxClick();
+  state.inlineHw1Done = true; saveState();
+  document.getElementById('btn-inline-done1').disabled = true;
+  setTimeout(() => {
+    sfxSlide();
+    showCardOverlay(document.getElementById('inline-evidence1').innerHTML, () => {
+      document.getElementById('quiz1-retry-hint').style.display = 'block';
+      document.querySelectorAll('#quiz1-options .btn-quiz')
+        .forEach(b => { if (!b.classList.contains('correct')) { b.disabled = false; b.className = 'btn-quiz'; } });
+      document.getElementById('quiz1-feedback').className = 'quiz-feedback';
+    });
+  }, 100);
+}
+
+function restoreInlineHw1() {
+  document.getElementById('btn-inline-done1').disabled = true;
+  document.getElementById('inline-evidence1').classList.add('slide-in');
+  document.getElementById('quiz1-retry-hint').style.display = 'block';
+}
+
+// ===== PHASE 5: HOMEWORK 2 / QUIZ 2 =====
+function goToPhase5() {
+  state.phase = 'homework2'; saveState();
+  quiz2WrongCount = 0;
+  showScreenWithSound('homework2');
+  renderQuiz2();
+  if (state.evidence2Unlocked) restoreHomework2();
+}
+
+function renderQuiz2() {
+  const container = document.getElementById('quiz2-options');
+  container.innerHTML = '';
+  quiz2Data.options.forEach((opt, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'quiz-option-wrap';
+    const btn = document.createElement('button');
+    btn.className = 'btn-quiz'; btn.textContent = opt;
+    btn.onclick = () => answerQuiz2(i);
+    const exp = document.createElement('div');
+    exp.className = 'wrong-explanation';
+    exp.id = 'quiz2-exp-' + i;
+    wrap.appendChild(btn);
+    wrap.appendChild(exp);
+    container.appendChild(wrap);
+  });
+  if (state.quiz2Done) {
+    const btns = container.querySelectorAll('.btn-quiz');
+    btns.forEach(b => b.disabled = true);
+    btns[quiz2Data.correct].classList.add('correct');
+    document.getElementById('quiz2-char-img').src = CHARS.bon.correct;
+    document.getElementById('quiz2-tako-img').src = CHARS.tako.correct;
+    const fb = document.getElementById('quiz2-feedback');
+    fb.className = 'quiz-feedback show ok'; fb.innerHTML = quiz2Data.correctMsg;
+  }
+}
+
+function answerQuiz2(i) {
+  sfxClick();
+  const btns = document.querySelectorAll('#quiz2-options .btn-quiz');
+
+  if (i === quiz2Data.correct) {
+    // 正解：全ボタン無効化・これだ演出
+    btns.forEach(b => b.disabled = true);
+    btns[i].classList.add('correct');
+    document.getElementById('quiz2-char-img').src = CHARS.bon.correct;
+    document.getElementById('quiz2-tako-img').src = CHARS.tako.correct;
+    if (state.quiz2FirstCorrect === null) { state.quiz2FirstCorrect = true; }
+    state.quiz2Done = true; saveState();
+    sfxCorrect();
+    showKoredayo(() => {
+      const fb = document.getElementById('quiz2-feedback');
+      fb.className = 'quiz-feedback show ok'; fb.innerHTML = quiz2Data.correctMsg;
+      setTimeout(() => {
+        document.getElementById('homework2-card').style.display = 'block';
+        document.getElementById('btn-done2').style.display = 'block';
+        document.getElementById('btn-nobook2').style.display = 'block';
+      }, 400);
+    });
+  } else {
+    // 不正解：選んだボタンのみ赤く・無効化、他は押せるまま
+    btns[i].classList.add('incorrect');
+    btns[i].disabled = true;
+    document.getElementById('quiz2-char-img').src = CHARS.bon.wrong;
+    document.getElementById('quiz2-tako-img').src = CHARS.tako.wrong;
+    if (state.quiz2FirstCorrect === null) { state.quiz2FirstCorrect = false; saveState(); }
+    sfxWrong();
+    quiz2WrongCount++;
+
+    // 解説テキストをボタン直下にフェードイン
+    const expEl = document.getElementById('quiz2-exp-' + i);
+    if (expEl && quiz2Data.wrongExplanations[i]) {
+      expEl.textContent = quiz2Data.wrongExplanations[i];
+      setTimeout(() => expEl.classList.add('show'), 10);
+    }
+
+    // 3回以上不正解でヒント追加表示
+    if (quiz2WrongCount >= 3) {
+      const fb = document.getElementById('quiz2-feedback');
+      if (!fb.classList.contains('show')) {
+        fb.className = 'quiz-feedback show ng';
+        fb.innerHTML = '<div class="hint-text">💡 ヒントが欲しい？ サロンの解説動画で詳しく学べます</div>';
+      }
+    }
+
+    // 初学者モード（intermediate）の追加処理
+    if (state.mode === 'intermediate') {
+      setTimeout(() => {
+        document.getElementById('homework2-card').style.display = 'block';
+        document.getElementById('btn-done2').style.display = 'block';
+        document.getElementById('btn-nobook2').style.display = 'block';
+      }, 600);
+    }
+  }
+}
+
+function restoreHomework2() {
+  document.getElementById('homework2-card').style.display = 'block';
+  document.getElementById('btn-done2').style.display = 'block';
+  document.getElementById('btn-done2').disabled = true;
+  document.getElementById('btn-nobook2').style.display = 'none';
+  document.getElementById('evidence2').classList.add('slide-in');
+  document.getElementById('btn-tohomework2-next').style.display = 'block';
+}
+
+function unlockEvidence2() {
+  sfxClick();
+  state.evidence2Unlocked = true; saveState();
+  document.getElementById('btn-done2').disabled = true;
+  document.getElementById('btn-nobook2').style.display = 'none';
+  document.getElementById('nobook-card2').classList.remove('visible');
+  setTimeout(() => {
+    sfxSlide();
+    showCardOverlay(document.getElementById('evidence2').innerHTML, () => {
+      if (state.mode === 'intermediate' && !state.quiz2Done) {
+        document.querySelectorAll('#quiz2-options .btn-quiz')
+          .forEach(b => { if (!b.classList.contains('correct')) { b.disabled = false; b.className = 'btn-quiz'; } });
+        document.getElementById('quiz2-feedback').className = 'quiz-feedback';
+        const hint = document.createElement('div');
+        hint.className = 'retry-hint';
+        hint.textContent = '根拠を確認した！もう一度選んでみよう 👆';
+        document.getElementById('quiz2-options').after(hint);
+      } else {
+        document.getElementById('btn-tohomework2-next').style.display = 'block';
+      }
+    });
+  }, 100);
+}
+
+function toggleNobook(n) {
+  sfxClick();
+  document.getElementById('nobook-card' + n).classList.toggle('visible');
+}
+
+// ===== CLEAR =====
+function goToClear() {
+  state.phase = 'clear'; state.cleared = true; saveState();
+  showScreenWithSound('clear');
+  setTimeout(animateClear, 400);
+}
+
+function calcAccuracy() {
+  const correct = [state.quiz1FirstCorrect, state.quiz2FirstCorrect].filter(v => v === true).length;
+  return Math.round((correct / 2) * 100);
+}
+
+function showClearModeMsg() {
+  const el = document.getElementById('clear-mode-msg');
+  if (!el) return;
+  if (state.mode === 'beginner') {
+    el.className = 'clear-mode-msg beginner-msg';
+    el.innerHTML = `
+      <div class="cmsg-title">🎉 初学者モードクリア！</div>
+      次は<strong>⚡ 初級者モード</strong>に挑戦してみよう。<br>
+      ヒントなしで同じ症例を解けるかな？<br>
+      <button class="btn-mode intermediate" style="margin-top:14px;width:100%" onclick="setModeAndStart('intermediate')">
+        <span style="font-size:1.4rem">⚡</span>
+        <span>
+          <div style="font-weight:900;font-size:0.95rem;color:#ffe44e">初級者モードで再挑戦</div>
+          <div style="font-size:0.75rem;color:#bbb;margin-top:2px">ヒントなし・自力で解く</div>
+        </span>
+      </button>`;
+  } else if (state.mode === 'intermediate') {
+    const acc = calcAccuracy();
+    el.className = 'clear-mode-msg intermediate-msg';
+    el.innerHTML = `
+      <div class="cmsg-title">🎉 初級者モードクリア！<span class="accuracy-badge">正答率 ${acc}%</span></div>
+      ${acc === 100
+        ? '全問一発正解！素晴らしい臨床的思考力です。'
+        : acc >= 50
+          ? '惜しい！復習してもう一度挑戦すれば完璧です。'
+          : '難しかったですか？解説動画で根拠を確認しよう。'}
+      <div class="preview-problem">
+        <strong style="color:var(--gold)">🔥 中級者モード プレビュー</strong><br>
+        「問診で得た情報から<em>治療穴の優先順位</em>を組み立てなさい」<br>
+        — 東洋医学的弁証を応用した複合問題（中級者モードで解放）
+      </div>
+      <div style="margin-top:14px;background:rgba(255,200,50,0.08);border:1px solid var(--gold);border-radius:12px;padding:14px;font-size:0.88rem;line-height:1.7;color:#ccc">
+        <span style="color:#ffc832">🔜 オンラインサロン開設準備中</span><br>
+        開設時にはLINEでお知らせします。
+      </div>`;
+  }
+  el.style.display = 'block';
+}
+
+function animateClear() {
+  ['star1','star2','star3'].forEach((id, i) => {
+    setTimeout(() => {
+      document.getElementById(id).classList.add('show');
+      sfxStar(i);
+    }, i * 250);
+  });
+  setTimeout(() => {
+    drawRadarChart();
+    sfxCorrect();
+    showClearModeMsg();
+  }, 900);
+}
+
+// レーダーチャート描画
+function drawRadarChart() {
+  const canvas = document.getElementById('radar-canvas');
+  if (!canvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.width, H = canvas.height;
+  canvas.width  = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width  = W + 'px';
+  canvas.style.height = H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  const cx = W / 2, cy = H / 2 + 10;
+  const R = Math.min(W, H) * 0.32;
+  const n = 5;
+  const labels  = ['① 触れる力','② 見立てる力','③ 選ぶ力','④ 施す力','⑤ 伝える力'];
+  const values  = [2, 0, 1, 0, 0];
+  const locked  = [false, false, false, true, true];
+  const angles  = Array.from({length: n}, (_, i) => (i * 2 * Math.PI / n) - Math.PI / 2);
+
+  for (let lv = 1; lv <= 5; lv++) {
+    ctx.beginPath();
+    angles.forEach((a, i) => {
+      const x = cx + R * (lv/5) * Math.cos(a);
+      const y = cy + R * (lv/5) * Math.sin(a);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.closePath();
+    ctx.strokeStyle = lv === 5 ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  angles.forEach(a => {
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + R * Math.cos(a), cy + R * Math.sin(a));
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  });
+
+  let progress = 0;
+  const DURATION = 800;
+  const start = performance.now();
+
+  function frame(now) {
+    progress = Math.min((now - start) / DURATION, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+
+    ctx.clearRect(0, 0, W, H);
+    for (let lv = 1; lv <= 5; lv++) {
+      ctx.beginPath();
+      angles.forEach((a, i) => {
+        const x = cx + R*(lv/5)*Math.cos(a), y = cy + R*(lv/5)*Math.sin(a);
+        i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+      });
+      ctx.closePath();
+      ctx.strokeStyle = lv===5 ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.08)';
+      ctx.lineWidth = 1; ctx.stroke();
+    }
+    angles.forEach(a => {
+      ctx.beginPath(); ctx.moveTo(cx,cy);
+      ctx.lineTo(cx+R*Math.cos(a), cy+R*Math.sin(a));
+      ctx.strokeStyle='rgba(255,255,255,0.12)'; ctx.lineWidth=1; ctx.stroke();
+    });
+
+    ctx.beginPath();
+    angles.forEach((a, i) => {
+      const v = locked[i] ? 0 : values[i] * ease;
+      const x = cx + R*(v/5)*Math.cos(a), y = cy + R*(v/5)*Math.sin(a);
+      i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    });
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(74,255,127,0.18)';
+    ctx.fill();
+    ctx.strokeStyle = '#4aff7f'; ctx.lineWidth = 2; ctx.stroke();
+
+    angles.forEach((a, i) => {
+      const v = locked[i] ? 0 : values[i] * ease;
+      const x = cx + R*(v/5)*Math.cos(a), y = cy + R*(v/5)*Math.sin(a);
+      ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI*2);
+      ctx.fillStyle = locked[i] ? '#444' : '#4aff7f'; ctx.fill();
+    });
+
+    ctx.font = `bold 11px 'Noto Sans JP', sans-serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    angles.forEach((a, i) => {
+      const lr = R * 1.35;
+      const x = cx + lr * Math.cos(a), y = cy + lr * Math.sin(a);
+      ctx.fillStyle = locked[i] ? '#555' : '#ddd';
+      ctx.fillText(locked[i] ? labels[i]+' 🔒' : labels[i], x, y);
+    });
+
+    if (progress < 1) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+// リプレイ（進捗リセットなし、会話だけやり直し）
+function replayGame() {
+  state.phase = 'dialogue';
+  state.choicesAnswered = new Set();
+  state.quiz1FirstCorrect = null;
+  state.quiz2FirstCorrect = null;
+  state.inlineHw1Shown = false;
+  state.inlineHw1Done = false;
+  state.quiz1Done = false;
+  state.quiz2Done = false;
+  state.evidence1Unlocked = false;
+  state.evidence2Unlocked = false;
+  state.cleared = false;
+  saveState();
+  showScreenWithSound('dialogue');
+  dlgIdx = 0; showDialogue(0);
+}
+
+// =====================================================
+// これだ!! ANIMATION
+// =====================================================
+function showKoredayo(cb) {
+  sfxKoredayo();
+  const overlay = document.getElementById('koredayo-overlay');
+  // 白フラッシュ → 0.2s でフェードアウト
+  overlay.classList.add('flash-bg');
+  overlay.style.opacity = '1';
+  setTimeout(() => {
+    overlay.classList.remove('flash-bg');
+    overlay.style.opacity = '0';
+  }, 200);
+  // シェイクは少し遅れて起動（テキスト表示タイミングに合わせる）
+  overlay.style.opacity = '1';
+  overlay.classList.add('shake');
+  overlay.addEventListener('animationend', function onEnd() {
+    overlay.classList.remove('shake');
+    overlay.removeEventListener('animationend', onEnd);
+  });
+  setTimeout(() => {
+    overlay.style.opacity = '0';
+    setTimeout(() => { if (cb) cb(); }, 300);
+  }, 700);
+}
+
+// =====================================================
+// STEP INDICATOR
+// =====================================================
+const PHASE_STEP = {
+  dialogue:  0,
+  choices:   1,
+  homework1: 2,
+  miniquiz:  2,
+  quiz1:     3,
+  homework2: 4,
+};
+
+function updateStepDots(phase) {
+  const currentStep = PHASE_STEP[phase];
+  if (currentStep === undefined) {
+    // title / onboarding / clear ではドットを非表示
+    document.getElementById('step-dots').style.display = 'none';
+    return;
+  }
+  document.getElementById('step-dots').style.display = 'flex';
+  for (let i = 0; i < 5; i++) {
+    const dot = document.getElementById('dot-' + i);
+    dot.classList.remove('active', 'done');
+    if (i < currentStep) dot.classList.add('done');
+    else if (i === currentStep) dot.classList.add('active');
+  }
+}
+
+// =====================================================
+// RESET
+// =====================================================
+function resetGame() {
+  localStorage.removeItem(STORAGE_KEY);
+  state = {
+    phase: 'splash', mode: null, choicesAnswered: new Set(),
+    evidence1Unlocked: false, evidence2Unlocked: false,
+    quiz1Done: false, quiz2Done: false, cleared: false,
+    quiz1FirstCorrect: null, quiz2FirstCorrect: null,
+    inlineHw1Shown: false, inlineHw1Done: false,
+  };
+  showScreen('splash');
+}
+
+// =====================================================
+// ONBOARDING
+// =====================================================
+const ONBOARDING_KEY = 'rinsho_onboarding_v1';
+const GOAL_KEY = 'rinsho_goal_v1';
+
+const obQuestions = [
+  {
+    key: 'onboarding_job',
+    q: 'あなたのお仕事は？',
+    options: [
+      '鍼灸師・鍼灸学生',
+      '柔道整復師・柔整学生',
+      '整体師・カイロ',
+      'エステ・リラクゼーション',
+      'ヨガ・トレーナー',
+      'まだ資格はない',
+      'その他',
+    ],
+  },
+  {
+    key: 'onboarding_experience',
+    q: '臨床経験はどれくらい？',
+    options: ['まだ学生・未経験', '1〜3年目', '3年以上'],
+  },
+  {
+    key: 'onboarding_focus',
+    q: '一番伸ばしたい力は？',
+    options: [
+      '① 触れる力（解剖学）',
+      '② 見立てる力（整形外科学）',
+      '③ 選ぶ力（経穴学）',
+      '④ 施す力（実技）',
+      '⑤ 伝える力（説明）',
+    ],
+  },
+  {
+    key: 'onboarding_time',
+    q: '1日どれくらい学べそう？',
+    options: ['5分（ゆるく）', '10分（しっかり）', '15分以上（ガチ）'],
+  },
+  {
+    key: 'onboarding_goal',
+    q: '3ヶ月後、どうなりたい？',
+    options: [
+      '患者に自信を持って説明したい',
+      '解剖学を施術に活かしたい',
+      '独立・開業の基礎を固めたい',
+      'なんとなく学びたい',
+    ],
+  },
+];
+
+let obIdx = 0;
+let obAnswers = {};
+
+function checkOnboarding() {
+  loadState();
+  const saved = localStorage.getItem(ONBOARDING_KEY);
+  if (saved) {
+    // 2回目以降はスキップ
+    showTitleScreen();
+  } else {
+    obIdx = 0;
+    obAnswers = {};
+    showScreen('onboarding');
+    renderObQuestion();
+  }
+}
+
+function renderObQuestion() {
+  const q = obQuestions[obIdx];
+  const fill = document.getElementById('ob-progress-fill');
+  const label = document.getElementById('ob-progress-label');
+  const body = document.getElementById('ob-body');
+
+  fill.style.width = ((obIdx + 1) / obQuestions.length * 100) + '%';
+  label.textContent = (obIdx + 1) + ' / ' + obQuestions.length;
+
+  // フェードアウト → コンテンツ更新 → フェードイン
+  body.classList.remove('fade-in');
+  setTimeout(() => {
+    body.innerHTML = `
+      <div class="char-duo" style="margin-bottom:4px">
+        <img class="char-img" src="${CHARS.tako.normal}" alt="タコくん">
+      </div>
+      <div class="ob-question">${q.q}</div>
+      <div class="ob-options" id="ob-options"></div>
+    `;
+    const container = document.getElementById('ob-options');
+    q.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'btn-ob';
+      btn.textContent = opt;
+      btn.onclick = () => selectObAnswer(q.key, opt, btn);
+      container.appendChild(btn);
+    });
+    body.classList.add('fade-in');
+  }, 150);
+}
+
+function selectObAnswer(key, value, btn) {
+  sfxClick();
+  btn.classList.add('selected');
+  obAnswers[key] = value;
+  // 0.3s後に次の質問へ自動遷移
+  setTimeout(() => {
+    obIdx++;
+    if (obIdx < obQuestions.length) {
+      renderObQuestion();
+    } else {
+      showObResult();
+    }
+  }, 300);
+}
+
+function showObResult() {
+  // LocalStorageに保存
+  localStorage.setItem(ONBOARDING_KEY, JSON.stringify(obAnswers));
+
+  const exp = obAnswers['onboarding_experience'] || '';
+  const focus = obAnswers['onboarding_focus'] || '';
+
+  // 経験→モード推薦
+  let modeRec = '初学者モード';
+  if (exp === '1〜3年目') modeRec = '初級者モード';
+  else if (exp === '3年以上') modeRec = '初級者モード（難しければ中級者モードへ）';
+
+  // フォーカス→コメント
+  const focusComment = focus
+    ? 'EP1から<strong>' + focus + '</strong>を重点的に'
+    : 'EP1からスタートしよう';
+
+  const card = document.getElementById('ob-result-card');
+  card.innerHTML = `
+    <div class="ob-result-row">経験：<span>${exp || '—'}</span><br>
+      → <span class="ob-result-recommend">${modeRec}がおすすめ</span></div>
+    <div class="ob-result-row">伸ばしたい力：<span>${focus || '—'}</span><br>
+      → ${focusComment}</div>
+  `;
+
+  sfxTransition();
+  showScreen('onboarding-result');
+}
+
+function finishOnboarding() {
+  showTitleScreen();
+}
+
+function showTitleScreen() {
+  loadState();
+  const msg = document.getElementById('saved-progress-msg');
+  if (state.cleared)              msg.textContent = '✅ クリア済み！もう一度遊べます';
+  else if (state.phase !== 'splash') msg.textContent = '📂 前回の続きから再開できます';
+  else                            msg.textContent = '';
+  showScreen('splash');
+}
+
+function goToEpisode() {
+  showScreen('episode');
+}
+
+function goToMode() {
+  if (!localStorage.getItem(GOAL_KEY)) {
+    showScreenWithSound('goal');
+  } else {
+    showScreen('mode');
+  }
+}
+
+function finishGoal() {
+  localStorage.setItem(GOAL_KEY, '1');
+  showScreenWithSound('mode');
+}
+
+// =====================================================
+// INIT
+// =====================================================
+function init() {
+  checkOnboarding();
+}
+
+init();
+</script>
+</body>
+</html>
