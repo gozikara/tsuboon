@@ -118,8 +118,8 @@
   #screen-choices .scene-area { overflow-y:auto; justify-content:flex-start; padding-top:52px; }
   .character-icon { display:flex; flex-direction:column; align-items:center; gap:8px; }
   .char-emoji { font-size:4.5rem; filter:drop-shadow(0 0 12px rgba(74,158,255,0.3)); }
-  .char-img { width:60px; height:60px; border-radius:50%; object-fit:cover; background:#fff; flex-shrink:0; }
-  .char-img-sm { width:50px; height:50px; border-radius:50%; object-fit:cover; background:#fff; }
+  .char-img { width:60px; height:60px; border-radius:0; object-fit:contain; background:none; flex-shrink:0; }
+  .char-img-sm { width:50px; height:50px; border-radius:0; object-fit:contain; background:none; }
   .char-duo { display:flex; justify-content:center; gap:16px; align-items:center; }
   .char-name { font-size:0.8rem; background:rgba(74,158,255,0.2); border:1px solid var(--accent); border-radius:20px; padding:3px 12px; color:var(--accent); }
   .text-window {
@@ -139,7 +139,7 @@
   .choice-answer-box { background:var(--text-win); border:1px solid var(--accent); border-radius:12px; padding:16px; margin-bottom:16px; font-size:0.95rem; line-height:1.7; min-height:80px; width:100%; white-space:pre-wrap; display:none; }
   .choice-answer-box.visible { display:block; }
   .choices-list { display:flex; flex-direction:column; gap:10px; width:100%; }
-  .btn-choice { background:transparent; color:#fff; border:2px solid var(--accent); border-radius:12px; padding:14px 16px; font-size:0.95rem; font-family:'Noto Sans JP',sans-serif; font-weight:700; cursor:pointer; text-align:left; transition:background 0.2s; }
+  .btn-choice { background:rgba(8,16,36,0.62); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); color:#fff; border:2px solid rgba(74,158,255,0.75); border-radius:12px; padding:14px 16px; font-size:0.95rem; font-family:'Noto Sans JP',sans-serif; font-weight:700; cursor:pointer; text-align:left; transition:background 0.2s; }
   .btn-choice:disabled { opacity:0.5; cursor:default; }
   .btn-choice.answered { background:rgba(74,158,255,0.25); }
   .choices-next { margin-top:16px; display:none; width:100%; }
@@ -175,7 +175,7 @@
   .quiz-question { font-size:1rem; font-weight:700; line-height:1.6; }
   .quiz-options { display:flex; flex-direction:column; gap:10px; }
   .quiz-option-wrap { display:flex; flex-direction:column; }
-  .btn-quiz { background:transparent; color:#fff; border:2px solid var(--accent); border-radius:12px; padding:14px 16px; font-size:0.95rem; font-family:'Noto Sans JP',sans-serif; font-weight:700; cursor:pointer; text-align:left; transition:background 0.2s, border-color 0.2s, color 0.2s; }
+  .btn-quiz { background:rgba(8,16,36,0.62); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); color:#fff; border:2px solid rgba(74,158,255,0.75); border-radius:12px; padding:14px 16px; font-size:0.95rem; font-family:'Noto Sans JP',sans-serif; font-weight:700; cursor:pointer; text-align:left; transition:background 0.2s, border-color 0.2s, color 0.2s; }
   .btn-quiz:disabled { cursor:default; }
   .btn-quiz.correct { background:rgba(74,255,127,0.2); border-color:var(--correct); color:var(--correct); }
   .btn-quiz.incorrect { background:rgba(255,74,74,0.15); border-color:var(--wrong); color:var(--wrong); }
@@ -201,10 +201,25 @@
     25%      { transform:translateX(-3px); }
     75%      { transform:translateX(3px); }
   }
-  #koredayo-overlay { position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; pointer-events:none; opacity:0; transition:opacity 0.2s; }
-  #koredayo-overlay.flash-bg { background:#ffffff; }
+  #koredayo-overlay { position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; pointer-events:none; opacity:0; transition:opacity 0.2s; background:transparent; }
   #koredayo-overlay.shake { animation:shake 0.3s ease 2; }
   .koredayo-text { font-size:5rem; font-weight:900; color:var(--gold); text-shadow:0 0 40px rgba(255,200,50,0.9), 4px 4px 0 #000; letter-spacing:0.05em; }
+
+  /* ===== XP POPUP ===== */
+  @keyframes xp-float {
+    0%   { transform:translateX(-50%) translateY(-50px); opacity:0; }
+    15%  { transform:translateX(-50%) translateY(10px);  opacity:1; }
+    70%  { transform:translateX(-50%) translateY(10px);  opacity:1; }
+    100% { transform:translateX(-50%) translateY(-20px); opacity:0; }
+  }
+  #xp-popup {
+    position:fixed; top:0; left:50%; transform:translateX(-50%) translateY(-60px);
+    background:rgba(255,200,50,0.12); border:1.5px solid var(--gold); color:var(--gold);
+    font-weight:900; font-size:0.95rem; padding:6px 18px; border-radius:20px;
+    z-index:150; pointer-events:none; opacity:0;
+    text-shadow:0 0 8px rgba(255,200,50,0.6);
+  }
+  #xp-popup.show { animation:xp-float 1.8s ease forwards; }
 
   /* ===== STEP INDICATOR ===== */
   #step-dots {
@@ -229,7 +244,7 @@
   }
 
   /* ===== CLEAR ===== */
-  #screen-clear { align-items:center; justify-content:flex-start; gap:18px; padding:32px 24px 40px; }
+  #screen-clear1, #screen-clear2, #screen-clear3 { align-items:center; justify-content:flex-start; gap:18px; padding:32px 24px 40px; }
   .clear-episode { font-size:0.85rem; color:var(--accent); letter-spacing:0.15em; }
   .clear-title { font-size:2rem; font-weight:900; color:var(--gold); text-align:center; text-shadow:0 0 20px rgba(255,200,50,0.6); }
   .stars-row { display:flex; gap:12px; font-size:2.5rem; filter:drop-shadow(0 0 8px rgba(255,200,50,0.7)); }
@@ -437,9 +452,47 @@
     padding-bottom: 16px;
     position: relative;
   }
-  /* ダイアログ画面はインタラクティブ領域がないのでシーンを大きく */
-  #screen-dialogue .novel-scene { height: 65vh; }
-  #screen-dialogue .novel-char { width: 150px; height: 150px; }
+  /* ===== Ace Attorney スタイル ダイアログシーン ===== */
+  #screen-dialogue .novel-scene {
+    flex: 1 !important;
+    height: auto !important;
+    display: block !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    overflow: hidden;
+    position: relative;
+  }
+  #screen-dialogue .char-slot {
+    position: absolute;
+    bottom: 0;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  #dlg-slot-left  { left: 0; }
+  #dlg-slot-right { right: 0; }
+  #screen-dialogue .novel-char {
+    width: auto;
+    height: 65vh;
+    display: block;
+    filter: drop-shadow(4px 0 20px rgba(0,0,0,0.7));
+  }
+  #screen-dialogue .char-name {
+    position: absolute;
+    bottom: 8px;
+    background: rgba(0,10,40,0.88);
+    border: 1px solid rgba(74,158,255,0.8);
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    white-space: nowrap;
+    z-index: 5;
+  }
+  #dlg-slot-left  .char-name { left:  4px; }
+  #dlg-slot-right .char-name { right: 4px; }
   .novel-interactive {
     flex: 1;
     overflow-y: auto;
@@ -480,14 +533,20 @@
     white-space: nowrap;
   }
   .novel-char {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-    background: #fff;
+    width: auto;
+    height: 180px;
+    border-radius: 0;
+    object-fit: contain;
+    background: none;
     flex-shrink: 0;
-    transition: opacity 0.3s ease, filter 0.3s ease;
+    transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
+    filter: drop-shadow(0 8px 16px rgba(0,0,0,0.8));
   }
+  /* 左右スロット */
+  .char-slot { display:flex; flex-direction:column; align-items:center; transition:opacity 0.35s, filter 0.35s, transform 0.35s; }
+  .char-slot.char-inactive { opacity:0; pointer-events:none; }
+  /* 2キャラ並びシーン */
+  .novel-scene-duo { justify-content:space-between !important; padding-left:8px !important; padding-right:8px !important; gap:0 !important; }
   .novel-char.dim { opacity: 0.5; filter: brightness(0.6); }
   .novel-char-wrap {
     display: flex;
@@ -573,8 +632,8 @@
   <div id="screen-onboarding-result" class="screen pad20">
     <div style="text-align:center">
       <div class="char-duo" style="margin-bottom:12px">
-        <img class="char-img" src="./12.png" alt="ぼん学長">
-        <img class="char-img" src="./9.png" alt="タコくん">
+        <img class="char-img" src="./images2/12.png" alt="ぼん学長">
+        <img class="char-img" src="./images2/9.png" alt="タコくん">
       </div>
       <div class="ob-result-title">あなた専用の<br>学習プランができました！</div>
     </div>
@@ -586,11 +645,11 @@
   <div id="screen-splash" class="screen pad20" style="justify-content:center;align-items:center;gap:20px">
     <div style="text-align:center">
       <div class="char-duo" style="margin-bottom:12px">
-        <img style="width:80px;height:80px;border-radius:50%;object-fit:cover;background:#fff" src="./11.png" alt="ぼん学長">
-        <img style="width:80px;height:80px;border-radius:50%;object-fit:cover;background:#fff" src="./5.png" alt="タコくん">
+        <img style="width:80px;height:80px;object-fit:contain" src="./images2/11.png" alt="ぼん学長">
+        <img style="width:80px;height:80px;object-fit:contain" src="./images2/5.png" alt="タコくん">
       </div>
       <div style="font-size:2.5rem;font-weight:bold;color:#fff;line-height:1.2">つぼーん</div>
-      <div style="font-size:0.85rem;color:#8899aa;margin-top:6px">— カラダに触れるすべての人へ —</div>
+      <div style="font-size:0.85rem;color:#8899aa;margin-top:6px">「ぶったくんを救え！ こりの魔王を倒す旅が始まる。」</div>
     </div>
     <div class="progress-info" id="saved-progress-msg"></div>
     <button class="btn-primary" onclick="sfxClick(); goToEpisode()">▶ はじめる</button>
@@ -602,26 +661,18 @@
       <div style="font-size:1.5rem;font-weight:bold;color:#4a9eff">Episode 1</div>
       <div style="font-size:1.3rem;font-weight:bold;color:#ffc832;margin-top:6px">「肩こりの真犯人を探せ」</div>
     </div>
-    <img src="./1.png" alt="ぶったくん" style="width:160px;height:160px;object-fit:contain">
-    <button class="btn-primary" onclick="sfxClick(); goToMode()">▶ 捜査開始</button>
+    <img src="./images2/1.png" alt="ぶったくん" style="width:160px;height:160px;object-fit:contain">
+    <button class="btn-primary" onclick="sfxClick(); goToMode()">⚔️ 冒険に出発！</button>
   </div>
 
   <!-- ========== GOAL ========== -->
   <div id="screen-goal" class="screen novel-screen">
     <div class="novel-scene" style="height:32vh">
-      <img src="./11.png" alt="ぼん学長" class="novel-char" style="width:150px;height:150px">
+      <img src="./images2/11.png" alt="ぼん学長" class="novel-char" style="width:150px;height:150px">
     </div>
     <div class="novel-win" style="height:auto;flex:1;min-height:0;overflow-y:auto;padding-top:64px">
       <div class="novel-speaker">ぼん学長</div>
-      <div class="novel-text" style="margin-bottom:16px;white-space:pre-line;line-height:1.8">おまえの目標はひとつ。
-
-5つの力をすべて★5にして
-"一人前の施術家"になることだ。
-
-全エピソードをクリアした者には
-【つぼーんマスター】の称号を与える。
-
-まずは最初の患者を救うところからだ。</div>
+      <div class="novel-text" id="goal-text" style="margin-bottom:16px;white-space:pre-line;line-height:1.8"></div>
       <div class="goal-powers">
         <div class="goal-power-row"><span class="goal-power-num">①</span><span class="goal-power-name">触れる力</span><span class="goal-power-stars">☆☆☆☆☆</span></div>
         <div class="goal-power-row"><span class="goal-power-num">②</span><span class="goal-power-name">見立てる力</span><span class="goal-power-stars">☆☆☆☆☆</span></div>
@@ -636,7 +687,7 @@
   <!-- ========== MODE ========== -->
   <div id="screen-mode" class="screen pad20">
     <div style="text-align:center;margin-bottom:12px">
-      <img src="./14.png" alt="ぼん学長" style="width:80px;height:80px;border-radius:50%;object-fit:cover;background:#fff">
+      <img src="./images2/14.png" alt="ぼん学長" style="width:80px;height:80px;object-fit:contain">
       <div style="font-size:1.1rem;font-weight:bold;color:#fff;margin-top:8px">どのモードで挑む？</div>
     </div>
     <div class="mode-selector">
@@ -678,13 +729,18 @@
   <!-- ========== DIALOGUE ========== -->
   <div id="screen-dialogue" class="screen novel-screen">
     <div class="novel-scene">
-      <div class="novel-char-wrap">
-        <img class="novel-char" id="dialogue-img" src="./1.png" alt="ぶったくん">
-        <div class="char-name" id="dialogue-charname">ぶったくん</div>
+      <div class="char-slot" id="dlg-slot-left">
+        <img class="novel-char" id="dlg-img-left" src="" alt="" style="visibility:hidden">
+        <div class="char-name" id="dlg-name-left"></div>
+      </div>
+      <div class="char-slot" id="dlg-slot-right">
+        <img class="novel-char" id="dlg-img-right" src="" alt="" style="visibility:hidden">
+        <div class="char-name" id="dlg-name-right"></div>
       </div>
     </div>
     <div class="novel-win" id="text-window" onclick="handleDialogueTap()">
       <div class="novel-speaker" id="speaker-name">ぶったくん</div>
+      <div class="novel-phase-label" id="dlg-phase-label">⚔️ 第1章：依頼</div>
       <div class="dialogue-text" id="dialogue-text"></div>
       <div class="tap-hint" id="tap-hint">▼</div>
     </div>
@@ -694,7 +750,7 @@
   <div id="screen-choices" class="screen novel-screen">
     <div class="novel-scene">
       <div class="novel-char-wrap">
-        <img class="novel-char" src="./2.png" alt="ぶったくん">
+        <img class="novel-char" src="./images2/2.png" alt="ぶったくん">
         <div class="char-name">ぶったくん</div>
       </div>
     </div>
@@ -706,7 +762,8 @@
     </div>
     <div class="novel-win">
       <div class="novel-speaker">ぼん学長</div>
-      <div class="choice-prompt">まずは聞き込みだ。<br>ぶったくんに質問してみろ。</div>
+      <div class="novel-phase-label">⚔️ 第2章：情報収集</div>
+      <div class="choice-prompt">敵の情報を集めろ。<br>ぶったくんに話を聞くんだ！</div>
       <div class="novel-context-text" style="color:rgba(255,200,80,0.9);font-size:0.85rem;margin-top:8px">ぶったくん：「何でも聞いてください…つらいんです…」</div>
       <div class="choice-answer-box" id="choice-answer-box"></div>
     </div>
@@ -716,12 +773,12 @@
   <div id="screen-homework1" class="screen novel-screen">
     <div class="novel-scene">
       <div class="novel-char-wrap">
-        <img class="novel-char" id="hw1-char-img" src="./14.png" alt="ぼん学長">
+        <img class="novel-char" id="hw1-char-img" src="./images2/14.png" alt="ぼん学長">
       </div>
     </div>
     <div class="novel-interactive">
       <div class="homework-card">
-        <div class="hw-title">📖 宿題</div>
+        <div class="hw-title">⚔️ 修行</div>
         <div>筋肉パーフェクト事典 第2章を読んで<br><strong>僧帽筋の起始・停止・作用</strong>を確認しよう</div>
       </div>
       <button class="btn-done" id="btn-done1" onclick="unlockEvidence1()">✅ 読んだ！</button>
@@ -743,23 +800,23 @@
           → <strong style="color:var(--wrong)">肩こりの原因になりうる</strong>
         </div>
       </div>
-      <button class="btn-next-full" id="btn-tohomework1-next" style="display:none" onclick="sfxClick(); goToMiniQuiz()">📝 確認テストへ！</button>
+      <button class="btn-next-full" id="btn-tohomework1-next" style="display:none" onclick="sfxClick(); goToMiniQuiz()">⚔️ 試練へ挑む！</button>
     </div>
     <div class="novel-win">
       <div class="novel-speaker">ぼん学長</div>
-      <div class="novel-phase-label">Phase 3 — 宿題</div>
-      <div class="novel-context-text" id="hw1-win-text">容疑者を絞るには"根拠"が必要だ。<br>まずは容疑者リストを確認しろ。</div>
+      <div class="novel-phase-label">⚔️ 第3章：修行</div>
+      <div class="novel-context-text" id="hw1-win-text">こりの魔王を倒すには"根拠"が必要だ。<br>まずは容疑者リストを確認しろ。</div>
     </div>
   </div>
 
   <!-- ========== MINI QUIZ ========== -->
   <div id="screen-miniquiz" class="screen novel-screen">
-    <div class="novel-scene">
+    <div class="novel-scene novel-scene-duo">
       <div class="novel-char-wrap">
-        <img class="novel-char" id="mq-char-img" src="./14.png" alt="ぼん学長">
+        <img class="novel-char" id="mq-char-img" src="./images2/14.png" alt="ぼん学長">
       </div>
       <div class="novel-char-wrap">
-        <img class="novel-char" id="mq-tako-img" src="./7.png" alt="タコくん">
+        <img class="novel-char" id="mq-tako-img" src="./images2/7.png" alt="タコくん">
       </div>
     </div>
     <div class="novel-interactive">
@@ -772,19 +829,19 @@
     </div>
     <div class="novel-win">
       <div class="novel-speaker">ぼん学長</div>
-      <div class="novel-phase-label">Phase 3.5 — 確認テスト</div>
-      <div class="novel-context-text" id="mq-intro-text">根拠を叩き込んだか？<br>ちゃんと覚えてるか確認するぞ。</div>
+      <div class="novel-phase-label">⚔️ 第4章：試練</div>
+      <div class="novel-context-text" id="mq-intro-text">修行の成果を試す時が来た！<br>魔王を倒す知識が身に付いているか？</div>
     </div>
   </div>
 
   <!-- ========== QUIZ 1 ========== -->
   <div id="screen-quiz1" class="screen novel-screen">
-    <div class="novel-scene">
+    <div class="novel-scene novel-scene-duo">
       <div class="novel-char-wrap">
-        <img class="novel-char" id="quiz1-char-img" src="./11.png" alt="ぼん学長">
+        <img class="novel-char" id="quiz1-char-img" src="./images2/11.png" alt="ぼん学長">
       </div>
       <div class="novel-char-wrap">
-        <img class="novel-char" id="quiz1-tako-img" src="./7.png" alt="タコくん">
+        <img class="novel-char" id="quiz1-tako-img" src="./images2/7.png" alt="タコくん">
       </div>
     </div>
     <div class="novel-interactive">
@@ -794,7 +851,7 @@
       <div id="quiz1-inline-hw" style="display:none">
         <div class="inline-hw-sep">📖 根拠を確認して、もう一度挑戦しよう</div>
         <div class="homework-card">
-          <div class="hw-title">📖 宿題</div>
+          <div class="hw-title">⚔️ 修行</div>
           <div>筋肉パーフェクト事典 第2章を読んで<br><strong>僧帽筋の起始・停止・作用</strong>を確認しよう</div>
         </div>
         <button class="btn-done" id="btn-inline-done1" onclick="unlockInlineEvidence1()">✅ 読んだ！</button>
@@ -812,7 +869,7 @@
       <!-- 臨床メモ（正解後に表示） -->
       <div class="clinical-memo" id="quiz1-memo">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-          <img class="char-img" src="./12.png" alt="ぼん学長">
+          <img class="char-img" src="./images2/12.png" alt="ぼん学長">
           <div class="memo-title" style="margin-bottom:0">🩺 ぼん学長の臨床メモ</div>
         </div>
         よくやった。俺の経験を教えておく。<br>
@@ -828,26 +885,26 @@
     </div>
     <div class="novel-win">
       <div class="novel-speaker">ぼん学長</div>
-      <div class="novel-phase-label">Phase 4 — 鑑別（法廷）</div>
-      <div class="novel-context-text">容疑者は4人。<br>ぶったくんの肩こりの真犯人はどいつだ？</div>
+      <div class="novel-phase-label">⚔️ 第5章：敵の正体</div>
+      <div class="novel-context-text">容疑者は4人。<br>こりの魔王の正体を見破れ！</div>
     </div>
   </div>
 
   <!-- ========== HOMEWORK 2 ========== -->
   <div id="screen-homework2" class="screen novel-screen">
-    <div class="novel-scene">
+    <div class="novel-scene novel-scene-duo">
       <div class="novel-char-wrap">
-        <img class="novel-char" id="quiz2-char-img" src="./11.png" alt="ぼん学長">
+        <img class="novel-char" id="quiz2-char-img" src="./images2/11.png" alt="ぼん学長">
       </div>
       <div class="novel-char-wrap">
-        <img class="novel-char" id="quiz2-tako-img" src="./7.png" alt="タコくん">
+        <img class="novel-char" id="quiz2-tako-img" src="./images2/7.png" alt="タコくん">
       </div>
     </div>
     <div class="novel-interactive">
       <div class="quiz-options" id="quiz2-options"></div>
       <div class="quiz-feedback" id="quiz2-feedback"></div>
       <div class="homework-card" id="homework2-card" style="display:none">
-        <div class="hw-title">📖 宿題</div>
+        <div class="hw-title">⚔️ 修行</div>
         <div>ツボ単で<strong>肩井の取穴法</strong>を確認しよう</div>
       </div>
       <button class="btn-done" id="btn-done2" style="display:none" onclick="unlockEvidence2()">✅ 読んだ！</button>
@@ -867,12 +924,12 @@
           僧帽筋のトリガーポイントに一致
         </div>
       </div>
-      <button class="btn-next-full" id="btn-tohomework2-next" style="display:none" onclick="sfxClick(); goToClear()">🏆 クリアへ！</button>
+      <button class="btn-next-full" id="btn-tohomework2-next" style="display:none" onclick="sfxClick(); goToClear()">🏆 決着をつけろ！</button>
     </div>
     <div class="novel-win">
       <div class="novel-speaker">ぼん学長</div>
-      <div class="novel-phase-label">Phase 5 — 治療選択</div>
-      <div class="novel-context-text">犯人は分かった。最後の仕上げだ。<br>僧帽筋上部の弱点を突くツボを選べ！</div>
+      <div class="novel-phase-label">⚔️ 第6章：決戦</div>
+      <div class="novel-context-text">魔王の正体が分かった。最後の一撃だ。<br>こりの魔王の弱点を突くツボを選べ！</div>
     </div>
   </div>
 
@@ -880,11 +937,11 @@
   <div id="screen-clear" class="screen pad20">
     <div style="text-align:center">
       <div class="clear-episode">EPISODE 1</div>
-      <div class="clear-title">CLEAR！</div>
+      <div class="clear-title">勝利！こりの魔王を倒した！</div>
       <div class="char-duo" style="margin-top:10px">
-        <img class="char-img" src="./12.png" alt="ぼん学長">
-        <img class="char-img" src="./4.png" alt="ぶったくん">
-        <img class="char-img" src="./9.png" alt="タコくん">
+        <img class="char-img" src="./images2/12.png" alt="ぼん学長">
+        <img class="char-img" src="./images2/4.png" alt="ぶったくん">
+        <img class="char-img" src="./images2/9.png" alt="タコくん">
       </div>
     </div>
     <div class="stars-row" style="justify-content:center">
@@ -899,15 +956,15 @@
     <!-- クリア台詞 -->
     <div style="width:100%;display:flex;flex-direction:column;gap:10px">
       <div style="display:flex;align-items:flex-start;gap:10px">
-        <img class="char-img" src="./4.png" alt="ぶったくん" style="flex-shrink:0">
+        <img class="char-img" src="./images2/4.png" alt="ぶったくん" style="flex-shrink:0">
         <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:10px 14px;font-size:0.9rem;line-height:1.7">
-          先生…！肩が軽くなりました！<br>ありがとうございます！！
+          魔王が…消えた…！<br>体が楽になりました…！ありがとうございます！！
         </div>
       </div>
       <div style="display:flex;align-items:flex-start;gap:10px;flex-direction:row-reverse">
-        <img class="char-img" src="./12.png" alt="ぼん学長" style="flex-shrink:0">
+        <img class="char-img" src="./images2/12.png" alt="ぼん学長" style="flex-shrink:0">
         <div style="background:rgba(74,158,255,0.1);border:1px solid var(--accent);border-radius:12px;padding:10px 14px;font-size:0.9rem;line-height:1.7;text-align:right">
-          ぶったくんの肩こり、解決だ。<br>おまえの"触れる力"と"選ぶ力"が成長したぞ。
+          ぶったくんの肩こり、解決だ。<br><span id="clear-player-name-msg"></span>
         </div>
       </div>
     </div>
@@ -964,11 +1021,11 @@
       <div class="ep2-label">NEXT — EPISODE 2</div>
       <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px">
         <div style="display:flex;align-items:flex-start;gap:10px">
-          <img class="char-img-sm" src="./3.png" alt="ぶったくん" style="flex-shrink:0;margin-top:2px">
+          <img class="char-img-sm" src="./images2/3.png" alt="ぶったくん" style="flex-shrink:0;margin-top:2px">
           <div class="ep2-dialogue" style="margin:0">先生…実はもう1つ相談が…<br>最近、毎日夕方になると<br>頭の後ろがズキズキして…</div>
         </div>
         <div style="display:flex;align-items:flex-start;gap:10px;flex-direction:row-reverse">
-          <img class="char-img-sm" src="./11.png" alt="ぼん学長" style="flex-shrink:0;margin-top:2px">
+          <img class="char-img-sm" src="./images2/11.png" alt="ぼん学長" style="flex-shrink:0;margin-top:2px">
           <div style="font-size:0.88rem;line-height:1.6;color:#ccc;text-align:right">次の患者が待っている。<br><strong style="color:var(--gold)">Episode 2 — 頭痛の正体を暴け</strong></div>
         </div>
       </div>
@@ -999,18 +1056,61 @@
   <div class="step-dot" id="dot-4"></div>
 </div>
 
+<!-- 経験値ポップアップ -->
+<div id="xp-popup">⚔️ 経験値 +10 獲得！</div>
+
 <!-- これだ!! OVERLAY -->
 <div id="koredayo-overlay">
   <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
     <div class="char-duo">
-      <img class="char-img" style="width:72px;height:72px" src="./12.png" alt="ぼん学長">
-      <img class="char-img" style="width:72px;height:72px" src="./8.png" alt="タコくん">
+      <img class="char-img" style="width:72px;height:72px" src="./images2/12.png" alt="ぼん学長">
+      <img class="char-img" style="width:72px;height:72px" src="./images2/8.png" alt="タコくん">
     </div>
     <div class="koredayo-text">これだ！！</div>
   </div>
 </div>
 
 <script>
+// =====================================================
+// 白背景除去（キャンバス BFS フラッドフィル）
+// =====================================================
+function removeBgFromImg(img) {
+  if (!img || img.src.startsWith('data:') || !img.naturalWidth) return;
+  const w = img.naturalWidth, h = img.naturalHeight;
+  const canvas = document.createElement('canvas');
+  canvas.width = w; canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  try { ctx.drawImage(img, 0, 0); } catch(e) { return; }
+  const imageData = ctx.getImageData(0, 0, w, h);
+  const d = imageData.data;
+  const T = 230;
+  // 「背景候補」= 透過 OR 近白 → BFSで到達できる全ピクセルをマーク
+  const isBg = pi => { const i = pi * 4; return d[i+3] < 10 || (d[i] >= T && d[i+1] >= T && d[i+2] >= T); };
+  const visited = new Uint8Array(w * h);
+  const stack = [];
+  const tryAdd = pi => { if (pi >= 0 && pi < w * h && !visited[pi] && isBg(pi)) { visited[pi] = 1; stack.push(pi); } };
+  for (let x = 0; x < w; x++) { tryAdd(x); tryAdd((h - 1) * w + x); }
+  for (let y = 1; y < h - 1; y++) { tryAdd(y * w); tryAdd(y * w + w - 1); }
+  while (stack.length) {
+    const pi = stack.pop();
+    const x = pi % w, y = Math.floor(pi / w);
+    if (x > 0) tryAdd(pi - 1); if (x < w - 1) tryAdd(pi + 1);
+    if (y > 0) tryAdd(pi - w); if (y < h - 1) tryAdd(pi + w);
+  }
+  // 到達済みの「近白」ピクセルだけを透過化（元から透過のものはそのまま）
+  for (let pi = 0; pi < w * h; pi++) {
+    if (visited[pi]) d[pi * 4 + 3] = 0;
+  }
+  ctx.putImageData(imageData, 0, 0);
+  img.src = canvas.toDataURL('image/png');
+}
+
+document.addEventListener('load', e => {
+  if (e.target.matches && e.target.tagName === 'IMG' && e.target.src.includes('/images2/') && !e.target.src.startsWith('data:')) {
+    removeBgFromImg(e.target);
+  }
+}, true);
+
 // =====================================================
 // モバイル対応：実際の表示高さを --vh に設定
 // =====================================================
@@ -1312,36 +1412,55 @@ function skipType() {
 // =====================================================
 const CHARS = {
   bon:   {
-    question: './11.png',  // 指立て（通常）
-    correct:  './12.png',  // 星目・万歳（大喜び）
-    wrong:    './13.png',  // イラッ
-    mini:     './14.png',  // ？マーク（考え中）
-    clear:    './15.png',  // 居眠り
+    question: './images2/11.png',  // 指立て（通常）
+    correct:  './images2/12.png',  // 星目・万歳（大喜び）
+    wrong:    './images2/13.png',  // イラッ
+    mini:     './images2/14.png',  // ？マーク（考え中）
+    clear:    './images2/15.png',  // 居眠り
   },
   tako:  {
-    normal:   './5.png',   // 通常（ニコニコ）
-    correct:  './9.png',   // 大喜び
-    wrong:    './6.png',   // 悲しみ
-    thinking: './7.png',   // もやもや（出題中・選択前）
-    excited:  './8.png',   // ガッツ（これだ！！）
+    normal:   './images2/5.png',   // 通常（ニコニコ）
+    correct:  './images2/9.png',   // 大喜び
+    wrong:    './images2/6.png',   // 悲しみ
+    thinking: './images2/7.png',   // もやもや（出題中・選択前）
+    excited:  './images2/8.png',   // ガッツ（これだ！！）
   },
   butta: {
-    arrive:   './1.png',   // 通常（ニコニコ）
-    symptom:  './2.png',   // 泣き（痛そう）
-    after:    './4.png',   // びっくり（治療後）
+    arrive:   './images2/1.png',   // 通常（ニコニコ）
+    symptom:  './images2/2.png',   // 泣き（痛そう）
+    after:    './images2/4.png',   // びっくり（治療後）
   },
 };
+
+// =====================================================
+// PLAYER NAME
+// =====================================================
+let playerName = '';
+
+function pName() {
+  return playerName ? playerName + 'さん' : '先生';
+}
+
+function loadPlayerName() {
+  try {
+    const saved = localStorage.getItem(ONBOARDING_KEY);
+    if (saved) {
+      const data = JSON.parse(saved);
+      if (data.playerName) playerName = data.playerName;
+    }
+  } catch(e) {}
+}
 
 // =====================================================
 // DIALOGUE DATA
 // =====================================================
 const dialogues = [
   { imgSrc: CHARS.butta.symptom, name: 'ぶったくん', speaker: 'ぶったくん', charType: 'patient',
-    text: '先生、助けてください…！\n肩が重くて動けないんです…\n毎日デスクワークで、夕方になると特にひどくて…' },
+    text: () => `${pName()}…！こりの魔王が体を蝕んでいる…！\n肩が重くて動けないんです…\n毎日デスクワークで、夕方になると特にひどくて…` },
   { imgSrc: CHARS.bon.question,  name: 'ぼん学長', speaker: 'ぼん学長', charType: 'npc',
-    text: 'よし、俺たちの出番だ。\nこの肩こりの"真犯人"を突き止めて\nぶったくんを救うぞ！' },
-  { imgSrc: CHARS.tako.normal,   name: 'タコくん', speaker: 'タコくん', charType: 'you',
-    text: 'はい、学長！\nまずは何から調べますか？' },
+    text: () => `見習いよ、ぶったくんが魔物に侵されている。\n${pName()}の治療の力で\nこりの魔王を倒してくれ！` },
+  { imgSrc: CHARS.tako.normal,   name: () => pName(), speaker: () => pName(), charType: 'you',
+    text: '任せてください、師匠！\nこりの魔王を必ず倒します！' },
 ];
 
 const choiceData = [
@@ -1356,11 +1475,11 @@ const choiceData = [
 const quiz1Data = {
   options: ['A. 三角筋', 'B. 僧帽筋上部', 'C. 肩甲挙筋', 'D. 棘上筋'],
   correct: 1,
-  correctMsg: '犯人は僧帽筋上部だ！\nこいつがぶったくんを苦しめていたんだ！',
+  correctMsg: 'こりの魔王の正体は僧帽筋上部だ！\nこいつがぶったくんを苦しめていたんだ！',
   wrongExplanations: [
     '三角筋は肩の丸みを作る筋肉。腕を上げる動作で使うため、肩こりの"重だるさ"とは症状が異なります',
     null,
-    '惜しい！肩甲挙筋も肩こりの原因にはなりますが、今回の症状（肩上部の広範囲な張り）は僧帽筋上部がより疑わしいです',
+    '肩甲挙筋も肩こりの原因にはなりますが、今回の症状（肩上部の広範囲な張り）は僧帽筋上部がより疑わしいです',
     '棘上筋は腕を横に上げるときに使う筋肉。五十肩との関連が深く、デスクワークの肩こりとは原因が異なります',
   ],
 };
@@ -1368,7 +1487,7 @@ const quiz1Data = {
 const quiz2Data = {
   options: ['A. 合谷', 'B. 足三里', 'C. 肩井', 'D. 委中'],
   correct: 2,
-  correctMsg: '肩井だ！これでぶったくんを治療できる！',
+  correctMsg: '肩井だ！これがこりの魔王への必殺技！ぶったくんを救える！',
   wrongExplanations: [
     '合谷（LI4）は万能ツボですが大腸経。全身の緊張緩和には使えますが、僧帽筋の局所ポイントとしては別のツボが最適です',
     '足三里（ST36）は胃経のツボ。消化器系や全身の疲労回復が得意で、肩こりの局所治療には向きません',
@@ -1381,16 +1500,47 @@ const quiz2Data = {
 // DIALOGUE
 // =====================================================
 let dlgIdx = 0;
+let dlgLeftSrc = '', dlgRightSrc = '';
 
 function showDialogue(idx) {
   if (idx >= dialogues.length) { goToChoices(); return; }
   dlgIdx = idx;
   const d = dialogues[idx];
-  document.getElementById('dialogue-img').src = d.imgSrc;
-  document.getElementById('dialogue-img').alt = d.name;
-  document.getElementById('dialogue-charname').textContent = d.name;
-  document.getElementById('speaker-name').textContent = d.speaker;
-  typewrite(document.getElementById('dialogue-text'), d.text, d.charType);
+  // text/name/speakerはfunction対応
+  const dText    = typeof d.text    === 'function' ? d.text()    : d.text;
+  const dName    = typeof d.name    === 'function' ? d.name()    : d.name;
+  const dSpeaker = typeof d.speaker === 'function' ? d.speaker() : d.speaker;
+  const isLeft = d.charType === 'patient';
+
+  // 初回リセット
+  if (idx === 0) {
+    dlgLeftSrc = ''; dlgRightSrc = '';
+    document.getElementById('dlg-img-left').style.visibility = 'hidden';
+    document.getElementById('dlg-img-right').style.visibility = 'hidden';
+    document.getElementById('dlg-name-left').textContent = '';
+    document.getElementById('dlg-name-right').textContent = '';
+    document.getElementById('dlg-slot-left').classList.remove('char-inactive');
+    document.getElementById('dlg-slot-right').classList.remove('char-inactive');
+  }
+
+  if (isLeft) {
+    dlgLeftSrc = d.imgSrc;
+    const img = document.getElementById('dlg-img-left');
+    img.src = d.imgSrc; img.alt = dName; img.style.visibility = 'visible';
+    document.getElementById('dlg-name-left').textContent = dName;
+    document.getElementById('dlg-slot-left').classList.remove('char-inactive');
+    if (dlgRightSrc) document.getElementById('dlg-slot-right').classList.add('char-inactive');
+  } else {
+    dlgRightSrc = d.imgSrc;
+    const img = document.getElementById('dlg-img-right');
+    img.src = d.imgSrc; img.alt = dName; img.style.visibility = 'visible';
+    document.getElementById('dlg-name-right').textContent = dName;
+    document.getElementById('dlg-slot-right').classList.remove('char-inactive');
+    if (dlgLeftSrc) document.getElementById('dlg-slot-left').classList.add('char-inactive');
+  }
+
+  document.getElementById('speaker-name').textContent = dSpeaker;
+  typewrite(document.getElementById('dialogue-text'), dText, d.charType);
 }
 
 function handleDialogueTap() {
@@ -1492,7 +1642,7 @@ function restoreHomework1() {
   document.getElementById('btn-nobook1').style.display = 'none';
   document.getElementById('evidence1').classList.add('slide-in');
   document.getElementById('btn-tohomework1-next').style.display = 'block';
-  document.getElementById('hw1-char-img').src = './11.png';
+  document.getElementById('hw1-char-img').src = './images2/11.png';
   document.getElementById('hw1-win-text').innerHTML = '僧帽筋上部…こいつが怪しいな。<br>本当にこいつが犯人か、確認テストだ。';
 }
 
@@ -1506,8 +1656,8 @@ function unlockEvidence1() {
     sfxSlide();
     showCardOverlay(document.getElementById('evidence1').innerHTML, () => {
       document.getElementById('btn-tohomework1-next').style.display = 'block';
-      document.getElementById('hw1-char-img').src = './11.png';
-      document.getElementById('hw1-win-text').innerHTML = '僧帽筋上部…こいつが怪しいな。<br>本当にこいつが犯人か、確認テストだ。';
+      document.getElementById('hw1-char-img').src = './images2/11.png';
+      document.getElementById('hw1-win-text').innerHTML = '僧帽筋上部…こいつがこりの魔王だ。<br>本当にこいつが魔王か、試練で確かめろ！';
     });
   }, 100);
 }
@@ -1515,11 +1665,11 @@ function unlockEvidence1() {
 // ===== MINI QUIZ (Phase 3.5) =====
 const miniQuizData = [
   {
-    intro: '根拠を叩き込んだか？\nちゃんと覚えてるか確認するぞ。',
+    intro: '魔王を倒すには武器の知識が必要だ！\nまず第一の試練に挑め！',
     q: '僧帽筋上部の起始は___である',
     options: ['A. 外後頭隆起・項靭帯', 'B. 肩甲棘', 'C. 烏口突起', 'D. 鎖骨外側端'],
     correct: 0,
-    correctMsg: 'その通り！外後頭隆起から鎖骨まで走る大きな筋肉だ',
+    correctMsg: '正解！外後頭隆起から鎖骨まで走る大きな筋肉だ。経験値獲得！',
     wrongMsgs: [
       null,
       '肩甲棘は僧帽筋の"中部"の停止部。上部とは異なります',
@@ -1528,11 +1678,11 @@ const miniQuizData = [
     ],
   },
   {
-    intro: 'もう1問いくぞ',
+    intro: '第二の試練だ！もう1問いくぞ！',
     q: '僧帽筋上部はデスクワーク中に"弛緩"している',
     options: ['A. ○ 正しい', 'B. × 間違い'],
     correct: 1,
-    correctMsg: '正解！常に"収縮"しているからこそ肩こりの原因になる',
+    correctMsg: '正解！常に"収縮"しているからこそ、こりの魔王は力を持つのだ！',
     wrongMsgs: [
       'デスクワーク中は肩が上がり、僧帽筋上部は常に収縮しています。だから疲労して肩こりになるんです',
       null,
@@ -1592,8 +1742,9 @@ function answerMiniQuiz(i) {
     iineEl.textContent = '✨ いいね！';
     setTimeout(() => iineEl.classList.add('show'), 10);
 
+    showXpGain(10);
     document.getElementById('mq-feedback').innerHTML =
-      `<div style="color:var(--correct);font-size:0.88rem;margin-top:6px;line-height:1.6">${q.correctMsg}</div>`;
+      `<div style="color:var(--correct);font-size:0.88rem;margin-top:6px;line-height:1.6">${pName()}、${q.correctMsg}</div>`;
 
     setTimeout(() => {
       mqIdx++;
@@ -1613,7 +1764,7 @@ function answerMiniQuiz(i) {
     sfxWrong();
     const expEl = document.getElementById('mq-exp-' + i);
     if (expEl && q.wrongMsgs[i]) {
-      expEl.textContent = q.wrongMsgs[i];
+      expEl.textContent = pName() + '、惜しい！' + q.wrongMsgs[i];
       setTimeout(() => expEl.classList.add('show'), 10);
     }
   }
@@ -1702,9 +1853,10 @@ function answerQuiz1(i) {
     if (state.quiz1FirstCorrect === null) { state.quiz1FirstCorrect = true; }
     state.quiz1Done = true; saveState();
     sfxCorrect();
+    showXpGain(10);
     showKoredayo(() => {
       const fb = document.getElementById('quiz1-feedback');
-      fb.className = 'quiz-feedback show ok'; fb.textContent = quiz1Data.correctMsg;
+      fb.className = 'quiz-feedback show ok'; fb.textContent = pName() + '、' + quiz1Data.correctMsg;
       showClinicalMemo();
       document.getElementById('quiz1-next').classList.add('show');
     });
@@ -1721,7 +1873,8 @@ function answerQuiz1(i) {
     // 解説テキストをボタン直下にフェードイン
     const expEl = document.getElementById('quiz1-exp-' + i);
     if (expEl && quiz1Data.wrongExplanations[i]) {
-      expEl.textContent = quiz1Data.wrongExplanations[i];
+      const msg = quiz1Data.wrongExplanations[i];
+      expEl.textContent = pName() + '、惜しい！' + msg;
       setTimeout(() => expEl.classList.add('show'), 10);
     }
 
@@ -1816,9 +1969,10 @@ function answerQuiz2(i) {
     if (state.quiz2FirstCorrect === null) { state.quiz2FirstCorrect = true; }
     state.quiz2Done = true; saveState();
     sfxCorrect();
+    showXpGain(10);
     showKoredayo(() => {
       const fb = document.getElementById('quiz2-feedback');
-      fb.className = 'quiz-feedback show ok'; fb.innerHTML = quiz2Data.correctMsg;
+      fb.className = 'quiz-feedback show ok'; fb.innerHTML = pName() + '、' + quiz2Data.correctMsg;
       setTimeout(() => {
         document.getElementById('homework2-card').style.display = 'block';
         document.getElementById('btn-done2').style.display = 'block';
@@ -1838,7 +1992,7 @@ function answerQuiz2(i) {
     // 解説テキストをボタン直下にフェードイン
     const expEl = document.getElementById('quiz2-exp-' + i);
     if (expEl && quiz2Data.wrongExplanations[i]) {
-      expEl.textContent = quiz2Data.wrongExplanations[i];
+      expEl.textContent = pName() + '、惜しい！' + quiz2Data.wrongExplanations[i];
       setTimeout(() => expEl.classList.add('show'), 10);
     }
 
@@ -1904,6 +2058,8 @@ function toggleNobook(n) {
 function goToClear() {
   state.phase = 'clear'; state.cleared = true; saveState();
   showScreenWithSound('clear');
+  const msgEl = document.getElementById('clear-player-name-msg');
+  if (msgEl) msgEl.textContent = '見事だ' + pName() + '！こりの魔王を撃退した！\nぶったくんの体が救われたぞ！';
   setTimeout(animateClear, 400);
 }
 
@@ -1918,9 +2074,9 @@ function showClearModeMsg() {
   if (state.mode === 'beginner') {
     el.className = 'clear-mode-msg beginner-msg';
     el.innerHTML = `
-      <div class="cmsg-title">🎉 初学者モードクリア！</div>
-      次は<strong>⚡ 初級者モード</strong>に挑戦してみよう。<br>
-      ヒントなしで同じ症例を解けるかな？<br>
+      <div class="cmsg-title">⚔️ 見習いの証 獲得！</div>
+      次はヒントなしの<strong>⚡ 勇者モード</strong>に挑戦せよ！<br>
+      同じ魔王を自力で倒せるか？<br>
       <button class="btn-mode intermediate" style="margin-top:14px;width:100%" onclick="setModeAndStart('intermediate')">
         <span style="font-size:1.4rem">⚡</span>
         <span>
@@ -1932,12 +2088,12 @@ function showClearModeMsg() {
     const acc = calcAccuracy();
     el.className = 'clear-mode-msg intermediate-msg';
     el.innerHTML = `
-      <div class="cmsg-title">🎉 初級者モードクリア！<span class="accuracy-badge">正答率 ${acc}%</span></div>
+      <div class="cmsg-title">⚔️ 勇者の証 獲得！<span class="accuracy-badge">命中率 ${acc}%</span></div>
       ${acc === 100
-        ? '全問一発正解！素晴らしい臨床的思考力です。'
+        ? '全問一撃必殺！伝説の治療士の称号が近い！'
         : acc >= 50
-          ? '惜しい！復習してもう一度挑戦すれば完璧です。'
-          : '難しかったですか？解説動画で根拠を確認しよう。'}
+          ? '惜しい…もう一度修行して完璧な必殺技を習得しよう！'
+          : '魔王は手強かったか？解説動画で必殺技を磨け！'}
       <div class="preview-problem">
         <strong style="color:var(--gold)">🔥 中級者モード プレビュー</strong><br>
         「問診で得た情報から<em>治療穴の優先順位</em>を組み立てなさい」<br>
@@ -2065,38 +2221,37 @@ function drawRadarChart() {
   requestAnimationFrame(frame);
 }
 
-// リプレイ（進捗リセットなし、会話だけやり直し）
+// リプレイ（全データ完全リセット）
 function replayGame() {
-  state.phase = 'dialogue';
-  state.choicesAnswered = new Set();
-  state.quiz1FirstCorrect = null;
-  state.quiz2FirstCorrect = null;
-  state.inlineHw1Shown = false;
-  state.inlineHw1Done = false;
-  state.quiz1Done = false;
-  state.quiz2Done = false;
-  state.evidence1Unlocked = false;
-  state.evidence2Unlocked = false;
-  state.cleared = false;
-  saveState();
-  showScreenWithSound('dialogue');
-  dlgIdx = 0; showDialogue(0);
+  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(ONBOARDING_KEY);
+  localStorage.removeItem(GOAL_KEY);
+  state = {
+    phase: 'splash', mode: null, choicesAnswered: new Set(),
+    evidence1Unlocked: false, evidence2Unlocked: false,
+    quiz1Done: false, quiz2Done: false, cleared: false,
+    quiz1FirstCorrect: null, quiz2FirstCorrect: null,
+    inlineHw1Shown: false, inlineHw1Done: false,
+  };
+  showScreen('splash');
 }
 
 // =====================================================
 // これだ!! ANIMATION
 // =====================================================
+function showXpGain(pts) {
+  const el = document.getElementById('xp-popup');
+  if (!el) return;
+  el.textContent = `⚔️ 経験値 +${pts || 10} 獲得！`;
+  el.classList.remove('show');
+  void el.offsetWidth; // reflow to restart animation
+  el.classList.add('show');
+  el.addEventListener('animationend', () => el.classList.remove('show'), { once: true });
+}
+
 function showKoredayo(cb) {
   sfxKoredayo();
   const overlay = document.getElementById('koredayo-overlay');
-  // 白フラッシュ → 0.2s でフェードアウト
-  overlay.classList.add('flash-bg');
-  overlay.style.opacity = '1';
-  setTimeout(() => {
-    overlay.classList.remove('flash-bg');
-    overlay.style.opacity = '0';
-  }, 200);
-  // シェイクは少し遅れて起動（テキスト表示タイミングに合わせる）
   overlay.style.opacity = '1';
   overlay.classList.add('shake');
   overlay.addEventListener('animationend', function onEnd() {
@@ -2160,6 +2315,13 @@ const GOAL_KEY = 'rinsho_goal_v1';
 
 const obQuestions = [
   {
+    type: 'text',
+    key: 'playerName',
+    q: '勇者よ、汝の名は？',
+    sub: '冒険者名を入力してください（例：タコ丸、ツボ太郎）',
+    placeholder: '冒険者名を入力…',
+  },
+  {
     key: 'onboarding_job',
     q: 'あなたのお仕事は？',
     options: [
@@ -2174,8 +2336,8 @@ const obQuestions = [
   },
   {
     key: 'onboarding_experience',
-    q: '臨床経験はどれくらい？',
-    options: ['まだ学生・未経験', '1〜3年目', '3年以上'],
+    q: '冒険者レベルを教えてください！',
+    options: ['⚔️ はじめての冒険（未経験・学生）', '🗡️ 見習い冒険者（1〜3年）', '⚔️🛡️ 一人前の冒険者（3〜10年）', '👑 ベテラン冒険者（10年以上）'],
   },
   {
     key: 'onboarding_focus',
@@ -2210,6 +2372,7 @@ let obAnswers = {};
 
 function checkOnboarding() {
   loadState();
+  loadPlayerName();
   const saved = localStorage.getItem(ONBOARDING_KEY);
   if (saved) {
     // 2回目以降はスキップ
@@ -2231,24 +2394,58 @@ function renderObQuestion() {
   fill.style.width = ((obIdx + 1) / obQuestions.length * 100) + '%';
   label.textContent = (obIdx + 1) + ' / ' + obQuestions.length;
 
-  // フェードアウト → コンテンツ更新 → フェードイン
   body.classList.remove('fade-in');
   setTimeout(() => {
-    body.innerHTML = `
-      <div class="char-duo" style="margin-bottom:4px">
-        <img class="char-img" src="${CHARS.tako.normal}" alt="タコくん">
-      </div>
-      <div class="ob-question">${q.q}</div>
-      <div class="ob-options" id="ob-options"></div>
-    `;
-    const container = document.getElementById('ob-options');
-    q.options.forEach(opt => {
-      const btn = document.createElement('button');
-      btn.className = 'btn-ob';
-      btn.textContent = opt;
-      btn.onclick = () => selectObAnswer(q.key, opt, btn);
-      container.appendChild(btn);
-    });
+    if (q.type === 'text') {
+      body.innerHTML = `
+        <div class="char-duo" style="margin-bottom:4px">
+          <img class="char-img" src="${CHARS.tako.normal}" alt="タコくん">
+        </div>
+        <div class="ob-question">${q.q}</div>
+        ${q.sub ? `<div style="font-size:0.8rem;color:#8899aa;margin-bottom:10px">${q.sub}</div>` : ''}
+        <div class="ob-options" id="ob-options">
+          <input id="ob-name-input" type="text" placeholder="${q.placeholder}"
+            style="width:100%;padding:14px;font-size:1rem;border-radius:10px;border:2px solid var(--accent);background:rgba(0,10,30,0.8);color:#fff;outline:none;box-sizing:border-box;margin-bottom:12px"
+            maxlength="20">
+          <button id="ob-name-btn" class="btn-primary" style="width:100%;opacity:0.4" disabled>これが我が名！</button>
+        </div>
+      `;
+      const input = document.getElementById('ob-name-input');
+      const btn   = document.getElementById('ob-name-btn');
+      input.addEventListener('input', () => {
+        const ok = input.value.trim().length > 0;
+        btn.disabled = !ok;
+        btn.style.opacity = ok ? '1' : '0.4';
+      });
+      btn.addEventListener('click', () => {
+        sfxClick();
+        const val = input.value.trim();
+        obAnswers[q.key] = val;
+        playerName = val;
+        obIdx++;
+        if (obIdx < obQuestions.length) renderObQuestion();
+        else showObResult();
+      });
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !btn.disabled) btn.click();
+      });
+    } else {
+      body.innerHTML = `
+        <div class="char-duo" style="margin-bottom:4px">
+          <img class="char-img" src="${CHARS.tako.normal}" alt="タコくん">
+        </div>
+        <div class="ob-question">${q.q}</div>
+        <div class="ob-options" id="ob-options"></div>
+      `;
+      const container = document.getElementById('ob-options');
+      q.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-ob';
+        btn.textContent = opt;
+        btn.onclick = () => selectObAnswer(q.key, opt, btn);
+        container.appendChild(btn);
+      });
+    }
     body.classList.add('fade-in');
   }, 150);
 }
@@ -2257,7 +2454,6 @@ function selectObAnswer(key, value, btn) {
   sfxClick();
   btn.classList.add('selected');
   obAnswers[key] = value;
-  // 0.3s後に次の質問へ自動遷移
   setTimeout(() => {
     obIdx++;
     if (obIdx < obQuestions.length) {
@@ -2269,7 +2465,8 @@ function selectObAnswer(key, value, btn) {
 }
 
 function showObResult() {
-  // LocalStorageに保存
+  // playerName を確定して保存
+  if (obAnswers.playerName) playerName = obAnswers.playerName;
   localStorage.setItem(ONBOARDING_KEY, JSON.stringify(obAnswers));
 
   const exp = obAnswers['onboarding_experience'] || '';
@@ -2316,6 +2513,8 @@ function goToEpisode() {
 
 function goToMode() {
   if (!localStorage.getItem(GOAL_KEY)) {
+    const el = document.getElementById('goal-text');
+    if (el) el.textContent = `${pName()}の目標はひとつ。\n\n5つの力をすべて★5にして\n"一人前の施術家"になることだ。\n\n全エピソードをクリアした者には\n【つぼーんマスター】の称号を与える。\n\nまずは最初の患者を救うところからだ。`;
     showScreenWithSound('goal');
   } else {
     showScreen('mode');
