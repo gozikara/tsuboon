@@ -73,8 +73,7 @@
     display: flex; flex-direction: column;
     opacity: 0; pointer-events: none;
     transition: opacity 0.3s ease;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow-y: hidden;
     overscroll-behavior: contain;
   }
   .screen.active { opacity:1; pointer-events:all; }
@@ -149,9 +148,9 @@
 
   /* ===== HOMEWORK ===== */
   .phase-label { font-size:0.8rem; color:var(--accent); letter-spacing:0.12em; text-align:center; padding-top:10px; }
-  .homework-card { background:var(--homework-bg); border:2px solid var(--homework-border); border-radius:16px; padding:20px; line-height:1.8; font-size:0.95rem; }
+  .homework-card { background:var(--homework-bg); border:2px solid var(--homework-border); border-radius:16px; padding:12px 14px; line-height:1.7; font-size:0.85rem; overflow:visible; }
   .homework-card .hw-title { font-size:1rem; font-weight:700; color:var(--homework-border); margin-bottom:8px; }
-  .btn-done { width:100%; background:var(--homework-border); color:#0a1628; border:none; border-radius:12px; padding:14px; font-size:1.05rem; font-family:'Noto Sans JP',sans-serif; font-weight:900; cursor:pointer; transition:transform 0.1s, opacity 0.2s; }
+  .btn-done { width:100%; background:var(--homework-border); color:#0a1628; border:none; border-radius:12px; padding:10px; font-size:1.05rem; font-family:'Noto Sans JP',sans-serif; font-weight:900; cursor:pointer; transition:transform 0.1s, opacity 0.2s; }
   .btn-done:active { transform:scale(0.97); }
   .btn-done:disabled { opacity:0.4; cursor:default; }
 
@@ -444,7 +443,7 @@
   }
   .novel-scene {
     flex-shrink: 0;
-    height: 38vh;
+    height: 30vh;
     display: flex;
     align-items: flex-end;
     justify-content: center;
@@ -474,7 +473,7 @@
   #dlg-slot-right { right: 0; }
   #screen-dialogue .novel-char {
     width: auto;
-    height: 65vh;
+    height: 45vh;
     display: block;
     filter: drop-shadow(4px 0 20px rgba(0,0,0,0.7));
   }
@@ -507,7 +506,7 @@
   .novel-win {
     flex-shrink: 0;
     margin-top: auto;
-    height: 25vh;
+    height: 20vh;
     min-height: 100px;
     background: rgba(0,10,30,0.85);
     border-top: 3px solid var(--accent);
@@ -1456,7 +1455,7 @@ const CHARS = {
 let playerName = '';
 
 function pName() {
-  return playerName ? playerName + 'さん' : '先生';
+  return playerName ? playerName + 'さん' : '勇者';
 }
 
 function loadPlayerName() {
