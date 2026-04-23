@@ -607,7 +607,6 @@
   .btn-choice { font-size: 0.85rem !important; }
   /* 患者情報フローティングボタン */
   #btn-patient-info {
-    display: none;
     position: fixed;
     bottom: 80px;
     right: 16px;
@@ -622,9 +621,8 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     align-items: center;
     justify-content: center;
-    transition: transform 0.15s ease, opacity 0.2s ease;
+    transition: transform 0.15s ease;
   }
-  #btn-patient-info.visible { display: flex; }
   #btn-patient-info:active { transform: scale(0.9); }
 </style>
 </head>
@@ -1046,7 +1044,7 @@
 </div>
 
 <!-- 患者情報フローティングボタン -->
-<button id="btn-patient-info" onclick="showPatientInfo()">📋</button>
+<button id="btn-patient-info" style="display:none" onclick="showPatientInfo()">📋</button>
 
 <!-- ステップインジケーター -->
 <div id="step-dots">
@@ -1373,7 +1371,7 @@ function showScreen(id) {
   updateBackBtn();
   updateStepDots(id);
   document.getElementById('game-bg').classList.toggle('visible', GAME_SCREENS.has(id));
-  document.getElementById('btn-patient-info').classList.toggle('visible', PATIENT_INFO_SCREENS.has(id));
+  document.getElementById('btn-patient-info').style.display = PATIENT_INFO_SCREENS.has(id) ? 'flex' : 'none';
 }
 
 // bg.png が存在すれば has-img クラスを付与
