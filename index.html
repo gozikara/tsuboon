@@ -739,7 +739,6 @@
     </div>
     <div class="novel-win" id="text-window" onclick="handleDialogueTap()">
       <div class="novel-speaker" id="speaker-name">ぶったくん</div>
-      <div class="novel-phase-label" id="dlg-phase-label">⚔️ 第1章：依頼</div>
       <div class="dialogue-text" id="dialogue-text"></div>
       <div class="tap-hint" id="tap-hint">▼</div>
     </div>
@@ -750,7 +749,7 @@
     <div class="novel-scene">
       <div class="novel-char-wrap">
         <img class="novel-char" src="./images2/2.png" alt="ぶったくん">
-        <div class="char-name">ぶったくん</div>
+        <div class="char-name">⚔️ 第2章：情報収集</div>
       </div>
     </div>
     <div class="novel-interactive">
@@ -761,7 +760,6 @@
     </div>
     <div class="novel-win">
       <div class="novel-speaker">ぼん学長</div>
-      <div class="novel-phase-label">⚔️ 第2章：情報収集</div>
       <div class="choice-prompt">敵の情報を集めろ。<br>ぶったくんに話を聞くんだ！</div>
       <div class="novel-context-text" style="color:rgba(255,200,80,0.9);font-size:0.85rem;margin-top:8px">ぶったくん：「何でも聞いてください…つらいんです…」</div>
       <div class="choice-answer-box" id="choice-answer-box"></div>
@@ -776,20 +774,6 @@
       </div>
     </div>
     <div class="novel-interactive">
-      <div class="homework-card">
-        <div class="hw-title">⚔️ 修行</div>
-        <div>筋肉パーフェクト事典 第2章を読んで<br><strong>僧帽筋の起始・停止・作用</strong>を確認しよう</div>
-      </div>
-      <button class="btn-done" id="btn-done1" onclick="unlockEvidence1()">✅ 読んだ！</button>
-      <button class="btn-nobook" id="btn-nobook1" onclick="toggleNobook(1)">📱 本を持っていない</button>
-      <div class="nobook-card" id="nobook-card1">
-        <div class="nobook-title">💡 本がなくても大丈夫</div>
-        参考書3冊の合計は約7,700円。<br>
-        オンラインサロンなら月550円〜で<br><strong>同じ内容を動画で学べます。</strong><br><br>
-        <span style="color:#ffc832">🔜 オンラインサロン開設準備中</span><br>
-        開設時にはLINEでお知らせします。<br>
-        → 概要欄からLINE登録しておいてください
-      </div>
       <div class="evidence-card" id="evidence1">
         <div class="ev-title">🔓 根拠を入手！</div>
         <div>
@@ -803,7 +787,6 @@
     </div>
     <div class="novel-win">
       <div class="novel-speaker">ぼん学長</div>
-      <div class="novel-phase-label">⚔️ 第3章：修行</div>
       <div class="novel-context-text" id="hw1-win-text">こりの魔王を倒すには"根拠"が必要だ。<br>まずは容疑者リストを確認しろ。</div>
     </div>
   </div>
@@ -828,7 +811,6 @@
     </div>
     <div class="novel-win">
       <div class="novel-speaker">ぼん学長</div>
-      <div class="novel-phase-label">⚔️ 第4章：試練</div>
       <div class="novel-context-text" id="mq-intro-text">修行の成果を試す時が来た！<br>魔王を倒す知識が身に付いているか？</div>
     </div>
   </div>
@@ -884,7 +866,6 @@
     </div>
     <div class="novel-win">
       <div class="novel-speaker">ぼん学長</div>
-      <div class="novel-phase-label">⚔️ 第5章：敵の正体</div>
       <div class="novel-context-text">容疑者は4人。<br>こりの魔王の正体を見破れ！</div>
     </div>
   </div>
@@ -903,18 +884,6 @@
       <div class="quiz-options" id="quiz2-options"></div>
       <div class="quiz-feedback" id="quiz2-feedback"></div>
       <button class="btn-next-full" id="btn-quiz2-to-hw2" style="display:none" onclick="sfxClick(); showHw2Step()">次へ →</button>
-      <div class="homework-card" id="homework2-card" style="display:none">
-        <div class="hw-title">⚔️ 修行</div>
-        <div>ツボ単で<strong>肩井の取穴法</strong>を確認しよう</div>
-      </div>
-      <button class="btn-done" id="btn-done2" style="display:none" onclick="unlockEvidence2()">✅ 読んだ！</button>
-      <button class="btn-nobook" id="btn-nobook2" style="display:none" onclick="toggleNobook(2)">📱 本を持っていない</button>
-      <div class="nobook-card" id="nobook-card2">
-        <div class="nobook-title">💡 本がなくても大丈夫</div>
-        「ツボ単」は約2,640円。<br><br>
-        <span style="color:#ffc832">🔜 オンラインサロン開設準備中</span><br>
-        開設時にはLINEでお知らせします。
-      </div>
       <div class="evidence-card" id="evidence2">
         <div class="ev-title">🔓 根拠を入手！</div>
         <div>
@@ -928,7 +897,6 @@
     </div>
     <div class="novel-win">
       <div class="novel-speaker">ぼん学長</div>
-      <div class="novel-phase-label">⚔️ 第6章：決戦</div>
       <div class="novel-context-text">魔王の正体が分かった。最後の一撃だ。<br>こりの魔王の弱点を突くツボを選べ！</div>
     </div>
   </div>
@@ -1541,18 +1509,19 @@ function showDialogue(idx) {
     document.getElementById('dlg-slot-right').classList.remove('char-inactive');
   }
 
+  const phaseLabel = '⚔️ 第1章：依頼';
   if (isLeft) {
     dlgLeftSrc = d.imgSrc;
     const img = document.getElementById('dlg-img-left');
     img.src = d.imgSrc; img.alt = dName; img.style.visibility = 'visible';
-    document.getElementById('dlg-name-left').textContent = dName;
+    document.getElementById('dlg-name-left').textContent = phaseLabel;
     document.getElementById('dlg-slot-left').classList.remove('char-inactive');
     if (dlgRightSrc) document.getElementById('dlg-slot-right').classList.add('char-inactive');
   } else {
     dlgRightSrc = d.imgSrc;
     const img = document.getElementById('dlg-img-right');
     img.src = d.imgSrc; img.alt = dName; img.style.visibility = 'visible';
-    document.getElementById('dlg-name-right').textContent = dName;
+    document.getElementById('dlg-name-right').textContent = phaseLabel;
     document.getElementById('dlg-slot-right').classList.remove('char-inactive');
     if (dlgLeftSrc) document.getElementById('dlg-slot-left').classList.add('char-inactive');
   }
@@ -1654,31 +1623,13 @@ function goToPhase3() {
   state.phase = 'homework1'; saveState();
   showScreenWithSound('homework1');
   if (state.evidence1Unlocked) restoreHomework1();
+  else setTimeout(() => showHomeworkOverlay(1), 300);
 }
 
 function restoreHomework1() {
-  document.getElementById('btn-done1').disabled = true;
-  document.getElementById('btn-nobook1').style.display = 'none';
-  document.getElementById('evidence1').classList.add('slide-in');
   document.getElementById('btn-tohomework1-next').style.display = 'block';
   document.getElementById('hw1-char-img').src = './images2/11.png';
-  document.getElementById('hw1-win-text').innerHTML = '僧帽筋上部…こいつが怪しいな。<br>本当にこいつが犯人か、確認テストだ。';
-}
-
-function unlockEvidence1() {
-  sfxClick();
-  state.evidence1Unlocked = true; saveState();
-  document.getElementById('btn-done1').disabled = true;
-  document.getElementById('btn-nobook1').style.display = 'none';
-  document.getElementById('nobook-card1').classList.remove('visible');
-  setTimeout(() => {
-    sfxSlide();
-    showCardOverlay(document.getElementById('evidence1').innerHTML, () => {
-      document.getElementById('btn-tohomework1-next').style.display = 'block';
-      document.getElementById('hw1-char-img').src = './images2/11.png';
-      document.getElementById('hw1-win-text').innerHTML = '僧帽筋上部…こいつがこりの魔王だ。<br>本当にこいつが魔王か、試練で確かめろ！';
-    });
-  }, 100);
+  document.getElementById('hw1-win-text').innerHTML = '僧帽筋上部…こいつがこりの魔王だ。<br>本当にこいつが魔王か、試練で確かめろ！';
 }
 
 // ===== MINI QUIZ (Phase 3.5) =====
@@ -1840,6 +1791,7 @@ function renderQuiz1() {
 // CARD OVERLAY
 // =====================================================
 let _cardOverlayCb = null;
+let _hwOverlayMode = false;
 
 function showCardOverlay(html, afterCloseFn) {
   document.getElementById('card-overlay-body').innerHTML = html;
@@ -1848,9 +1800,71 @@ function showCardOverlay(html, afterCloseFn) {
 }
 
 function closeCardOverlay(e) {
+  if (_hwOverlayMode) return;
   if (e && e.target.id !== 'card-overlay' && e.target.id !== 'card-overlay-close') return;
   document.getElementById('card-overlay').classList.remove('show');
   if (_cardOverlayCb) { _cardOverlayCb(); _cardOverlayCb = null; }
+}
+
+function showHomeworkOverlay(n) {
+  const contents = {
+    1: {
+      book: '筋肉パーフェクト事典 第2章を読んで<br><strong>僧帽筋の起始・停止・作用</strong>を確認しよう',
+      nobook: '参考書3冊の合計は約7,700円。<br>オンラインサロンなら月550円〜で<br><strong>同じ内容を動画で学べます。</strong><br><br><span style="color:#ffc832">🔜 オンラインサロン開設準備中</span><br>開設時にはLINEでお知らせします。<br>→ 概要欄からLINE登録しておいてください'
+    },
+    2: {
+      book: 'ツボ単で<strong>肩井の取穴法</strong>を確認しよう',
+      nobook: '「ツボ単」は約2,640円。<br><br><span style="color:#ffc832">🔜 オンラインサロン開設準備中</span><br>開設時にはLINEでお知らせします。'
+    }
+  };
+  const c = contents[n];
+  const html = `
+    <div class="hw-title" style="margin-bottom:10px">⚔️ 修行</div>
+    <div style="margin-bottom:14px;line-height:1.7">${c.book}</div>
+    <button class="btn-done" style="width:100%;margin-bottom:10px" onclick="hwDone(${n})">✅ 読んだ！</button>
+    <details style="margin-top:4px">
+      <summary class="btn-nobook" style="cursor:pointer;list-style:none">📱 本を持っていない</summary>
+      <div class="nobook-card visible" style="margin-top:8px">${c.nobook}</div>
+    </details>
+  `;
+  _hwOverlayMode = true;
+  document.getElementById('card-overlay-close').style.display = 'none';
+  showCardOverlay(html, null);
+}
+
+function hwDone(n) {
+  sfxClick();
+  if (n === 1) state.evidence1Unlocked = true;
+  else state.evidence2Unlocked = true;
+  saveState();
+  _hwOverlayMode = false;
+  document.getElementById('card-overlay-close').style.display = '';
+  document.getElementById('card-overlay').classList.remove('show');
+  setTimeout(() => {
+    sfxSlide();
+    const evidenceEl = document.getElementById('evidence' + n);
+    if (n === 1) {
+      showCardOverlay(evidenceEl.innerHTML, () => {
+        document.getElementById('btn-tohomework1-next').style.display = 'block';
+        document.getElementById('hw1-char-img').src = './images2/11.png';
+        document.getElementById('hw1-win-text').innerHTML = '僧帽筋上部…こいつがこりの魔王だ。<br>本当にこいつが魔王か、試練で確かめろ！';
+      });
+    } else {
+      showCardOverlay(evidenceEl.innerHTML, () => {
+        if (state.mode === 'intermediate' && !state.quiz2Done) {
+          document.querySelectorAll('#quiz2-options .btn-quiz')
+            .forEach(b => { if (!b.classList.contains('correct')) { b.disabled = false; b.className = 'btn-quiz'; } });
+          document.getElementById('quiz2-feedback').className = 'quiz-feedback';
+          const hint = document.createElement('div');
+          hint.className = 'retry-hint';
+          hint.textContent = '根拠を確認した！もう一度選んでみよう 👆';
+          document.getElementById('quiz2-options').after(hint);
+        } else {
+          document.getElementById('btn-tohomework2-next').style.display = 'block';
+        }
+      });
+    }
+  }, 100);
 }
 
 function showClinicalMemo() {
@@ -1952,17 +1966,10 @@ function renderQuiz2() {
   const container = document.getElementById('quiz2-options');
   container.innerHTML = '';
   quiz2Data.options.forEach((opt, i) => {
-    const wrap = document.createElement('div');
-    wrap.className = 'quiz-option-wrap';
     const btn = document.createElement('button');
     btn.className = 'btn-quiz'; btn.textContent = opt;
     btn.onclick = () => answerQuiz2(i);
-    const exp = document.createElement('div');
-    exp.className = 'wrong-explanation';
-    exp.id = 'quiz2-exp-' + i;
-    wrap.appendChild(btn);
-    wrap.appendChild(exp);
-    container.appendChild(wrap);
+    container.appendChild(btn);
   });
   if (state.quiz2Done) {
     document.getElementById('quiz2-char-img').src = CHARS.bon.correct;
@@ -1974,9 +1981,9 @@ function renderQuiz2() {
 function answerQuiz2(i) {
   sfxClick();
   const btns = document.querySelectorAll('#quiz2-options .btn-quiz');
+  const optText = quiz2Data.options[i];
 
   if (i === quiz2Data.correct) {
-    // 正解：全ボタン無効化・これだ演出
     btns.forEach(b => b.disabled = true);
     btns[i].classList.add('correct');
     document.getElementById('quiz2-char-img').src = CHARS.bon.correct;
@@ -1986,12 +1993,15 @@ function answerQuiz2(i) {
     sfxCorrect();
     showXpGain(10);
     showKoredayo(() => {
-      const fb = document.getElementById('quiz2-feedback');
-      fb.className = 'quiz-feedback show ok'; fb.innerHTML = pName() + '、' + quiz2Data.correctMsg;
-      document.getElementById('btn-quiz2-to-hw2').style.display = 'block';
+      const html = `
+        <div style="text-align:center;font-size:2rem;margin-bottom:8px">✅</div>
+        <div style="font-weight:900;color:var(--correct);font-size:1.1rem;margin-bottom:10px">正解！</div>
+        <div style="line-height:1.7;margin-bottom:16px">${pName()}、${quiz2Data.correctMsg}</div>
+        <button class="btn-next-full" onclick="closeCardOverlay()">次へ →</button>
+      `;
+      showCardOverlay(html, showHw2Step);
     });
   } else {
-    // 不正解：選んだボタンのみ赤く・無効化、他は押せるまま
     btns[i].classList.add('incorrect');
     btns[i].disabled = true;
     document.getElementById('quiz2-char-img').src = CHARS.bon.wrong;
@@ -2000,30 +2010,18 @@ function answerQuiz2(i) {
     sfxWrong();
     quiz2WrongCount++;
 
-    // 解説テキストをボタン直下にフェードイン
-    const expEl = document.getElementById('quiz2-exp-' + i);
-    if (expEl && quiz2Data.wrongExplanations[i]) {
-      expEl.textContent = pName() + '、惜しい！' + quiz2Data.wrongExplanations[i];
-      setTimeout(() => expEl.classList.add('show'), 10);
-    }
-
-    // 3回以上不正解でヒント追加表示
-    if (quiz2WrongCount >= 3) {
-      const fb = document.getElementById('quiz2-feedback');
-      if (!fb.classList.contains('show')) {
-        fb.className = 'quiz-feedback show ng';
-        fb.innerHTML = '<div class="hint-text">💡 ヒントが欲しい？ サロンの解説動画で詳しく学べます</div>';
-      }
-    }
-
-    // 初学者モード（intermediate）の追加処理
-    if (state.mode === 'intermediate') {
-      setTimeout(() => {
-        document.getElementById('homework2-card').style.display = 'block';
-        document.getElementById('btn-done2').style.display = 'block';
-        document.getElementById('btn-nobook2').style.display = 'block';
-      }, 600);
-    }
+    const expText = quiz2Data.wrongExplanations[i] || 'このツボでは僧帽筋の局所ポイントとしては最適ではありません';
+    const hintHtml = quiz2WrongCount >= 3
+      ? `<div style="margin-top:12px;padding:10px;background:rgba(255,200,50,0.1);border-radius:8px;color:var(--gold)">💡 ヒントが欲しい？ サロンの解説動画で詳しく学べます</div>`
+      : '';
+    const html = `
+      <div style="text-align:center;font-size:2rem;margin-bottom:8px">❌</div>
+      <div style="font-weight:700;margin-bottom:10px">${optText}</div>
+      <div style="line-height:1.7;margin-bottom:4px">${pName()}、惜しい！${expText}</div>
+      ${hintHtml}
+      <button class="btn-next-full" style="margin-top:16px;background:var(--accent)" onclick="closeCardOverlay()">もう一度考える</button>
+    `;
+    showCardOverlay(html, null);
   }
 }
 
@@ -2031,45 +2029,12 @@ function showHw2Step() {
   document.getElementById('quiz2-options').style.display = 'none';
   document.getElementById('quiz2-feedback').style.display = 'none';
   document.getElementById('btn-quiz2-to-hw2').style.display = 'none';
-  document.getElementById('homework2-card').style.display = 'block';
-  document.getElementById('btn-done2').style.display = 'block';
-  document.getElementById('btn-nobook2').style.display = 'block';
+  if (state.evidence2Unlocked) restoreHomework2();
+  else setTimeout(() => showHomeworkOverlay(2), 300);
 }
 
 function restoreHomework2() {
-  document.getElementById('quiz2-options').style.display = 'none';
-  document.getElementById('quiz2-feedback').style.display = 'none';
-  document.getElementById('btn-quiz2-to-hw2').style.display = 'none';
-  document.getElementById('homework2-card').style.display = 'block';
-  document.getElementById('btn-done2').style.display = 'block';
-  document.getElementById('btn-done2').disabled = true;
-  document.getElementById('btn-nobook2').style.display = 'none';
-  document.getElementById('evidence2').classList.add('slide-in');
   document.getElementById('btn-tohomework2-next').style.display = 'block';
-}
-
-function unlockEvidence2() {
-  sfxClick();
-  state.evidence2Unlocked = true; saveState();
-  document.getElementById('btn-done2').disabled = true;
-  document.getElementById('btn-nobook2').style.display = 'none';
-  document.getElementById('nobook-card2').classList.remove('visible');
-  setTimeout(() => {
-    sfxSlide();
-    showCardOverlay(document.getElementById('evidence2').innerHTML, () => {
-      if (state.mode === 'intermediate' && !state.quiz2Done) {
-        document.querySelectorAll('#quiz2-options .btn-quiz')
-          .forEach(b => { if (!b.classList.contains('correct')) { b.disabled = false; b.className = 'btn-quiz'; } });
-        document.getElementById('quiz2-feedback').className = 'quiz-feedback';
-        const hint = document.createElement('div');
-        hint.className = 'retry-hint';
-        hint.textContent = '根拠を確認した！もう一度選んでみよう 👆';
-        document.getElementById('quiz2-options').after(hint);
-      } else {
-        document.getElementById('btn-tohomework2-next').style.display = 'block';
-      }
-    });
-  }, 100);
 }
 
 function toggleNobook(n) {
