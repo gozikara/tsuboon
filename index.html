@@ -605,6 +605,27 @@
   /* 選択肢ボタンのfont-size調整 */
   .btn-quiz { font-size: 0.85rem !important; }
   .btn-choice { font-size: 0.85rem !important; }
+  /* 患者情報フローティングボタン */
+  #btn-patient-info {
+    display: none;
+    position: fixed;
+    bottom: 80px;
+    right: 16px;
+    z-index: 200;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #4a9eff;
+    border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease, opacity 0.2s ease;
+  }
+  #btn-patient-info.visible { display: flex; }
+  #btn-patient-info:active { transform: scale(0.9); }
 </style>
 </head>
 <body>
@@ -1024,6 +1045,9 @@
   </div>
 </div>
 
+<!-- 患者情報フローティングボタン -->
+<button id="btn-patient-info" onclick="showPatientInfo()">📋</button>
+
 <!-- ステップインジケーター -->
 <div id="step-dots">
   <div class="step-dot" id="dot-0"></div>
@@ -1340,6 +1364,7 @@ function goBack() {
 // SCREEN
 // =====================================================
 const GAME_SCREENS = new Set(['dialogue','choices','homework1','miniquiz','quiz1','homework2']);
+const PATIENT_INFO_SCREENS = new Set(['choices','homework1','miniquiz','quiz1','homework2','clear1','clear2','clear3']);
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -1348,6 +1373,7 @@ function showScreen(id) {
   updateBackBtn();
   updateStepDots(id);
   document.getElementById('game-bg').classList.toggle('visible', GAME_SCREENS.has(id));
+  document.getElementById('btn-patient-info').classList.toggle('visible', PATIENT_INFO_SCREENS.has(id));
 }
 
 // bg.png が存在すれば has-img クラスを付与
@@ -1798,6 +1824,22 @@ function closeCardOverlay(e) {
   if (e && e.target.id !== 'card-overlay' && e.target.id !== 'card-overlay-close') return;
   document.getElementById('card-overlay').classList.remove('show');
   if (_cardOverlayCb) { _cardOverlayCb(); _cardOverlayCb = null; }
+}
+
+function showPatientInfo() {
+  sfxClick();
+  const html = `
+    <div style="font-weight:900;font-size:1.05rem;margin-bottom:14px;color:var(--accent)">📋 患者情報</div>
+    <div style="line-height:2;font-size:0.9rem">
+      🧑 <strong>患者</strong>：ぶったくん<br>
+      📍 <strong>症状</strong>：肩が重い・こり感<br>
+      ⏰ <strong>タイミング</strong>：夕方に悪化<br>
+      💼 <strong>職業</strong>：デスクワーク<br>
+      📌 <strong>部位</strong>：肩〜首
+    </div>
+    <button class="btn-next-full" style="margin-top:16px" onclick="closeCardOverlay()">閉じる</button>
+  `;
+  showCardOverlay(html, null);
 }
 
 function showHomeworkOverlay(n) {
