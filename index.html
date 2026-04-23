@@ -1676,23 +1676,15 @@ function renderMiniQuiz() {
 
   const container = document.getElementById('mq-options');
   container.innerHTML = '';
-  const iineEl = document.getElementById('mq-iine');
-  iineEl.textContent = '';
-  iineEl.classList.remove('show');
+  document.getElementById('mq-iine').textContent = '';
+  document.getElementById('mq-iine').classList.remove('show');
   document.getElementById('mq-feedback').innerHTML = '';
 
   q.options.forEach((opt, i) => {
-    const wrap = document.createElement('div');
-    wrap.className = 'quiz-option-wrap';
     const btn = document.createElement('button');
     btn.className = 'btn-quiz'; btn.textContent = opt;
     btn.onclick = () => answerMiniQuiz(i);
-    const exp = document.createElement('div');
-    exp.className = 'wrong-explanation';
-    exp.id = 'mq-exp-' + i;
-    wrap.appendChild(btn);
-    wrap.appendChild(exp);
-    container.appendChild(wrap);
+    container.appendChild(btn);
   });
 }
 
@@ -1700,6 +1692,7 @@ function answerMiniQuiz(i) {
   sfxClick();
   const q = miniQuizData[mqIdx];
   const btns = document.querySelectorAll('#mq-options .btn-quiz');
+  const optText = q.options[i];
 
   if (i === q.correct) {
     btns.forEach(b => b.disabled = true);
@@ -1707,16 +1700,14 @@ function answerMiniQuiz(i) {
     document.getElementById('mq-char-img').src = CHARS.bon.correct;
     document.getElementById('mq-tako-img').src = CHARS.tako.correct;
     sfxCorrect();
-
-    const iineEl = document.getElementById('mq-iine');
-    iineEl.textContent = '✨ いいね！';
-    setTimeout(() => iineEl.classList.add('show'), 10);
-
     showXpGain(10);
-    document.getElementById('mq-feedback').innerHTML =
-      `<div style="color:var(--correct);font-size:0.88rem;margin-top:6px;line-height:1.6">${pName()}、${q.correctMsg}</div>`;
-
-    setTimeout(() => {
+    const html = `
+      <div style="text-align:center;font-size:2rem;margin-bottom:8px">✅</div>
+      <div style="font-weight:900;color:var(--correct);font-size:1.1rem;margin-bottom:10px">正解！</div>
+      <div style="line-height:1.7;margin-bottom:16px">${pName()}、${q.correctMsg}</div>
+      <button class="btn-next-full" onclick="closeCardOverlay()">次へ →</button>
+    `;
+    showCardOverlay(html, () => {
       mqIdx++;
       if (mqIdx < miniQuizData.length) {
         document.getElementById('mq-char-img').src = CHARS.bon.mini;
@@ -1725,18 +1716,21 @@ function answerMiniQuiz(i) {
       } else {
         showMiniQuizComplete();
       }
-    }, 1000);
+    });
   } else {
     btns[i].classList.add('incorrect');
     btns[i].disabled = true;
     document.getElementById('mq-char-img').src = CHARS.bon.wrong;
     document.getElementById('mq-tako-img').src = CHARS.tako.wrong;
     sfxWrong();
-    const expEl = document.getElementById('mq-exp-' + i);
-    if (expEl && q.wrongMsgs[i]) {
-      expEl.textContent = pName() + '、惜しい！' + q.wrongMsgs[i];
-      setTimeout(() => expEl.classList.add('show'), 10);
-    }
+    const expText = q.wrongMsgs[i] || 'この選択肢は正しくありません';
+    const html = `
+      <div style="text-align:center;font-size:2rem;margin-bottom:8px">❌</div>
+      <div style="font-weight:700;margin-bottom:10px">${optText}</div>
+      <div style="line-height:1.7;margin-bottom:4px">${pName()}、惜しい！${expText}</div>
+      <button class="btn-next-full" style="margin-top:16px;background:var(--accent)" onclick="closeCardOverlay()">もう一度考える</button>
+    `;
+    showCardOverlay(html, null);
   }
 }
 
