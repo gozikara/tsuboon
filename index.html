@@ -497,7 +497,7 @@
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
-    padding: 8px 16px 24px;
+    padding: 4px 12px 8px;
     min-height: 0;
     display: flex;
     flex-direction: column;
@@ -902,6 +902,7 @@
     <div class="novel-interactive">
       <div class="quiz-options" id="quiz2-options"></div>
       <div class="quiz-feedback" id="quiz2-feedback"></div>
+      <button class="btn-next-full" id="btn-quiz2-to-hw2" style="display:none" onclick="sfxClick(); showHw2Step()">次へ →</button>
       <div class="homework-card" id="homework2-card" style="display:none">
         <div class="hw-title">⚔️ 修行</div>
         <div>ツボ単で<strong>肩井の取穴法</strong>を確認しよう</div>
@@ -1571,6 +1572,7 @@ function handleDialogueTap() {
 // =====================================================
 function setModeAndStart(mode) {
   sfxClick();
+  loadPlayerName();
   if (state.mode !== mode) {
     state = {
       phase: 'dialogue', mode,
@@ -1963,13 +1965,9 @@ function renderQuiz2() {
     container.appendChild(wrap);
   });
   if (state.quiz2Done) {
-    const btns = container.querySelectorAll('.btn-quiz');
-    btns.forEach(b => b.disabled = true);
-    btns[quiz2Data.correct].classList.add('correct');
     document.getElementById('quiz2-char-img').src = CHARS.bon.correct;
     document.getElementById('quiz2-tako-img').src = CHARS.tako.correct;
-    const fb = document.getElementById('quiz2-feedback');
-    fb.className = 'quiz-feedback show ok'; fb.innerHTML = quiz2Data.correctMsg;
+    document.getElementById('quiz2-options').style.display = 'none';
   }
 }
 
@@ -1990,11 +1988,7 @@ function answerQuiz2(i) {
     showKoredayo(() => {
       const fb = document.getElementById('quiz2-feedback');
       fb.className = 'quiz-feedback show ok'; fb.innerHTML = pName() + '、' + quiz2Data.correctMsg;
-      setTimeout(() => {
-        document.getElementById('homework2-card').style.display = 'block';
-        document.getElementById('btn-done2').style.display = 'block';
-        document.getElementById('btn-nobook2').style.display = 'block';
-      }, 400);
+      document.getElementById('btn-quiz2-to-hw2').style.display = 'block';
     });
   } else {
     // 不正解：選んだボタンのみ赤く・無効化、他は押せるまま
@@ -2033,7 +2027,19 @@ function answerQuiz2(i) {
   }
 }
 
+function showHw2Step() {
+  document.getElementById('quiz2-options').style.display = 'none';
+  document.getElementById('quiz2-feedback').style.display = 'none';
+  document.getElementById('btn-quiz2-to-hw2').style.display = 'none';
+  document.getElementById('homework2-card').style.display = 'block';
+  document.getElementById('btn-done2').style.display = 'block';
+  document.getElementById('btn-nobook2').style.display = 'block';
+}
+
 function restoreHomework2() {
+  document.getElementById('quiz2-options').style.display = 'none';
+  document.getElementById('quiz2-feedback').style.display = 'none';
+  document.getElementById('btn-quiz2-to-hw2').style.display = 'none';
   document.getElementById('homework2-card').style.display = 'block';
   document.getElementById('btn-done2').style.display = 'block';
   document.getElementById('btn-done2').disabled = true;
