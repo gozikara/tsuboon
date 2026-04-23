@@ -1953,6 +1953,7 @@ function goToPhase5() {
 function renderQuiz2() {
   const container = document.getElementById('quiz2-options');
   container.innerHTML = '';
+  container.style.display = '';
   quiz2Data.options.forEach((opt, i) => {
     const btn = document.createElement('button');
     btn.className = 'btn-quiz'; btn.textContent = opt;
@@ -1960,9 +1961,11 @@ function renderQuiz2() {
     container.appendChild(btn);
   });
   if (state.quiz2Done) {
+    const btns = container.querySelectorAll('.btn-quiz');
+    btns.forEach(b => b.disabled = true);
+    btns[quiz2Data.correct].classList.add('correct');
     document.getElementById('quiz2-char-img').src = CHARS.bon.correct;
     document.getElementById('quiz2-tako-img').src = CHARS.tako.correct;
-    document.getElementById('quiz2-options').style.display = 'none';
   }
 }
 
