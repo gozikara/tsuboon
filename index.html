@@ -749,11 +749,9 @@
     <div class="novel-scene">
       <div class="char-slot" id="dlg-slot-left">
         <img class="novel-char" id="dlg-img-left" src="" alt="" style="visibility:hidden">
-        <div class="char-name" id="dlg-name-left"></div>
       </div>
       <div class="char-slot" id="dlg-slot-right">
         <img class="novel-char" id="dlg-img-right" src="" alt="" style="visibility:hidden">
-        <div class="char-name" id="dlg-name-right"></div>
       </div>
     </div>
     <div class="novel-win" id="text-window" onclick="handleDialogueTap()">
@@ -768,7 +766,6 @@
     <div class="novel-scene">
       <div class="novel-char-wrap">
         <img class="novel-char" src="./images2/2.png" alt="ぶったくん">
-        <div class="char-name">⚔️ 第2章：情報収集</div>
       </div>
     </div>
     <div class="novel-interactive">
@@ -1507,25 +1504,20 @@ function showDialogue(idx) {
     dlgLeftSrc = ''; dlgRightSrc = '';
     document.getElementById('dlg-img-left').style.visibility = 'hidden';
     document.getElementById('dlg-img-right').style.visibility = 'hidden';
-    document.getElementById('dlg-name-left').textContent = '';
-    document.getElementById('dlg-name-right').textContent = '';
     document.getElementById('dlg-slot-left').classList.remove('char-inactive');
     document.getElementById('dlg-slot-right').classList.remove('char-inactive');
   }
 
-  const phaseLabel = '⚔️ 第1章：依頼';
   if (isLeft) {
     dlgLeftSrc = d.imgSrc;
     const img = document.getElementById('dlg-img-left');
     img.src = d.imgSrc; img.alt = dName; img.style.visibility = 'visible';
-    document.getElementById('dlg-name-left').textContent = phaseLabel;
     document.getElementById('dlg-slot-left').classList.remove('char-inactive');
     if (dlgRightSrc) document.getElementById('dlg-slot-right').classList.add('char-inactive');
   } else {
     dlgRightSrc = d.imgSrc;
     const img = document.getElementById('dlg-img-right');
     img.src = d.imgSrc; img.alt = dName; img.style.visibility = 'visible';
-    document.getElementById('dlg-name-right').textContent = phaseLabel;
     document.getElementById('dlg-slot-right').classList.remove('char-inactive');
     if (dlgLeftSrc) document.getElementById('dlg-slot-left').classList.add('char-inactive');
   }
