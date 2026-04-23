@@ -1781,17 +1781,10 @@ function renderQuiz1() {
   const container = document.getElementById('quiz1-options');
   container.innerHTML = '';
   quiz1Data.options.forEach((opt, i) => {
-    const wrap = document.createElement('div');
-    wrap.className = 'quiz-option-wrap';
     const btn = document.createElement('button');
     btn.className = 'btn-quiz'; btn.textContent = opt;
     btn.onclick = () => answerQuiz1(i);
-    const exp = document.createElement('div');
-    exp.className = 'wrong-explanation';
-    exp.id = 'quiz1-exp-' + i;
-    wrap.appendChild(btn);
-    wrap.appendChild(exp);
-    container.appendChild(wrap);
+    container.appendChild(btn);
   });
   if (state.quiz1Done) {
     const btns = container.querySelectorAll('.btn-quiz');
@@ -1799,9 +1792,7 @@ function renderQuiz1() {
     btns[quiz1Data.correct].classList.add('correct');
     document.getElementById('quiz1-char-img').src = CHARS.bon.correct;
     document.getElementById('quiz1-tako-img').src = CHARS.tako.correct;
-    const fb = document.getElementById('quiz1-feedback');
-    fb.className = 'quiz-feedback show ok'; fb.textContent = quiz1Data.correctMsg;
-    showClinicalMemo();
+    document.getElementById('quiz1-next').classList.add('show');
   }
 }
 
@@ -1910,9 +1901,9 @@ function showClinicalMemo() {
 function answerQuiz1(i) {
   sfxClick();
   const btns = document.querySelectorAll('#quiz1-options .btn-quiz');
+  const optText = quiz1Data.options[i];
 
   if (i === quiz1Data.correct) {
-    // 正解：全ボタン無効化・これだ演出
     btns.forEach(b => b.disabled = true);
     btns[i].classList.add('correct');
     document.getElementById('quiz1-char-img').src = CHARS.bon.correct;
@@ -1922,13 +1913,17 @@ function answerQuiz1(i) {
     sfxCorrect();
     showXpGain(10);
     showKoredayo(() => {
-      const fb = document.getElementById('quiz1-feedback');
-      fb.className = 'quiz-feedback show ok'; fb.textContent = pName() + '、' + quiz1Data.correctMsg;
-      showClinicalMemo();
-      document.getElementById('quiz1-next').classList.add('show');
+      const memoHtml = document.getElementById('quiz1-memo').innerHTML;
+      const html = `
+        <div style="text-align:center;font-size:2rem;margin-bottom:8px">✅</div>
+        <div style="font-weight:900;color:var(--correct);font-size:1.1rem;margin-bottom:10px">正解！</div>
+        <div style="line-height:1.7;margin-bottom:14px">${pName()}、${quiz1Data.correctMsg}</div>
+        <div style="margin-bottom:16px">${memoHtml}</div>
+        <button class="btn-next-full" onclick="sfxClick(); closeCardOverlay()">次のフェーズへ →</button>
+      `;
+      showCardOverlay(html, goToPhase5);
     });
   } else {
-    // 不正解：選んだボタンのみ赤く・無効化、他は押せるまま
     btns[i].classList.add('incorrect');
     btns[i].disabled = true;
     document.getElementById('quiz1-char-img').src = CHARS.bon.wrong;
@@ -1937,24 +1932,19 @@ function answerQuiz1(i) {
     sfxWrong();
     quiz1WrongCount++;
 
-    // 解説テキストをボタン直下にフェードイン
-    const expEl = document.getElementById('quiz1-exp-' + i);
-    if (expEl && quiz1Data.wrongExplanations[i]) {
-      const msg = quiz1Data.wrongExplanations[i];
-      expEl.textContent = pName() + '、惜しい！' + msg;
-      setTimeout(() => expEl.classList.add('show'), 10);
-    }
+    const expText = quiz1Data.wrongExplanations[i] || 'この筋肉は今回の症状とは原因が異なります';
+    const hintHtml = quiz1WrongCount >= 3
+      ? `<div style="margin-top:12px;padding:10px;background:rgba(255,200,50,0.1);border-radius:8px;color:var(--gold)">💡 ヒントが欲しい？ サロンの解説動画で詳しく学べます</div>`
+      : '';
+    const html = `
+      <div style="text-align:center;font-size:2rem;margin-bottom:8px">❌</div>
+      <div style="font-weight:700;margin-bottom:10px">${optText}</div>
+      <div style="line-height:1.7;margin-bottom:4px">${pName()}、惜しい！${expText}</div>
+      ${hintHtml}
+      <button class="btn-next-full" style="margin-top:16px;background:var(--accent)" onclick="closeCardOverlay()">もう一度考える</button>
+    `;
+    showCardOverlay(html, null);
 
-    // 3回以上不正解でヒント追加表示
-    if (quiz1WrongCount >= 3) {
-      const fb = document.getElementById('quiz1-feedback');
-      if (!fb.classList.contains('show')) {
-        fb.className = 'quiz-feedback show ng';
-        fb.innerHTML = '<div class="hint-text">💡 ヒントが欲しい？ サロンの解説動画で詳しく学べます</div>';
-      }
-    }
-
-    // 初学者モード（intermediate）の追加処理
     if (state.mode === 'intermediate' && !state.inlineHw1Shown) {
       state.inlineHw1Shown = true; saveState();
       setTimeout(() => {
