@@ -244,10 +244,10 @@
   }
 
   /* ===== CLEAR ===== */
-  #screen-clear1, #screen-clear2, #screen-clear3 { align-items:center; justify-content:flex-start; gap:18px; padding:32px 24px 40px; }
+  #screen-clear1, #screen-clear2, #screen-clear3 { align-items:center; justify-content:flex-start; gap:12px; padding:20px; overflow-y:auto; }
   .clear-episode { font-size:0.85rem; color:var(--accent); letter-spacing:0.15em; }
-  .clear-title { font-size:2rem; font-weight:900; color:var(--gold); text-align:center; text-shadow:0 0 20px rgba(255,200,50,0.6); }
-  .stars-row { display:flex; gap:12px; font-size:2.5rem; filter:drop-shadow(0 0 8px rgba(255,200,50,0.7)); }
+  .clear-title { font-size:1.4rem; font-weight:900; color:var(--gold); text-align:center; text-shadow:0 0 20px rgba(255,200,50,0.6); }
+  .stars-row { display:flex; gap:10px; font-size:1.8rem; filter:drop-shadow(0 0 8px rgba(255,200,50,0.7)); }
   .star { opacity:0; transition:opacity 0.4s ease, transform 0.4s ease; transform:scale(0.3); }
   .star.show { opacity:1; transform:scale(1); }
   .progress-gains { width:100%; display:flex; flex-direction:column; gap:10px; }
@@ -658,7 +658,7 @@
   <!-- ========== EPISODE ========== -->
   <div id="screen-episode" class="screen pad20" style="justify-content:center;align-items:center;gap:16px">
     <div style="text-align:center">
-      <div style="font-size:1.5rem;font-weight:bold;color:#4a9eff">Episode 1</div>
+      <div style="font-size:1.5rem;font-weight:bold;color:#4a9eff">エピソード 1</div>
       <div style="font-size:1.3rem;font-weight:bold;color:#ffc832;margin-top:6px">「肩こりの真犯人を探せ」</div>
     </div>
     <img src="./images2/1.png" alt="ぶったくん" style="width:160px;height:160px;object-fit:contain">
@@ -934,9 +934,10 @@
   </div>
 
   <!-- ========== CLEAR ========== -->
-  <div id="screen-clear" class="screen pad20">
+  <!-- ========== CLEAR 1: クリア演出 ========== -->
+  <div id="screen-clear1" class="screen pad20">
     <div style="text-align:center">
-      <div class="clear-episode">EPISODE 1</div>
+      <div class="clear-episode">エピソード 1</div>
       <div class="clear-title">勝利！こりの魔王を倒した！</div>
       <div class="char-duo" style="margin-top:10px">
         <img class="char-img" src="./images2/12.png" alt="ぼん学長">
@@ -949,10 +950,6 @@
       <span class="star" id="star2">⭐</span>
       <span class="star" id="star3">⭐</span>
     </div>
-
-    <!-- モード別メッセージ（JSで内容を動的セット） -->
-    <div id="clear-mode-msg" class="clear-mode-msg" style="display:none"></div>
-
     <!-- クリア台詞 -->
     <div style="width:100%;display:flex;flex-direction:column;gap:10px">
       <div style="display:flex;align-items:flex-start;gap:10px">
@@ -968,7 +965,14 @@
         </div>
       </div>
     </div>
+    <button class="btn-primary" style="margin-top:auto;width:100%;flex-shrink:0" onclick="sfxClick(); showClear2()">成長を確認する ▶</button>
+  </div>
 
+  <!-- ========== CLEAR 2: 成長レポート ========== -->
+  <div id="screen-clear2" class="screen pad20">
+    <div style="text-align:center;margin-bottom:4px">
+      <div class="clear-title" id="clear2-title">の成長記録</div>
+    </div>
     <!-- レーダーチャート -->
     <div class="radar-section">
       <div class="radar-canvas-wrap">
@@ -992,33 +996,25 @@
         </div>
         <div class="power-row">
           <div class="power-name">④ 施す力</div>
-          <div class="power-lock">🔒 オンラインサロンで解放予定（鍼・指圧・ストレッチ対応）</div>
+          <div class="power-lock">🔒 オンラインサロンで解放予定</div>
         </div>
         <div class="power-row">
           <div class="power-name">⑤ 伝える力</div>
-          <div class="power-lock">🔒 オンラインサロンで解放予定（患者さんへの説明力）</div>
+          <div class="power-lock">🔒 オンラインサロンで解放予定</div>
         </div>
       </div>
       <div class="radar-salon-cta">
-        <div class="cta-text">④⑤を伸ばすには実技動画・ケーススタディが必要です<br><br><span style="color:#ffc832">🔜 オンラインサロン開設準備中<br>開設時にはLINEでお知らせします</span></div>
+        <div class="cta-text">④⑤を伸ばすには実技動画・ケーススタディが必要です<br><span style="color:#ffc832">🔜 オンラインサロン開設準備中</span></div>
       </div>
     </div>
+    <button class="btn-primary" style="margin-top:auto;width:100%;flex-shrink:0" onclick="sfxClick(); showScreen('clear3')">次の冒険へ ▶</button>
+  </div>
 
-    <!-- 学習ステップ一覧 -->
-    <div class="curriculum-box" style="margin-top:8px">
-      <div class="curriculum-title">① 触れる力（解剖学）— 学習ステップ</div>
-      <div class="curr-step done"><span class="curr-icon">✅</span><span class="curr-label">STEP 1 肩甲骨のランドマーク</span></div>
-      <div class="curr-step done"><span class="curr-icon">✅</span><span class="curr-label">STEP 2 僧帽筋の起始・停止・作用</span></div>
-      <div class="curr-step locked"><span class="curr-icon">🔒</span><span class="curr-label">STEP 3 僧帽筋の触診と臨床応用</span><span class="badge-salon">サロン</span></div>
-      <div class="curr-step locked" style="opacity:0.6"><span class="curr-icon">🔓</span><span class="curr-label">STEP 4 三角筋の3部位</span></div>
-      <div class="curr-step locked"><span class="curr-icon">🔒</span><span class="curr-label">STEP 5 三角筋の触診と臨床応用</span><span class="badge-salon">サロン</span></div>
-    </div>
-
-    <!-- リプレイボタン -->
-    <button class="btn-replay" onclick="sfxClick(); replayGame()">🔄 もう一度挑戦する</button>
-
+  <!-- ========== CLEAR 3: 次の冒険へ ========== -->
+  <div id="screen-clear3" class="screen pad20">
+    <!-- EP2プレビュー -->
     <div class="ep2-teaser">
-      <div class="ep2-label">NEXT — EPISODE 2</div>
+      <div class="ep2-label">次回 — エピソード 2</div>
       <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px">
         <div style="display:flex;align-items:flex-start;gap:10px">
           <img class="char-img-sm" src="./images2/3.png" alt="ぶったくん" style="flex-shrink:0;margin-top:2px">
@@ -1026,15 +1022,28 @@
         </div>
         <div style="display:flex;align-items:flex-start;gap:10px;flex-direction:row-reverse">
           <img class="char-img-sm" src="./images2/11.png" alt="ぼん学長" style="flex-shrink:0;margin-top:2px">
-          <div style="font-size:0.88rem;line-height:1.6;color:#ccc;text-align:right">次の患者が待っている。<br><strong style="color:var(--gold)">Episode 2 — 頭痛の正体を暴け</strong></div>
+          <div style="font-size:0.88rem;line-height:1.6;color:#ccc;text-align:right">次の患者が待っている。<br><strong style="color:var(--gold)">エピソード 2 — 頭痛の正体を暴け</strong></div>
         </div>
       </div>
-      <div>
-        <div class="btn-ep2-lock">▶ 続きをプレイ 🔒</div>
-        <div class="ep2-hint"><span style="color:#ffc832">🔜 EP2はオンラインサロン開設後に配信予定</span><br>LINE登録で配信通知を受け取る</div>
+      <div class="btn-ep2-lock">⚔️ 続きをプレイ 🔒</div>
+      <div class="ep2-hint"><span style="color:#ffc832">🔜 EP2はオンラインサロン開設後に配信予定</span><br>LINE登録で配信通知を受け取る</div>
+    </div>
+    <!-- アクションボタン -->
+    <button class="btn-replay" style="margin-top:auto;flex-shrink:0" onclick="sfxClick(); replayGame()">🔄 もう一度挑戦する</button>
+    <!-- 学習ステップ（小さく） -->
+    <div style="width:100%;margin-top:8px">
+      <div class="curriculum-box" style="opacity:0.75">
+        <div class="curriculum-title">① 触れる力（解剖学）— 学習ステップ</div>
+        <div class="curr-step done" style="font-size:0.8rem"><span class="curr-icon">✅</span><span class="curr-label">STEP 1 肩甲骨のランドマーク</span></div>
+        <div class="curr-step done" style="font-size:0.8rem"><span class="curr-icon">✅</span><span class="curr-label">STEP 2 僧帽筋の起始・停止・作用</span></div>
+        <div class="curr-step locked" style="font-size:0.8rem"><span class="curr-icon">🔒</span><span class="curr-label">STEP 3 僧帽筋の触診と臨床応用</span><span class="badge-salon">サロン</span></div>
+        <div class="curr-step locked" style="font-size:0.8rem;opacity:0.6"><span class="curr-icon">🔓</span><span class="curr-label">STEP 4 三角筋の3部位</span></div>
+        <div class="curr-step locked" style="font-size:0.8rem"><span class="curr-icon">🔒</span><span class="curr-label">STEP 5 三角筋の触診と臨床応用</span><span class="badge-salon">サロン</span></div>
+      </div>
+      <div style="margin-top:10px;background:rgba(255,200,50,0.06);border:1px solid rgba(255,200,50,0.3);border-radius:10px;padding:10px 14px;font-size:0.78rem;line-height:1.6;color:#aaa;text-align:center">
+        🔜 オンラインサロン開設準備中<br>開設時にはLINEでお知らせします
       </div>
     </div>
-    <button class="btn-retry" onclick="sfxClick(); resetGame()">最初からやり直す</button>
   </div>
 
 </div>
@@ -1110,6 +1119,15 @@ document.addEventListener('load', e => {
     removeBgFromImg(e.target);
   }
 }, true);
+
+// JSがimgのloadより後に実行される場合（キャッシュ）の対策
+window.addEventListener('load', () => {
+  document.querySelectorAll('img').forEach(img => {
+    if (img.src.includes('/images2/') && !img.src.startsWith('data:') && img.naturalWidth > 0) {
+      removeBgFromImg(img);
+    }
+  });
+});
 
 // =====================================================
 // モバイル対応：実際の表示高さを --vh に設定
@@ -1776,7 +1794,7 @@ function showMiniQuizComplete() {
   document.getElementById('mq-question-wrap').innerHTML = `
     <div class="mq-complete-msg">
       <div class="mq-complete-text">基礎確認OK！<br>法廷へ向かえ</div>
-      <button class="btn-next-full" onclick="sfxClick(); goToQuiz1()">⚖️ Phase 4 — 鑑別へ</button>
+      <button class="btn-next-full" onclick="sfxClick(); goToQuiz1()">⚔️ 第4章：鑑別へ</button>
     </div>
   `;
 }
@@ -2057,7 +2075,7 @@ function toggleNobook(n) {
 // ===== CLEAR =====
 function goToClear() {
   state.phase = 'clear'; state.cleared = true; saveState();
-  showScreenWithSound('clear');
+  showScreenWithSound('clear1');
   const msgEl = document.getElementById('clear-player-name-msg');
   if (msgEl) msgEl.textContent = '見事だ' + pName() + '！こりの魔王を撃退した！\nぶったくんの体が救われたぞ！';
   setTimeout(animateClear, 400);
@@ -2114,11 +2132,14 @@ function animateClear() {
       sfxStar(i);
     }, i * 250);
   });
-  setTimeout(() => {
-    drawRadarChart();
-    sfxCorrect();
-    showClearModeMsg();
-  }, 900);
+  setTimeout(() => { sfxCorrect(); }, 900);
+}
+
+function showClear2() {
+  const titleEl = document.getElementById('clear2-title');
+  if (titleEl) titleEl.textContent = pName() + 'の成長記録';
+  showScreen('clear2');
+  setTimeout(drawRadarChart, 200);
 }
 
 // レーダーチャート描画
@@ -2224,16 +2245,14 @@ function drawRadarChart() {
 // リプレイ（全データ完全リセット）
 function replayGame() {
   localStorage.removeItem(STORAGE_KEY);
-  localStorage.removeItem(ONBOARDING_KEY);
-  localStorage.removeItem(GOAL_KEY);
   state = {
-    phase: 'splash', mode: null, choicesAnswered: new Set(),
+    phase: 'mode', mode: null, choicesAnswered: new Set(),
     evidence1Unlocked: false, evidence2Unlocked: false,
     quiz1Done: false, quiz2Done: false, cleared: false,
     quiz1FirstCorrect: null, quiz2FirstCorrect: null,
     inlineHw1Shown: false, inlineHw1Done: false,
   };
-  showScreen('splash');
+  showScreen('mode');
 }
 
 // =====================================================
