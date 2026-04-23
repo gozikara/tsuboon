@@ -846,27 +846,7 @@
     </div>
     <div class="novel-interactive">
       <div class="quiz-options" id="quiz1-options"></div>
-      <div class="quiz-feedback" id="quiz1-feedback"></div>
-      <!-- 初学者モード：不正解後に出現するインライン宿題 -->
-      <div id="quiz1-inline-hw" style="display:none">
-        <div class="inline-hw-sep">📖 根拠を確認して、もう一度挑戦しよう</div>
-        <div class="homework-card">
-          <div class="hw-title">⚔️ 修行</div>
-          <div>筋肉パーフェクト事典 第2章を読んで<br><strong>僧帽筋の起始・停止・作用</strong>を確認しよう</div>
-        </div>
-        <button class="btn-done" id="btn-inline-done1" onclick="unlockInlineEvidence1()">✅ 読んだ！</button>
-        <div class="evidence-card" id="inline-evidence1">
-          <div class="ev-title">🔓 根拠を入手！</div>
-          <div>
-            <strong style="color:var(--gold)">【僧帽筋上部線維】</strong><br>
-            起始：外後頭隆起、項靭帯<br>停止：鎖骨外側1/3<br>作用：肩甲骨の挙上<br><br>
-            → デスクワークで常に収縮<br>
-            → <strong style="color:var(--wrong)">肩こりの原因になりうる</strong>
-          </div>
-        </div>
-        <div id="quiz1-retry-hint" class="retry-hint" style="display:none">根拠を確認した！もう一度選んでみよう 👆</div>
-      </div>
-      <!-- 臨床メモ（正解後に表示） -->
+      <!-- 臨床メモ（正解後にオーバーレイで表示） -->
       <div class="clinical-memo" id="quiz1-memo">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
           <img class="char-img" src="./images2/12.png" alt="ぼん学長">
@@ -1948,34 +1928,18 @@ function answerQuiz1(i) {
     if (state.mode === 'intermediate' && !state.inlineHw1Shown) {
       state.inlineHw1Shown = true; saveState();
       setTimeout(() => {
-        document.getElementById('quiz1-inline-hw').style.display = 'block';
-        if (state.inlineHw1Done) restoreInlineHw1();
+        const html = `
+          <div style="color:var(--accent);font-weight:700;margin-bottom:12px">📖 根拠を確認して、もう一度挑戦しよう</div>
+          <div class="hw-title" style="margin-bottom:10px">⚔️ 修行</div>
+          <div style="line-height:1.7;margin-bottom:16px">筋肉パーフェクト事典 第2章を読んで<br><strong>僧帽筋の起始・停止・作用</strong>を確認しよう</div>
+          <button class="btn-done" style="width:100%" onclick="closeCardOverlay()">✅ 読んだ！もう一度挑戦する</button>
+        `;
+        showCardOverlay(html, null);
       }, 600);
     }
   }
 }
 
-// インライン宿題①：読んだ！ボタン
-function unlockInlineEvidence1() {
-  sfxClick();
-  state.inlineHw1Done = true; saveState();
-  document.getElementById('btn-inline-done1').disabled = true;
-  setTimeout(() => {
-    sfxSlide();
-    showCardOverlay(document.getElementById('inline-evidence1').innerHTML, () => {
-      document.getElementById('quiz1-retry-hint').style.display = 'block';
-      document.querySelectorAll('#quiz1-options .btn-quiz')
-        .forEach(b => { if (!b.classList.contains('correct')) { b.disabled = false; b.className = 'btn-quiz'; } });
-      document.getElementById('quiz1-feedback').className = 'quiz-feedback';
-    });
-  }, 100);
-}
-
-function restoreInlineHw1() {
-  document.getElementById('btn-inline-done1').disabled = true;
-  document.getElementById('inline-evidence1').classList.add('slide-in');
-  document.getElementById('quiz1-retry-hint').style.display = 'block';
-}
 
 // ===== PHASE 5: HOMEWORK 2 / QUIZ 2 =====
 function goToPhase5() {
