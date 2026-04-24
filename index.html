@@ -117,8 +117,8 @@
   #screen-choices .scene-area { overflow-y:auto; justify-content:flex-start; padding-top:52px; }
   .character-icon { display:flex; flex-direction:column; align-items:center; gap:8px; }
   .char-emoji { font-size:4.5rem; filter:drop-shadow(0 0 12px rgba(74,158,255,0.3)); }
-  .char-img { width:60px; height:60px; border-radius:0; object-fit:contain; background:none; flex-shrink:0; }
-  .char-img-sm { width:50px; height:50px; border-radius:0; object-fit:contain; background:none; }
+  .char-img { width:60px; height:60px; border-radius:0; object-fit:contain; background:transparent; flex-shrink:0; }
+  .char-img-sm { width:50px; height:50px; border-radius:0; object-fit:contain; background:transparent; }
   .char-duo { display:flex; justify-content:center; gap:16px; align-items:center; }
   .char-name { font-size:0.8rem; background:rgba(74,158,255,0.2); border:1px solid var(--accent); border-radius:20px; padding:3px 12px; color:var(--accent); }
   .text-window {
@@ -554,7 +554,7 @@
     height: 180px;
     border-radius: 0;
     object-fit: contain;
-    background: none;
+    background: transparent;
     flex-shrink: 0;
     transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
     filter: drop-shadow(0 8px 16px rgba(0,0,0,0.8));
@@ -1127,8 +1127,11 @@ function removeBgFromImg(img) {
   img.src = canvas.toDataURL('image/png');
 }
 
+const _charFiles = ['bon_shocho.png','hero_male.png','hero_female.png','patient.png','villain.png'];
+const _isCharImg = src => !src.startsWith('data:') && _charFiles.some(f => src.includes(f));
+
 document.addEventListener('load', e => {
-  if (e.target.matches && e.target.tagName === 'IMG' && !e.target.src.startsWith('data:') && !e.target.src.includes('://')) {
+  if (e.target.matches && e.target.tagName === 'IMG' && _isCharImg(e.target.src)) {
     removeBgFromImg(e.target);
   }
 }, true);
@@ -1136,7 +1139,7 @@ document.addEventListener('load', e => {
 // JSがimgのloadより後に実行される場合（キャッシュ）の対策
 window.addEventListener('load', () => {
   document.querySelectorAll('img').forEach(img => {
-    if (!img.src.startsWith('data:') && !img.src.includes('://') && img.naturalWidth > 0) {
+    if (_isCharImg(img.src) && img.naturalWidth > 0) {
       removeBgFromImg(img);
     }
   });
