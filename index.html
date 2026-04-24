@@ -162,7 +162,7 @@
   .btn-salon-small { display:inline-block; margin-top:10px; background:var(--gold); color:#0a1628; border:none; border-radius:10px; padding:9px 18px; font-size:0.9rem; font-family:'Noto Sans JP',sans-serif; font-weight:700; cursor:pointer; text-decoration:none; }
 
   /* 根拠カード */
-  .evidence-card { background:var(--evidence-bg); border:2px solid var(--accent); border-radius:16px; padding:20px; font-size:0.9rem; line-height:1.8; transform:translateX(120%); transition:transform 0.5s cubic-bezier(0.16,1,0.3,1); max-width:100%; overflow:hidden; word-break:break-word; }
+  .evidence-card { background:var(--evidence-bg); border:2px solid var(--accent); border-radius:16px; padding:14px 16px; font-size:clamp(10px, 2.5vw, 13px); line-height:1.7; transform:translateX(120%); transition:transform 0.5s cubic-bezier(0.16,1,0.3,1); max-width:100%; overflow:hidden; word-break:break-word; box-sizing:border-box; }
   .evidence-card.slide-in { transform:translateX(0); }
   .evidence-card .ev-title { font-size:1rem; font-weight:700; color:var(--accent); margin-bottom:8px; }
 
@@ -172,7 +172,7 @@
   .quiz-char-info { flex:1; }
   .quiz-char-name { font-size:0.8rem; color:var(--accent); font-weight:700; }
   .quiz-question { font-size:1rem; font-weight:700; line-height:1.6; }
-  .quiz-options { display:flex; flex-direction:column; gap:8px; overflow-y:auto; }
+  .quiz-options { display:flex; flex-direction:column; gap:6px; overflow-y:auto; max-height:35vh; padding:4px; }
   .quiz-option-wrap { display:flex; flex-direction:column; }
   .btn-quiz { background:rgba(8,16,36,0.62); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); color:#fff; border:2px solid rgba(74,158,255,0.75); border-radius:12px; padding:10px 12px; font-size:clamp(0.78rem, 2.5vw, 0.9rem); font-family:'Noto Sans JP',sans-serif; font-weight:700; cursor:pointer; text-align:left; transition:background 0.2s, border-color 0.2s, color 0.2s; flex-shrink:0; }
   .btn-quiz:disabled { cursor:default; }
@@ -461,14 +461,14 @@
   }
   .novel-scene {
     flex: 0 1 auto;
-    height: 28vh;
-    max-height: 28vh;
+    height: 38vh;
+    max-height: 38vh;
     min-height: 0;
     display: flex;
     align-items: flex-end;
     justify-content: center;
     gap: 32px;
-    padding-bottom: 8px;
+    padding-bottom: 0;
     position: relative;
     overflow: hidden;
   }
@@ -556,9 +556,9 @@
   }
   .novel-char {
     width: auto;
-    max-width: 100%;
-    height: clamp(100px, 25vh, 180px);
-    max-height: 25vh;
+    max-width: 48%;
+    height: clamp(120px, 38vh, 280px);
+    max-height: 38vh;
     border-radius: 0;
     object-fit: contain;
     background: transparent;
@@ -570,12 +570,13 @@
   .char-slot { display:flex; flex-direction:column; align-items:center; transition:opacity 0.35s, filter 0.35s, transform 0.35s; }
   .char-slot.char-inactive { opacity:0; pointer-events:none; }
   /* 2キャラ並びシーン */
-  .novel-scene-duo { justify-content:space-between !important; padding-left:8px !important; padding-right:8px !important; gap:0 !important; }
+  .novel-scene-duo { justify-content:space-between !important; align-items:flex-end !important; padding-left:8px !important; padding-right:8px !important; gap:0 !important; }
   .novel-char.dim { opacity: 0.5; filter: brightness(0.6); }
   .novel-char-wrap {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: flex-end;
     gap: 6px;
   }
   .novel-phase-label {
@@ -586,7 +587,8 @@
   }
   .novel-context-text { font-size: 0.9rem; line-height: 1.65; }
   /* novel-win内テキスト */
-  .novel-win .dialogue-text { font-size:0.9rem; line-height:1.65; white-space:pre-wrap; }
+  .novel-win .dialogue-text { font-size:clamp(11px, 2.8vw, 14px); line-height:1.5; white-space:pre-wrap; }
+  .novel-context-text { font-size:clamp(11px, 2.8vw, 14px); line-height:1.5; }
   .novel-win .tap-hint { position:absolute; bottom:8px; right:14px; font-size:0.72rem; color:#aaa; animation:blink 1.2s ease infinite; }
   .novel-win .choice-prompt { font-size:0.85rem; font-weight:700; color:var(--accent); margin-bottom:6px; }
   .novel-win .choice-answer-box { font-size:0.85rem; line-height:1.65; white-space:pre-wrap; display:none; }
