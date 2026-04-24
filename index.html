@@ -530,12 +530,12 @@
     gap: 10px;
   }
   .novel-win {
-    flex: 0 1 auto;
+    flex: 0 0 auto;
     margin-top: auto;
     height: auto;
-    min-height: 100px;
-    max-height: 25vh;
-    background: rgba(0,10,30,0.85);
+    min-height: 120px;
+    max-height: 30vh;
+    background: rgba(0,10,30,0.88);
     border-top: 3px solid var(--accent);
     border-left: 3px solid var(--accent);
     border-right: 3px solid var(--accent);
@@ -591,8 +591,8 @@
   }
   .novel-context-text { font-size: 0.9rem; line-height: 1.65; }
   /* novel-win内テキスト */
-  .novel-win .dialogue-text { font-size:clamp(13px, 3.5vw, 16px); line-height:1.7; white-space:pre-wrap; }
-  .novel-context-text { font-size:clamp(11px, 2.8vw, 14px); line-height:1.5; }
+  .novel-win .dialogue-text { font-size:16px; line-height:1.7; white-space:pre-wrap; }
+  .novel-context-text { font-size:16px; line-height:1.7; }
   .novel-win .tap-hint { position:absolute; bottom:8px; right:14px; font-size:0.72rem; color:#aaa; animation:blink 1.2s ease infinite; }
   .novel-win .choice-prompt { font-size:0.85rem; font-weight:700; color:var(--accent); margin-bottom:6px; }
   .novel-win .choice-answer-box { font-size:0.85rem; line-height:1.65; white-space:pre-wrap; display:none; }
