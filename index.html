@@ -40,7 +40,7 @@
       linear-gradient(180deg, #0d1b2a 0%, #1b2a3a 30%, #243447 60%, #1b2a3a 100%);
   }
   #game-bg.has-img {
-    background: url('./bg.png') center/cover no-repeat;
+    background: url('./image/bg.png') center/cover no-repeat;
     filter: brightness(0.4);
   }
   #game-bg.visible { display: block; }
@@ -668,8 +668,8 @@
   <div id="screen-onboarding-result" class="screen pad20">
     <div style="text-align:center">
       <div class="char-duo" style="margin-bottom:12px">
-        <img class="char-img" src="./bon_shocho.png" alt="ぼん署長">
-        <img class="char-img hero-img" src="./hero_male.png" alt="タコくん">
+        <img class="char-img" src="./image/bon_shocho.png" alt="ぼん署長">
+        <img class="char-img hero-img" src="./image/hero_male.png" alt="タコくん">
       </div>
       <div class="ob-result-title">あなた専用の<br>学習プランができました！</div>
     </div>
@@ -693,11 +693,11 @@
     </div>
     <div style="display:flex;gap:24px;justify-content:center">
       <button class="gender-btn" onclick="selectGender('male')">
-        <img src="./hero_male.png" alt="男性" style="width:120px;height:120px;object-fit:contain">
+        <img src="./image/hero_male.png" alt="男性" style="width:120px;height:120px;object-fit:contain">
         <div style="margin-top:8px;font-weight:bold;color:#fff">男性</div>
       </button>
       <button class="gender-btn" onclick="selectGender('female')">
-        <img src="./hero_female.png" alt="女性" style="width:120px;height:120px;object-fit:contain">
+        <img src="./image/hero_female.png" alt="女性" style="width:120px;height:120px;object-fit:contain">
         <div style="margin-top:8px;font-weight:bold;color:#fff">女性</div>
       </button>
     </div>
@@ -707,8 +707,8 @@
   <div id="screen-splash" class="screen pad20" style="justify-content:center;align-items:center;gap:20px">
     <div style="text-align:center">
       <div class="char-duo" style="margin-bottom:12px">
-        <img style="width:80px;height:80px;object-fit:contain" src="./bon_shocho.png" alt="ぼん署長">
-        <img style="width:80px;height:80px;object-fit:contain" src="./hero_male.png" class="hero-img" alt="タコくん">
+        <img style="width:80px;height:80px;object-fit:contain" src="./image/bon_shocho.png" alt="ぼん署長">
+        <img style="width:80px;height:80px;object-fit:contain" src="./image/hero_male.png" class="hero-img" alt="タコくん">
       </div>
       <div style="font-size:2.5rem;font-weight:bold;color:#fff;line-height:1.2">ツボ刑事</div>
       <div style="font-size:0.85rem;color:#8899aa;margin-top:6px">体の中の犯人を、特定せよ。</div>
@@ -723,14 +723,14 @@
       <div style="font-size:1.5rem;font-weight:bold;color:#4a9eff">エピソード 1</div>
       <div style="font-size:1.3rem;font-weight:bold;color:#ffc832;margin-top:6px">「肩こりの真犯人を探せ」</div>
     </div>
-    <img src="./patient.png" alt="患者さん" style="width:160px;height:160px;object-fit:contain">
+    <img src="./image/patient.png" alt="患者さん" style="width:160px;height:160px;object-fit:contain">
     <button class="btn-primary" onclick="sfxClick(); goToMode()">⚔️ 冒険に出発！</button>
   </div>
 
   <!-- ========== GOAL ========== -->
   <div id="screen-goal" class="screen novel-screen">
     <div class="novel-scene" style="height:32vh">
-      <img src="./bon_shocho.png" alt="ぼん署長" class="novel-char" style="width:150px;height:150px">
+      <img src="./image/bon_shocho.png" alt="ぼん署長" class="novel-char" style="width:150px;height:150px">
     </div>
     <div class="novel-win" style="height:auto;flex:1;min-height:0;overflow-y:auto;padding-top:64px">
       <div class="novel-speaker">ぼん署長</div>
@@ -749,7 +749,7 @@
   <!-- ========== MODE ========== -->
   <div id="screen-mode" class="screen pad20">
     <div style="text-align:center;margin-bottom:12px">
-      <img src="./bon_shocho.png" alt="ぼん署長" style="width:80px;height:80px;object-fit:contain">
+      <img src="./image/bon_shocho.png" alt="ぼん署長" style="width:80px;height:80px;object-fit:contain">
       <div style="font-size:1.1rem;font-weight:bold;color:#fff;margin-top:8px">どのモードで挑む？</div>
     </div>
     <div class="mode-selector">
@@ -809,7 +809,7 @@
   <div id="screen-choices" class="screen novel-screen">
     <div class="novel-scene">
       <div class="novel-char-wrap">
-        <img class="novel-char" src="./patient.png" alt="患者さん">
+        <img class="novel-char" src="./image/patient.png" alt="患者さん">
       </div>
     </div>
     <div class="novel-interactive">
@@ -830,7 +830,7 @@
   <div id="screen-homework1" class="screen novel-screen">
     <div class="novel-scene">
       <div class="novel-char-wrap">
-        <img class="novel-char" id="hw1-char-img" src="./bon_shocho.png" alt="ぼん署長">
+        <img class="novel-char" id="hw1-char-img" src="./image/bon_shocho.png" alt="ぼん署長">
       </div>
     </div>
     <div class="novel-interactive">
@@ -856,10 +856,10 @@
   <div id="screen-miniquiz" class="screen novel-screen">
     <div class="novel-scene novel-scene-duo">
       <div class="novel-char-wrap">
-        <img class="novel-char" id="mq-char-img" src="./bon_shocho.png" alt="ぼん署長">
+        <img class="novel-char" id="mq-char-img" src="./image/bon_shocho.png" alt="ぼん署長">
       </div>
       <div class="novel-char-wrap">
-        <img class="novel-char hero-img" id="mq-tako-img" src="./hero_male.png" alt="タコくん">
+        <img class="novel-char hero-img" id="mq-tako-img" src="./image/hero_male.png" alt="タコくん">
       </div>
     </div>
     <div class="novel-interactive">
@@ -880,10 +880,10 @@
   <div id="screen-quiz1" class="screen novel-screen">
     <div class="novel-scene novel-scene-duo">
       <div class="novel-char-wrap">
-        <img class="novel-char" id="quiz1-char-img" src="./bon_shocho.png" alt="ぼん署長">
+        <img class="novel-char" id="quiz1-char-img" src="./image/bon_shocho.png" alt="ぼん署長">
       </div>
       <div class="novel-char-wrap">
-        <img class="novel-char hero-img" id="quiz1-tako-img" src="./hero_male.png" alt="タコくん">
+        <img class="novel-char hero-img" id="quiz1-tako-img" src="./image/hero_male.png" alt="タコくん">
       </div>
     </div>
     <div class="novel-interactive">
@@ -891,7 +891,7 @@
       <!-- 臨床メモ（正解後にオーバーレイで表示） -->
       <div class="clinical-memo" id="quiz1-memo">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-          <img class="char-img" src="./bon_shocho.png" alt="ぼん署長">
+          <img class="char-img" src="./image/bon_shocho.png" alt="ぼん署長">
           <div class="memo-title" style="margin-bottom:0">🩺 ぼん署長の臨床メモ</div>
         </div>
         僧帽筋上部が真犯人のとき、<br>
@@ -915,10 +915,10 @@
   <div id="screen-homework2" class="screen novel-screen">
     <div class="novel-scene novel-scene-duo">
       <div class="novel-char-wrap">
-        <img class="novel-char" id="quiz2-char-img" src="./bon_shocho.png" alt="ぼん署長">
+        <img class="novel-char" id="quiz2-char-img" src="./image/bon_shocho.png" alt="ぼん署長">
       </div>
       <div class="novel-char-wrap">
-        <img class="novel-char hero-img" id="quiz2-tako-img" src="./hero_male.png" alt="タコくん">
+        <img class="novel-char hero-img" id="quiz2-tako-img" src="./image/hero_male.png" alt="タコくん">
       </div>
     </div>
     <div class="novel-interactive">
@@ -950,9 +950,9 @@
       <div class="clear-episode">エピソード 1</div>
       <div class="clear-title">事件解決！真犯人を特定した！</div>
       <div class="char-duo" style="margin-top:10px">
-        <img class="char-img" src="./bon_shocho.png" alt="ぼん署長">
-        <img class="char-img" src="./patient.png" alt="患者さん">
-        <img class="char-img hero-img" src="./hero_male.png" alt="タコくん">
+        <img class="char-img" src="./image/bon_shocho.png" alt="ぼん署長">
+        <img class="char-img" src="./image/patient.png" alt="患者さん">
+        <img class="char-img hero-img" src="./image/hero_male.png" alt="タコくん">
       </div>
     </div>
     <div class="stars-row" style="justify-content:center">
@@ -963,13 +963,13 @@
     <!-- クリア台詞 -->
     <div style="width:100%;display:flex;flex-direction:column;gap:10px">
       <div style="display:flex;align-items:flex-start;gap:10px">
-        <img class="char-img" src="./patient.png" alt="患者さん" style="flex-shrink:0">
+        <img class="char-img" src="./image/patient.png" alt="患者さん" style="flex-shrink:0">
         <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:10px 14px;font-size:0.9rem;line-height:1.7">
           あ…！<br>肩が…軽くなっていく…！<br>この感覚…3ヶ月ぶりです…！<br>私…また全力で仕事できる気がします。<br>ありがとうございます、先生…！
         </div>
       </div>
       <div style="display:flex;align-items:flex-start;gap:10px;flex-direction:row-reverse">
-        <img class="char-img" src="./bon_shocho.png" alt="ぼん署長" style="flex-shrink:0">
+        <img class="char-img" src="./image/bon_shocho.png" alt="ぼん署長" style="flex-shrink:0">
         <div style="background:rgba(74,158,255,0.1);border:1px solid var(--accent);border-radius:12px;padding:10px 14px;font-size:0.9rem;line-height:1.7;text-align:right">
           ……治療家ってのは、症状を取る仕事じゃない。<br>その人の人生を——取り戻す仕事だ。<br><span id="clear-player-name-msg"></span>
         </div>
@@ -1027,11 +1027,11 @@
       <div class="ep2-label">次回 — エピソード 2</div>
       <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px">
         <div style="display:flex;align-items:flex-start;gap:10px">
-          <img class="char-img-sm" src="./patient.png" alt="患者さん" style="flex-shrink:0;margin-top:2px">
+          <img class="char-img-sm" src="./image/patient.png" alt="患者さん" style="flex-shrink:0;margin-top:2px">
           <div class="ep2-dialogue" style="margin:0">あの…先生、<br>知り合いも困っていて…<br>聞いてもらえますか。</div>
         </div>
         <div style="display:flex;align-items:flex-start;gap:10px;flex-direction:row-reverse">
-          <img class="char-img-sm" src="./bon_shocho.png" alt="ぼん署長" style="flex-shrink:0;margin-top:2px">
+          <img class="char-img-sm" src="./image/bon_shocho.png" alt="ぼん署長" style="flex-shrink:0;margin-top:2px">
           <div style="font-size:0.88rem;line-height:1.6;color:#ccc;text-align:right">次の事件が来たぞ。<br><strong style="color:var(--gold)">EP2——頭痛の真犯人を暴け。</strong></div>
         </div>
       </div>
@@ -1085,8 +1085,8 @@
 <div id="koredayo-overlay">
   <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
     <div class="char-duo">
-      <img class="char-img" style="width:72px;height:72px" src="./bon_shocho.png" alt="ぼん署長">
-      <img class="char-img hero-img" style="width:72px;height:72px" src="./hero_male.png" alt="タコくん">
+      <img class="char-img" style="width:72px;height:72px" src="./image/bon_shocho.png" alt="ぼん署長">
+      <img class="char-img hero-img" style="width:72px;height:72px" src="./image/hero_male.png" alt="タコくん">
     </div>
     <div class="koredayo-text">これだ！！</div>
   </div>
@@ -1401,7 +1401,7 @@ function showScreen(id) {
 (function() {
   const img = new Image();
   img.onload = () => document.getElementById('game-bg').classList.add('has-img');
-  img.src = './bg.png';
+  img.src = './image/bg.png';
 }());
 
 function showScreenWithSound(id) {
@@ -1446,7 +1446,7 @@ function skipType() {
 let heroGender = 'male';
 
 function heroImg() {
-  return heroGender === 'female' ? './hero_female.png' : './hero_male.png';
+  return heroGender === 'female' ? './image/hero_female.png' : './image/hero_male.png';
 }
 
 function applyHeroImages() {
@@ -1455,20 +1455,20 @@ function applyHeroImages() {
 
 const CHARS = {
   bon: {
-    question: './bon_shocho.png',
-    correct:  './bon_shocho.png',
-    wrong:    './bon_shocho.png',
-    mini:     './bon_shocho.png',
-    clear:    './bon_shocho.png',
+    question: './image/bon_shocho.png',
+    correct:  './image/bon_shocho.png',
+    wrong:    './image/bon_shocho.png',
+    mini:     './image/bon_shocho.png',
+    clear:    './image/bon_shocho.png',
   },
   get tako() {
     const h = heroImg();
     return { normal: h, correct: h, wrong: h, thinking: h, excited: h };
   },
   butta: {
-    arrive:  './patient.png',
-    symptom: './patient.png',
-    after:   './patient.png',
+    arrive:  './image/patient.png',
+    symptom: './image/patient.png',
+    after:   './image/patient.png',
   },
 };
 
@@ -1678,7 +1678,7 @@ function goToPhase3() {
 
 function restoreHomework1() {
   document.getElementById('btn-tohomework1-next').style.display = 'block';
-  document.getElementById('hw1-char-img').src = './bon_shocho.png';
+  document.getElementById('hw1-char-img').src = './image/bon_shocho.png';
   document.getElementById('hw1-win-text').innerHTML = '証拠が揃った。次は試練で犯人を確かめろ！';
 }
 
@@ -1897,7 +1897,7 @@ function hwDone(n) {
     if (n === 1) {
       showCardOverlay(evidenceEl.innerHTML, () => {
         document.getElementById('btn-tohomework1-next').style.display = 'block';
-        document.getElementById('hw1-char-img').src = './bon_shocho.png';
+        document.getElementById('hw1-char-img').src = './image/bon_shocho.png';
         document.getElementById('hw1-win-text').innerHTML = '証拠が揃った。次は試練で犯人を確かめろ！';
       });
     } else {
