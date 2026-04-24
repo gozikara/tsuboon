@@ -11,7 +11,12 @@
       "Bash(mv image2/2.png hero_male.png)",
       "Bash(mv image2/3.png bon_shocho.png)",
       "Bash(mv image2/4.png patient.png)",
-      "Bash(mv image2/5.png villain.png)"
+      "Bash(mv image2/5.png villain.png)",
+      "Bash(cp image/1.png hero_female.png)",
+      "Bash(cp image/2.png hero_male.png)",
+      "Bash(cp image/3.png bon_shocho.png)",
+      "Bash(cp image/4.png patient.png)",
+      "Bash(cp image/5.png villain.png)"
     ]
   }
 }
