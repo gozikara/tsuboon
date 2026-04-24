@@ -727,6 +727,84 @@
     padding: 12px !important;
     font-size: 0.92rem !important;
   }
+
+  /* ===== 容疑筋撃破オーバーレイ ===== */
+  #villain-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 400;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.85);
+    gap: 0;
+  }
+  #villain-overlay.show { display: flex; }
+
+  #villain-defeat-img {
+    width: auto;
+    max-width: 65%;
+    max-height: 50vh;
+    object-fit: contain;
+    object-position: bottom center;
+    filter: drop-shadow(0 0 30px rgba(255,80,80,1));
+    transition: filter 1.2s ease, opacity 1.2s ease, transform 1.2s ease;
+  }
+  #villain-defeat-img.flash {
+    filter: drop-shadow(0 0 60px rgba(255,255,255,1)) brightness(3);
+  }
+  #villain-defeat-img.collapse {
+    opacity: 0;
+    transform: translateY(40px) scale(0.85);
+    filter: brightness(0.1);
+  }
+
+  #villain-scream {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #ff4a4a;
+    text-shadow: 0 0 20px rgba(255,80,80,0.9), 2px 2px 0 #000;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    margin-top: -20px;
+    text-align: center;
+    line-height: 1.6;
+    padding: 0 20px;
+  }
+  #villain-scream.show { opacity: 1; }
+
+  #villain-bon-msg {
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--gold);
+    text-shadow: 0 0 16px rgba(255,200,50,0.8), 2px 2px 0 #000;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    text-align: center;
+    line-height: 1.7;
+    padding: 0 24px;
+    margin-top: 16px;
+  }
+  #villain-bon-msg.show { opacity: 1; }
+
+  #villain-continue-btn {
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    margin-top: 24px;
+  }
+  #villain-continue-btn.show { opacity: 1; }
+
+  @keyframes villain-shake {
+    0%,100% { transform: translateX(0) rotate(0deg); }
+    20%     { transform: translateX(-8px) rotate(-2deg); }
+    40%     { transform: translateX(8px) rotate(2deg); }
+    60%     { transform: translateX(-6px) rotate(-1deg); }
+    80%     { transform: translateX(6px) rotate(1deg); }
+  }
+  #villain-defeat-img.shake {
+    animation: villain-shake 0.5s ease;
+  }
 </style>
 </head>
 <body>
@@ -1172,6 +1250,16 @@
 
 </div>
 
+<!-- ========== 容疑筋撃破オーバーレイ ========== -->
+<div id="villain-overlay">
+  <img id="villain-defeat-img" src="./villain.png" alt="僧帽筋タロウ">
+  <div id="villain-scream">ぐあああ…！<br>なぜ…バレた…！</div>
+  <div id="villain-bon-msg">真犯人——特定完了だ。<br>次は急所を突け。</div>
+  <button id="villain-continue-btn" class="btn-primary"
+    style="width:80%;max-width:300px"
+    onclick="closeVillainOverlay()">⚔️ 急所を突きに行く</button>
+</div>
+
 <!-- ========== CARD OVERLAY ========== -->
 <div id="card-overlay" onclick="closeCardOverlay(event)">
   <div id="card-overlay-inner">
@@ -1412,7 +1500,7 @@ function sfxTransition() {
 // =====================================================
 // STATE
 // =====================================================
-const STORAGE_KEY = 'rinsho_ep1_v8';
+const STORAGE_KEY = 'rinsho_ep1_v9';
 
 let state = {
   phase: 'splash',
@@ -2174,15 +2262,17 @@ function answerQuiz1(i) {
     sfxCorrect();
     showXpGain(10);
     showKoredayo(() => {
-      const memoHtml = document.getElementById('quiz1-memo').innerHTML;
-      const html = `
-        <div style="text-align:center;font-size:2rem;margin-bottom:8px">✅</div>
-        <div style="font-weight:900;color:var(--correct);font-size:1.1rem;margin-bottom:10px">正解！</div>
-        <div style="line-height:1.7;margin-bottom:14px">${pName()}、${quiz1Data.correctMsg}</div>
-        <div style="margin-bottom:16px">${memoHtml}</div>
-        <button class="btn-next-full" onclick="sfxClick(); closeCardOverlay()">次のフェーズへ →</button>
-      `;
-      showCardOverlay(html, goToPhase5);
+      showVillainDefeat(() => {
+        const memoHtml = document.getElementById('quiz1-memo').innerHTML;
+        const html = `
+          <div style="text-align:center;font-size:2rem;margin-bottom:8px">✅</div>
+          <div style="font-weight:900;color:var(--correct);font-size:1.1rem;margin-bottom:10px">正解！</div>
+          <div style="line-height:1.7;margin-bottom:14px">${pName()}、${quiz1Data.correctMsg}</div>
+          <div style="margin-bottom:16px">${memoHtml}</div>
+          <button class="btn-next-full" onclick="sfxClick(); closeCardOverlay()">次のフェーズへ →</button>
+        `;
+        showCardOverlay(html, goToPhase5);
+      });
     });
   } else {
     btns[i].classList.add('incorrect');
@@ -2496,7 +2586,7 @@ function drawRadarChart() {
 
 // リプレイ（全データ完全リセット）
 function replayGame() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8'].forEach(k => {
     localStorage.removeItem(k);
   });
   state = {
@@ -2535,6 +2625,48 @@ function showKoredayo(cb) {
     overlay.style.opacity = '0';
     setTimeout(() => { if (cb) cb(); }, 300);
   }, 700);
+}
+
+// =====================================================
+// 容疑筋撃破演出
+// =====================================================
+let _villainCb = null;
+
+function showVillainDefeat(cb) {
+  _villainCb = cb || null;
+  const overlay  = document.getElementById('villain-overlay');
+  const img      = document.getElementById('villain-defeat-img');
+  const scream   = document.getElementById('villain-scream');
+  const bonMsg   = document.getElementById('villain-bon-msg');
+  const btn      = document.getElementById('villain-continue-btn');
+
+  img.className    = '';
+  scream.className = '';
+  bonMsg.className = '';
+  btn.className    = '';
+  overlay.classList.add('show');
+
+  setTimeout(() => { img.classList.add('shake'); sfxWrong(); }, 300);
+  setTimeout(() => { img.classList.remove('shake'); img.classList.add('flash'); sfxKoredayo(); }, 800);
+  setTimeout(() => { img.classList.remove('flash'); scream.classList.add('show'); }, 1400);
+  setTimeout(() => { img.classList.add('collapse'); sfxCorrect(); }, 2200);
+  setTimeout(() => { bonMsg.classList.add('show'); }, 3000);
+  setTimeout(() => { btn.classList.add('show'); }, 3800);
+}
+
+function closeVillainOverlay() {
+  sfxClick();
+  const overlay = document.getElementById('villain-overlay');
+  overlay.classList.remove('show');
+  const img    = document.getElementById('villain-defeat-img');
+  const scream = document.getElementById('villain-scream');
+  const bonMsg = document.getElementById('villain-bon-msg');
+  const btn    = document.getElementById('villain-continue-btn');
+  img.className    = '';
+  scream.className = '';
+  bonMsg.className = '';
+  btn.className    = '';
+  if (_villainCb) { _villainCb(); _villainCb = null; }
 }
 
 // =====================================================
@@ -2831,7 +2963,7 @@ function finishGoal() {
 // INIT
 // =====================================================
 function init() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8'].forEach(k => {
     localStorage.removeItem(k);
   });
   checkOnboarding();
