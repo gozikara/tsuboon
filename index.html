@@ -476,21 +476,22 @@
   #screen-dialogue .novel-scene {
     flex: 1 !important;
     height: auto !important;
+    max-height: none !important;
     min-height: 0 !important;
     display: block !important;
-    padding: 0 !important;
-    gap: 0 !important;
-    overflow: hidden !important;
     position: relative !important;
+    overflow: hidden !important;
+    padding: 0 0 16px 0 !important;
+    gap: 0 !important;
   }
   #screen-dialogue .char-slot {
     position: absolute !important;
     bottom: 0 !important;
     top: auto !important;
-    display: inline-flex;
-    flex-direction: column;
-    align-items: flex-start;
-    transition: opacity 0.35s ease, transform 0.35s ease;
+    display: inline-flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    transition: opacity 0.35s ease, transform 0.35s ease !important;
   }
   #dlg-slot-left  { left: 0 !important; bottom: 0 !important; position: absolute !important; }
   #dlg-slot-right { right: 0 !important; bottom: 0 !important; position: absolute !important; }
@@ -530,20 +531,20 @@
     gap: 10px;
   }
   .novel-win {
-    flex: 0 0 auto;
-    margin-top: auto;
-    height: auto;
-    min-height: 120px;
-    max-height: 30vh;
-    background: rgba(0,10,30,0.88);
-    border-top: 3px solid var(--accent);
-    border-left: 3px solid var(--accent);
-    border-right: 3px solid var(--accent);
-    border-radius: 12px 12px 0 0;
-    padding: 46px 16px 14px;
-    position: relative;
-    overflow-y: auto;
-    backdrop-filter: blur(4px);
+    flex: 0 0 auto !important;
+    margin-top: auto !important;
+    height: auto !important;
+    min-height: 120px !important;
+    max-height: 30vh !important;
+    background: rgba(0,10,30,0.92) !important;
+    border-top: 3px solid var(--accent) !important;
+    border-left: 3px solid var(--accent) !important;
+    border-right: 3px solid var(--accent) !important;
+    border-radius: 12px 12px 0 0 !important;
+    padding: 46px 16px 14px !important;
+    position: relative !important;
+    overflow-y: auto !important;
+    backdrop-filter: blur(4px) !important;
   }
   .novel-speaker {
     position: absolute;
@@ -591,8 +592,8 @@
   }
   .novel-context-text { font-size: 0.9rem; line-height: 1.65; }
   /* novel-win内テキスト */
-  .novel-win .dialogue-text { font-size:16px; line-height:1.7; white-space:pre-wrap; }
-  .novel-context-text { font-size:16px; line-height:1.7; }
+  .novel-win .dialogue-text { font-size:16px !important; line-height:1.7 !important; white-space:pre-wrap !important; }
+  .novel-context-text { font-size:16px !important; line-height:1.7 !important; }
   .novel-win .tap-hint { position:absolute; bottom:8px; right:14px; font-size:0.72rem; color:#aaa; animation:blink 1.2s ease infinite; }
   .novel-win .choice-prompt { font-size:0.85rem; font-weight:700; color:var(--accent); margin-bottom:6px; }
   .novel-win .choice-answer-box { font-size:0.85rem; line-height:1.65; white-space:pre-wrap; display:none; }
@@ -636,6 +637,63 @@
   /* 選択肢ボタンのfont-size調整 */
   .btn-quiz { font-size: 0.85rem !important; }
   .btn-choice { font-size: 0.85rem !important; }
+
+  /* ===== 感情演出アニメーション ===== */
+  @keyframes screen-flash {
+    0%   { opacity: 1; }   20% { opacity: 0.1; }
+    40%  { opacity: 0.9; } 60% { opacity: 0.2; }
+    80%  { opacity: 0.8; } 100% { opacity: 1; }
+  }
+  @keyframes screen-shake {
+    0%,100% { transform: translateX(0) translateY(0); }
+    20%     { transform: translateX(-4px) translateY(2px); }
+    40%     { transform: translateX(4px) translateY(-2px); }
+    60%     { transform: translateX(-3px) translateY(1px); }
+    80%     { transform: translateX(3px) translateY(-1px); }
+  }
+  @keyframes text-flash {
+    0%,100% { border-color: var(--accent); }
+    50%     { border-color: var(--gold); box-shadow: 0 0 20px rgba(255,200,50,0.8); }
+  }
+  #app.flash { animation: screen-flash 0.4s ease; }
+  #app.shake { animation: screen-shake 0.4s ease; }
+  .novel-win.text-flash { animation: text-flash 0.6s ease 2; }
+
+  /* ===== 話者別テキストボックス ===== */
+  .novel-win.speaker-bon     { border-color: var(--accent); background: rgba(0,10,30,0.92) !important; }
+  .novel-win.speaker-patient { border-color: var(--gold);   background: rgba(30,20,0,0.92) !important; }
+  .novel-win.speaker-hero    { border-color: var(--correct); background: rgba(0,20,10,0.92) !important; }
+
+  /* ===== ミリオネア2×2グリッド ===== */
+  .quiz-options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+    padding: 4px;
+  }
+  .btn-quiz-grid {
+    background: rgba(8,16,36,0.82);
+    backdrop-filter: blur(8px);
+    color: #fff;
+    border: 2px solid rgba(74,158,255,0.75);
+    border-radius: 12px;
+    padding: 14px 8px;
+    font-size: clamp(13px, 3.5vw, 15px);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    line-height: 1.4;
+    transition: background 0.2s, border-color 0.2s;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn-quiz-grid:disabled { cursor: default; opacity: 0.6; }
+  .btn-quiz-grid.correct  { background: rgba(74,255,127,0.2); border-color: var(--correct); color: var(--correct); }
+  .btn-quiz-grid.incorrect { background: rgba(255,74,74,0.15); border-color: var(--wrong); color: var(--wrong); }
   /* 患者情報フローティングボタン */
   #btn-patient-info {
     position: fixed;
@@ -1434,28 +1492,60 @@ let typeTimer = null, typeFullText = '', typeEl = null;
 let typeIdx = 0, typeDone = false, typeCharType = 'you';
 
 function typewrite(element, text, charType) {
-  if (typeTimer) clearInterval(typeTimer);
+  if (typeTimer) clearTimeout(typeTimer);
   blipCounter = 0;
-  typeEl = element; typeFullText = text; typeIdx = 0; typeDone = false;
+  typeEl = element;
+  typeFullText = text;
+  typeIdx = 0;
+  typeDone = false;
   typeCharType = charType || 'you';
   element.textContent = '';
   document.getElementById('tap-hint').style.display = 'none';
-  typeTimer = setInterval(() => {
+
+  const PAUSE_CHARS = { '。': 180, '！': 150, '？': 150, '…': 220, '—': 125, '\n': 120 };
+  const BASE_SPEED = 30;
+
+  function typeNext() {
+    if (typeIdx >= typeFullText.length) {
+      typeDone = true;
+      document.getElementById('tap-hint').style.display = '';
+      return;
+    }
+    const char = typeFullText[typeIdx];
     typeIdx++;
     typeEl.textContent = typeFullText.slice(0, typeIdx);
-    if (typeFullText[typeIdx - 1] !== '\n') sfxBlip(typeCharType);
-    if (typeIdx >= typeFullText.length) {
-      clearInterval(typeTimer); typeTimer = null; typeDone = true;
-      document.getElementById('tap-hint').style.display = '';
-    }
-  }, 30);
+    if (char !== '\n') sfxBlip(typeCharType);
+    const pause = PAUSE_CHARS[char] || BASE_SPEED;
+    typeTimer = setTimeout(typeNext, pause);
+  }
+  typeNext();
 }
 
 function skipType() {
-  if (typeTimer) { clearInterval(typeTimer); typeTimer = null; }
+  if (typeTimer) { clearTimeout(typeTimer); typeTimer = null; }
   if (typeEl) typeEl.textContent = typeFullText;
   typeDone = true;
   document.getElementById('tap-hint').style.display = '';
+}
+
+function screenFlash() {
+  const app = document.getElementById('app');
+  app.classList.remove('flash'); void app.offsetWidth;
+  app.classList.add('flash');
+  app.addEventListener('animationend', () => app.classList.remove('flash'), { once: true });
+}
+function screenShake() {
+  const app = document.getElementById('app');
+  app.classList.remove('shake'); void app.offsetWidth;
+  app.classList.add('shake');
+  app.addEventListener('animationend', () => app.classList.remove('shake'), { once: true });
+}
+function textFlash() {
+  const win = document.getElementById('text-window');
+  if (!win) return;
+  win.classList.remove('text-flash'); void win.offsetWidth;
+  win.classList.add('text-flash');
+  win.addEventListener('animationend', () => win.classList.remove('text-flash'), { once: true });
 }
 
 // =====================================================
@@ -1597,6 +1687,21 @@ function showDialogue(idx) {
   }
 
   document.getElementById('speaker-name').textContent = dSpeaker;
+
+  // 話者別ボーダー色
+  const win = document.getElementById('text-window');
+  win.classList.remove('speaker-bon', 'speaker-patient', 'speaker-hero');
+  if (d.charType === 'npc')     win.classList.add('speaker-bon');
+  if (d.charType === 'patient') win.classList.add('speaker-patient');
+  if (d.charType === 'you')     win.classList.add('speaker-hero');
+
+  // 感情演出
+  const dlgEffects = {
+    1: () => { screenShake(); },
+    2: () => { textFlash(); },
+  };
+  if (dlgEffects[idx]) setTimeout(() => dlgEffects[idx](), 300);
+
   typewrite(document.getElementById('dialogue-text'), dText, d.charType);
 }
 
@@ -1746,13 +1851,14 @@ function renderMiniQuiz() {
 
   const container = document.getElementById('mq-options');
   container.innerHTML = '';
+  container.className = 'quiz-options-grid';
   document.getElementById('mq-iine').textContent = '';
   document.getElementById('mq-iine').classList.remove('show');
   document.getElementById('mq-feedback').innerHTML = '';
 
   q.options.forEach((opt, i) => {
     const btn = document.createElement('button');
-    btn.className = 'btn-quiz'; btn.textContent = opt;
+    btn.className = 'btn-quiz-grid'; btn.textContent = opt;
     btn.onclick = () => answerMiniQuiz(i);
     container.appendChild(btn);
   });
@@ -1761,7 +1867,7 @@ function renderMiniQuiz() {
 function answerMiniQuiz(i) {
   sfxClick();
   const q = miniQuizData[mqIdx];
-  const btns = document.querySelectorAll('#mq-options .btn-quiz');
+  const btns = document.querySelectorAll('#mq-options .btn-quiz-grid');
   const optText = q.options[i];
 
   if (i === q.correct) {
@@ -1826,14 +1932,15 @@ function goToQuiz1() {
 function renderQuiz1() {
   const container = document.getElementById('quiz1-options');
   container.innerHTML = '';
+  container.className = 'quiz-options-grid';
   quiz1Data.options.forEach((opt, i) => {
     const btn = document.createElement('button');
-    btn.className = 'btn-quiz'; btn.textContent = opt;
+    btn.className = 'btn-quiz-grid'; btn.textContent = opt;
     btn.onclick = () => answerQuiz1(i);
     container.appendChild(btn);
   });
   if (state.quiz1Done) {
-    const btns = container.querySelectorAll('.btn-quiz');
+    const btns = container.querySelectorAll('.btn-quiz-grid');
     btns.forEach(b => b.disabled = true);
     btns[quiz1Data.correct].classList.add('correct');
     document.getElementById('quiz1-char-img').src = CHARS.bon.correct;
@@ -1923,7 +2030,7 @@ function hwDone(n) {
     } else {
       showCardOverlay(evidenceEl.innerHTML, () => {
         if (state.mode === 'intermediate' && !state.quiz2Done) {
-          document.querySelectorAll('#quiz2-options .btn-quiz')
+          document.querySelectorAll('#quiz2-options .btn-quiz-grid')
             .forEach(b => { if (!b.classList.contains('correct')) { b.disabled = false; b.className = 'btn-quiz'; } });
           document.getElementById('quiz2-feedback').className = 'quiz-feedback';
           const hint = document.createElement('div');
@@ -1946,7 +2053,7 @@ function showClinicalMemo() {
 
 function answerQuiz1(i) {
   sfxClick();
-  const btns = document.querySelectorAll('#quiz1-options .btn-quiz');
+  const btns = document.querySelectorAll('#quiz1-options .btn-quiz-grid');
   const optText = quiz1Data.options[i];
 
   if (i === quiz1Data.correct) {
@@ -2024,15 +2131,16 @@ function goToPhase5() {
 function renderQuiz2() {
   const container = document.getElementById('quiz2-options');
   container.innerHTML = '';
+  container.className = 'quiz-options-grid';
   container.style.display = '';
   quiz2Data.options.forEach((opt, i) => {
     const btn = document.createElement('button');
-    btn.className = 'btn-quiz'; btn.textContent = opt;
+    btn.className = 'btn-quiz-grid'; btn.textContent = opt;
     btn.onclick = () => answerQuiz2(i);
     container.appendChild(btn);
   });
   if (state.quiz2Done) {
-    const btns = container.querySelectorAll('.btn-quiz');
+    const btns = container.querySelectorAll('.btn-quiz-grid');
     btns.forEach(b => b.disabled = true);
     btns[quiz2Data.correct].classList.add('correct');
     document.getElementById('quiz2-char-img').src = CHARS.bon.correct;
@@ -2042,7 +2150,7 @@ function renderQuiz2() {
 
 function answerQuiz2(i) {
   sfxClick();
-  const btns = document.querySelectorAll('#quiz2-options .btn-quiz');
+  const btns = document.querySelectorAll('#quiz2-options .btn-quiz-grid');
   const optText = quiz2Data.options[i];
 
   if (i === quiz2Data.correct) {
