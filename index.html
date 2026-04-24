@@ -476,28 +476,31 @@
   #screen-dialogue .novel-scene {
     flex: 1 !important;
     height: auto !important;
+    min-height: 0 !important;
     display: block !important;
     padding: 0 !important;
     gap: 0 !important;
-    overflow: hidden;
-    position: relative;
+    overflow: hidden !important;
+    position: relative !important;
   }
   #screen-dialogue .char-slot {
-    position: absolute;
-    bottom: 0;
+    position: absolute !important;
+    bottom: 0 !important;
+    top: auto !important;
     display: inline-flex;
     flex-direction: column;
     align-items: flex-start;
     transition: opacity 0.35s ease, transform 0.35s ease;
   }
-  #dlg-slot-left  { left: 0; bottom: 0; position: absolute; }
-  #dlg-slot-right { right: 0; bottom: 0; position: absolute; }
+  #dlg-slot-left  { left: 0 !important; bottom: 0 !important; position: absolute !important; }
+  #dlg-slot-right { right: 0 !important; bottom: 0 !important; position: absolute !important; }
   #screen-dialogue .novel-char {
-    width: auto;
-    height: 45vh;
-    display: block;
-    object-fit: contain;
-    filter: drop-shadow(4px 0 20px rgba(0,0,0,0.7));
+    height: 60vh !important;
+    width: auto !important;
+    max-width: 55vw !important;
+    object-fit: contain !important;
+    display: block !important;
+    filter: drop-shadow(4px 0 20px rgba(0,0,0,0.7)) !important;
   }
   #screen-dialogue .char-name {
     position: absolute;
