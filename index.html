@@ -450,6 +450,7 @@
   /* ===== NOVEL GAME LAYOUT ===== */
   :root { --game-bg: linear-gradient(180deg, #1a2a3a 0%, #2a3a4a 50%, #1a2a3a 100%); }
 
+  /* ===== スクロール禁止レイアウト（全画面共通）===== */
   .novel-screen {
     background: transparent !important;
     overflow: hidden !important;
@@ -457,50 +458,49 @@
     flex-direction: column !important;
     padding: 0 !important;
     gap: 0 !important;
+    height: 100% !important;
+    max-height: 100% !important;
   }
   .novel-interactive {
-    flex: 1;
-    overflow-y: auto;
+    flex: 0 0 auto;
+    overflow: hidden;
     overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-    padding: 8px 12px 10px;
-    min-height: 0;
+    padding: 6px 12px 6px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
   }
   .novel-win {
     position: relative;
     z-index: 100;
     flex: 0 0 auto !important;
     width: 100%;
-    min-height: 130px;
-    max-height: 30vh;
+    min-height: 110px;
+    max-height: 28vh;
     background: rgba(0, 8, 24, 0.92) !important;
     border-top: 3px solid var(--accent) !important;
     border-left: none !important;
     border-right: none !important;
     border-bottom: none !important;
     border-radius: 0 !important;
-    padding: 46px 18px 16px !important;
-    overflow-y: auto;
+    padding: 44px 16px 14px !important;
+    overflow: hidden !important;
     box-sizing: border-box;
     backdrop-filter: blur(4px);
   }
   .novel-speaker {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 0; left: 0;
     background: var(--accent);
     color: #fff;
-    padding: 5px 18px;
+    padding: 5px 16px;
     border-radius: 0 0 10px 0;
-    font-size: 0.88rem;
+    font-size: 0.85rem;
     font-weight: 900;
     z-index: 10;
     white-space: nowrap;
-    letter-spacing: 0.05em;
   }
   .novel-phase-label {
     font-size: 0.72rem;
@@ -510,14 +510,14 @@
   }
   .novel-win .dialogue-text,
   .novel-context-text {
-    font-size: 16px !important;
-    line-height: 1.75 !important;
+    font-size: 15px !important;
+    line-height: 1.7 !important;
     white-space: pre-wrap !important;
     color: #f0f4ff;
   }
-  .novel-win .tap-hint { position:absolute; bottom:8px; right:14px; font-size:0.72rem; color:#aaa; animation:blink 1.2s ease infinite; }
-  .novel-win .choice-prompt { font-size:0.85rem; font-weight:700; color:var(--accent); margin-bottom:6px; }
-  .novel-win .choice-answer-box { font-size:0.85rem; line-height:1.65; white-space:pre-wrap; display:none; }
+  .novel-win .tap-hint { position:absolute; bottom:6px; right:12px; font-size:0.7rem; color:#aaa; animation:blink 1.2s ease infinite; }
+  .novel-win .choice-prompt { font-size:14px; line-height:1.6; color:var(--accent); font-weight:700; }
+  .novel-win .choice-answer-box { font-size:13px; line-height:1.6; white-space:pre-wrap; display:none; margin-top:6px; color:#f0f4ff; }
   .novel-win .choice-answer-box.visible { display:block; }
 
   /* ===== CARD OVERLAY ===== */
@@ -581,9 +581,9 @@
   .novel-win.text-flash { animation: text-flash 0.6s ease 2; }
 
   /* ===== 話者別テキストボックス ===== */
-  .novel-win.speaker-bon     { border-top-color: var(--accent) !important; background: rgba(0,10,35,0.93) !important; }
+  .novel-win.speaker-bon     { border-top-color: var(--accent) !important; }
   .novel-win.speaker-patient { border-top-color: var(--gold) !important;   background: rgba(30,20,0,0.93) !important; }
-  .novel-win.speaker-hero    { border-top-color: var(--correct) !important; background: rgba(0,22,12,0.93) !important; }
+  .novel-win.speaker-hero    { border-top-color: var(--correct) !important; }
 
   /* ===== ミリオネア2×2グリッド ===== */
   .quiz-options-grid {
@@ -658,50 +658,68 @@
     left: 0;
     bottom: 0;
     height: 65vh;
-    max-width: 52vw;
-    width: auto;
+    max-width: 100%;
+    width: 100%;
   }
   .stage-char.dlg-right {
     right: 0;
     bottom: 0;
-    height: 62vh;
-    max-width: 52vw;
-    width: auto;
+    height: 65vh;
+    max-width: 100%;
+    width: 100%;
   }
   .stage-char.left {
     left: 0;
     bottom: 0;
-    height: 58vh;
-    max-width: 50vw;
+    height: 55vh;
+    max-width: 48vw;
     width: auto;
   }
   .stage-char.right {
     right: 0;
     bottom: 0;
-    height: 55vh;
-    max-width: 50vw;
+    height: 52vh;
+    max-width: 48vw;
     width: auto;
   }
   .stage-char.center {
-    left: 50%;
-    transform: translateX(-50%);
+    left: 0;
     bottom: 0;
-    height: 58vh;
-    max-width: 70vw;
-    width: auto;
+    height: 100%;
+    width: 100%;
+    max-width: 100%;
+    object-fit: cover;
+    object-position: top center;
   }
   .stage-char.hidden { opacity: 0; pointer-events: none; }
   .stage-char.dim    { opacity: 0.40; filter: brightness(0.4) drop-shadow(3px 0 14px rgba(0,0,0,0.85)); }
 
-  /* choices/quiz screens: stage gets priority, interactive area is capped */
-  #screen-choices .novel-interactive,
-  #screen-homework1 .novel-interactive,
+  /* クイズ系画面のinteractiveは選択肢2×2グリッドだけを収める */
   #screen-miniquiz .novel-interactive,
   #screen-quiz1 .novel-interactive,
   #screen-homework2 .novel-interactive {
-    flex: 0 0 auto;
-    max-height: 220px;
-    overflow-y: auto;
+    padding: 8px 12px;
+    gap: 8px;
+  }
+
+  /* 選択肢ボタン：コンパクト化 */
+  .btn-choice {
+    padding: 10px 14px !important;
+    font-size: 0.82rem !important;
+    border-radius: 10px;
+  }
+
+  /* 2×2グリッドボタン：コンパクト化 */
+  .btn-quiz-grid {
+    min-height: 52px !important;
+    padding: 10px 6px !important;
+    font-size: clamp(11px, 2.8vw, 13px) !important;
+  }
+
+  /* 次へボタン */
+  .btn-next-full {
+    padding: 12px !important;
+    font-size: 0.92rem !important;
   }
 </style>
 </head>
@@ -865,23 +883,42 @@
   </div>
 
   <!-- ========== CHOICES ========== -->
+  <!-- ========== CHOICES ========== -->
   <div id="screen-choices" class="screen novel-screen">
+
+    <!-- キャラ表示：stageが上部の残り全体を取る -->
     <div class="game-stage">
       <img class="stage-char center"
            src="./patient.png" alt="患者さん">
     </div>
-    <div class="novel-interactive">
+
+    <!-- 患者ボイスBOX：stageとnovel-winの間に固定 -->
+    <div id="patient-voice-box" style="
+      flex: 0 0 auto;
+      padding: 8px 14px;
+      background: rgba(255,200,50,0.08);
+      border-top: 1px solid rgba(255,200,50,0.35);
+      font-size: clamp(11px, 2.8vw, 13px);
+      line-height: 1.6;
+      color: rgba(255,200,80,0.95);
+    ">
+      患者さん：「先生…3ヶ月、肩がずっと重くて…夕方になると首まで張ってきて…」
+    </div>
+
+    <!-- 選択肢エリア：固定高さ -->
+    <div class="novel-interactive" style="gap:6px; padding: 6px 12px;">
       <div class="choices-list" id="choices-list"></div>
       <div class="choices-next" id="choices-next">
-        <button class="btn-next-full" onclick="sfxClick(); goToPhase3()">📋 情報が揃った！次へ</button>
+        <button class="btn-next-full" onclick="sfxClick(); goToPhase3()">
+          📋 情報が揃った！次へ
+        </button>
       </div>
     </div>
-    <div id="patient-voice-box" style="margin:0 12px 8px;background:rgba(255,200,50,0.08);border:1px solid rgba(255,200,50,0.4);border-radius:10px;padding:10px 14px;font-size:clamp(12px,3vw,14px);line-height:1.7;color:rgba(255,200,80,0.95);flex-shrink:0;">
-      患者さん：「先生…3ヶ月、肩がずっと重くて…<br>夕方になると首まで張ってきて…<br>もう、どうしたらいいか…」
-    </div>
+
+    <!-- テキストボックス -->
     <div class="novel-win">
       <div class="novel-speaker">ボーン院長</div>
-      <div class="choice-prompt">情報を集めろ。<br>容疑筋を絞り込む手がかりは——患者さんの話の中にある。</div>
+      <div class="choice-prompt">情報を集めろ。容疑筋を絞り込む手がかりは——患者さんの話の中にある。</div>
       <div class="choice-answer-box" id="choice-answer-box"></div>
     </div>
   </div>
@@ -1150,34 +1187,8 @@
 // 白背景除去（キャンバス BFS フラッドフィル）
 // =====================================================
 function removeBgFromImg(img) {
-  if (!img || img.src.startsWith('data:') || !img.naturalWidth) return;
-  const w = img.naturalWidth, h = img.naturalHeight;
-  const canvas = document.createElement('canvas');
-  canvas.width = w; canvas.height = h;
-  const ctx = canvas.getContext('2d');
-  try { ctx.drawImage(img, 0, 0); } catch(e) { return; }
-  const imageData = ctx.getImageData(0, 0, w, h);
-  const d = imageData.data;
-  const T = 230;
-  // 「背景候補」= 透過 OR 近白 → BFSで到達できる全ピクセルをマーク
-  const isBg = pi => { const i = pi * 4; return d[i+3] < 10 || (d[i] >= T && d[i+1] >= T && d[i+2] >= T); };
-  const visited = new Uint8Array(w * h);
-  const stack = [];
-  const tryAdd = pi => { if (pi >= 0 && pi < w * h && !visited[pi] && isBg(pi)) { visited[pi] = 1; stack.push(pi); } };
-  for (let x = 0; x < w; x++) { tryAdd(x); tryAdd((h - 1) * w + x); }
-  for (let y = 1; y < h - 1; y++) { tryAdd(y * w); tryAdd(y * w + w - 1); }
-  while (stack.length) {
-    const pi = stack.pop();
-    const x = pi % w, y = Math.floor(pi / w);
-    if (x > 0) tryAdd(pi - 1); if (x < w - 1) tryAdd(pi + 1);
-    if (y > 0) tryAdd(pi - w); if (y < h - 1) tryAdd(pi + w);
-  }
-  // 到達済みの「近白」ピクセルだけを透過化（元から透過のものはそのまま）
-  for (let pi = 0; pi < w * h; pi++) {
-    if (visited[pi]) d[pi * 4 + 3] = 0;
-  }
-  ctx.putImageData(imageData, 0, 0);
-  img.src = canvas.toDataURL('image/png');
+  // 背景込みのシーンイラストには適用しない
+  return;
 }
 
 const _charFiles = ['bon_shocho.png','hero_male.png','hero_female.png','patient.png','villain.png'];
@@ -1377,7 +1388,7 @@ function sfxTransition() {
 // =====================================================
 // STATE
 // =====================================================
-const STORAGE_KEY = 'rinsho_ep1_v6';
+const STORAGE_KEY = 'rinsho_ep1_v7';
 
 let state = {
   phase: 'splash',
@@ -2375,7 +2386,7 @@ function drawRadarChart() {
 
 // リプレイ（全データ完全リセット）
 function replayGame() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6'].forEach(k => {
     localStorage.removeItem(k);
   });
   state = {
@@ -2709,7 +2720,7 @@ function finishGoal() {
 // INIT
 // =====================================================
 function init() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6'].forEach(k => {
     localStorage.removeItem(k);
   });
   checkOnboarding();
