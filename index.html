@@ -1585,12 +1585,29 @@ function loadPlayerName() {
 // DIALOGUE DATA
 // =====================================================
 const dialogues = [
-  { imgSrc: CHARS.bon.question, name: 'ボーン院長', speaker: 'ボーン院長', charType: 'npc',
-    text: () => `来たか、${pName()}。\n今日から君はこの院の新人治療家だ。\nさっそく患者さんが来ている。診察室に向かえ。` },
-  { imgSrc: CHARS.bon.question, name: 'ボーン院長', speaker: 'ボーン院長', charType: 'npc',
+  // 0: ボーン院長・登場
+  { imgSrc: './bon_shocho.png', name: 'ボーン院長', speaker: 'ボーン院長', charType: 'npc',
+    text: () => `来たか、${pName()}。\n今日から君はこの院の新人治療家だ。\nさっそく患者さんが来ている。診察室へ向かえ。` },
+
+  // 1: ボーン院長・使命
+  { imgSrc: './bon_shocho.png', name: 'ボーン院長', speaker: 'ボーン院長', charType: 'npc',
     text: '治療家の仕事は症状を取ることじゃない。\n犯人を特定することだ。\n症状はただの——犯人が残した痕跡に過ぎん。' },
-  { imgSrc: CHARS.bon.question, name: 'ボーン院長', speaker: 'ボーン院長', charType: 'npc',
+
+  // 2: ボーン院長・容疑筋の概念
+  { imgSrc: './bon_shocho.png', name: 'ボーン院長', speaker: 'ボーン院長', charType: 'npc',
     text: 'まず患者さんから情報を集めろ。\n症状・タイミング・職業・生活習慣。\nそれが「容疑筋」を絞り込む唯一の手がかりだ。' },
+
+  // 3: 患者さん・登場（人生の背景）
+  { imgSrc: './patient.png', name: '患者さん', speaker: '患者さん', charType: 'patient',
+    text: '先生…来てよかった。\n3ヶ月間、肩がずっと重くて…\nパソコン仕事が辛くて、もう辞めようかと思ってたんです。' },
+
+  // 4: 患者さん・もっと深い背景
+  { imgSrc: './patient.png', name: '患者さん', speaker: '患者さん', charType: 'patient',
+    text: '先月…子どもの運動会も、\n肩と頭が痛くて途中で帰ったんです。\n子どもの顔、見れなくて…' },
+
+  // 5: ボーン院長・問診指示
+  { imgSrc: './bon_shocho.png', name: 'ボーン院長', speaker: 'ボーン院長', charType: 'npc',
+    text: () => `${pName()}、聞いたか。\nこの人には——取り戻すべき人生がある。\nまず情報を集めろ。容疑筋を絞り込め。` },
 ];
 
 const choiceData = [
