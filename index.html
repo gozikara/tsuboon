@@ -18,7 +18,7 @@
     --homework-border: #ffc832;
     --evidence-bg: rgba(74,158,255,0.1);
   }
-  html, body { width:100%; height:100%; background:var(--bg); color:#fff; font-family:'Noto Sans JP',sans-serif; overflow:hidden; }
+  html, body { width:100%; height:100%; height:100dvh; background:var(--bg); color:#fff; font-family:'Noto Sans JP',sans-serif; overflow:hidden; }
   #app {
     width:100%; max-width:480px; margin:0 auto;
     height: 100vh;
@@ -172,9 +172,9 @@
   .quiz-char-info { flex:1; }
   .quiz-char-name { font-size:0.8rem; color:var(--accent); font-weight:700; }
   .quiz-question { font-size:1rem; font-weight:700; line-height:1.6; }
-  .quiz-options { display:flex; flex-direction:column; gap:10px; }
+  .quiz-options { display:flex; flex-direction:column; gap:8px; overflow-y:auto; }
   .quiz-option-wrap { display:flex; flex-direction:column; }
-  .btn-quiz { background:rgba(8,16,36,0.62); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); color:#fff; border:2px solid rgba(74,158,255,0.75); border-radius:12px; padding:14px 16px; font-size:0.95rem; font-family:'Noto Sans JP',sans-serif; font-weight:700; cursor:pointer; text-align:left; transition:background 0.2s, border-color 0.2s, color 0.2s; }
+  .btn-quiz { background:rgba(8,16,36,0.62); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); color:#fff; border:2px solid rgba(74,158,255,0.75); border-radius:12px; padding:10px 12px; font-size:clamp(0.78rem, 2.5vw, 0.9rem); font-family:'Noto Sans JP',sans-serif; font-weight:700; cursor:pointer; text-align:left; transition:background 0.2s, border-color 0.2s, color 0.2s; flex-shrink:0; }
   .btn-quiz:disabled { cursor:default; }
   .btn-quiz.correct { background:rgba(74,255,127,0.2); border-color:var(--correct); color:var(--correct); }
   .btn-quiz.incorrect { background:rgba(255,74,74,0.15); border-color:var(--wrong); color:var(--wrong); }
@@ -460,14 +460,17 @@
     gap: 0 !important;
   }
   .novel-scene {
-    flex-shrink: 0;
-    height: 30vh;
+    flex: 0 1 auto;
+    height: 28vh;
+    max-height: 28vh;
+    min-height: 0;
     display: flex;
     align-items: flex-end;
     justify-content: center;
     gap: 32px;
-    padding-bottom: 16px;
+    padding-bottom: 8px;
     position: relative;
+    overflow: hidden;
   }
   /* ===== Ace Attorney スタイル ダイアログシーン ===== */
   #screen-dialogue .novel-scene {
@@ -522,10 +525,11 @@
     gap: 10px;
   }
   .novel-win {
-    flex-shrink: 0;
+    flex: 0 1 auto;
     margin-top: auto;
-    height: 20vh;
-    min-height: 100px;
+    height: auto;
+    min-height: 90px;
+    max-height: 22vh;
     background: rgba(0,10,30,0.85);
     border-top: 3px solid var(--accent);
     border-left: 3px solid var(--accent);
@@ -551,7 +555,8 @@
   }
   .novel-char {
     width: auto;
-    height: 180px;
+    height: clamp(100px, 25vh, 180px);
+    max-height: 25vh;
     border-radius: 0;
     object-fit: contain;
     background: transparent;
