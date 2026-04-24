@@ -464,40 +464,43 @@
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
-    padding: 4px 12px 8px;
+    padding: 8px 12px 10px;
     min-height: 0;
     display: flex;
     flex-direction: column;
     gap: 10px;
   }
   .novel-win {
+    position: relative;
+    z-index: 100;
     flex: 0 0 auto !important;
-    margin-top: auto !important;
-    height: auto !important;
-    min-height: 120px !important;
-    max-height: 30vh !important;
-    background: rgba(0,10,30,0.92) !important;
+    width: 100%;
+    min-height: 130px;
+    max-height: 30vh;
+    background: rgba(0, 8, 24, 0.92) !important;
     border-top: 3px solid var(--accent) !important;
-    border-left: 3px solid var(--accent) !important;
-    border-right: 3px solid var(--accent) !important;
-    border-radius: 12px 12px 0 0 !important;
-    padding: 46px 16px 14px !important;
-    position: relative !important;
-    overflow-y: auto !important;
-    backdrop-filter: blur(4px) !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
+    border-radius: 0 !important;
+    padding: 46px 18px 16px !important;
+    overflow-y: auto;
+    box-sizing: border-box;
+    backdrop-filter: blur(4px);
   }
   .novel-speaker {
     position: absolute;
-    top: 16px;
-    left: 16px;
+    top: 0;
+    left: 0;
     background: var(--accent);
     color: #fff;
-    padding: 4px 16px;
-    border-radius: 5px;
-    font-size: 0.9rem;
-    font-weight: bold;
+    padding: 5px 18px;
+    border-radius: 0 0 10px 0;
+    font-size: 0.88rem;
+    font-weight: 900;
     z-index: 10;
     white-space: nowrap;
+    letter-spacing: 0.05em;
   }
   .novel-phase-label {
     font-size: 0.72rem;
@@ -505,10 +508,13 @@
     letter-spacing: 0.12em;
     margin-bottom: 6px;
   }
-  .novel-context-text { font-size: 0.9rem; line-height: 1.65; }
-  /* novel-win内テキスト */
-  .novel-win .dialogue-text { font-size:16px !important; line-height:1.7 !important; white-space:pre-wrap !important; }
-  .novel-context-text { font-size:16px !important; line-height:1.7 !important; }
+  .novel-win .dialogue-text,
+  .novel-context-text {
+    font-size: 16px !important;
+    line-height: 1.75 !important;
+    white-space: pre-wrap !important;
+    color: #f0f4ff;
+  }
   .novel-win .tap-hint { position:absolute; bottom:8px; right:14px; font-size:0.72rem; color:#aaa; animation:blink 1.2s ease infinite; }
   .novel-win .choice-prompt { font-size:0.85rem; font-weight:700; color:var(--accent); margin-bottom:6px; }
   .novel-win .choice-answer-box { font-size:0.85rem; line-height:1.65; white-space:pre-wrap; display:none; }
@@ -575,9 +581,9 @@
   .novel-win.text-flash { animation: text-flash 0.6s ease 2; }
 
   /* ===== 話者別テキストボックス ===== */
-  .novel-win.speaker-bon     { border-color: var(--accent); background: rgba(0,10,30,0.92) !important; }
-  .novel-win.speaker-patient { border-color: var(--gold);   background: rgba(30,20,0,0.92) !important; }
-  .novel-win.speaker-hero    { border-color: var(--correct); background: rgba(0,20,10,0.92) !important; }
+  .novel-win.speaker-bon     { border-top-color: var(--accent) !important; background: rgba(0,10,35,0.93) !important; }
+  .novel-win.speaker-patient { border-top-color: var(--gold) !important;   background: rgba(30,20,0,0.93) !important; }
+  .novel-win.speaker-hero    { border-top-color: var(--correct) !important; background: rgba(0,22,12,0.93) !important; }
 
   /* ===== ミリオネア2×2グリッド ===== */
   .quiz-options-grid {
@@ -585,30 +591,31 @@
     grid-template-columns: 1fr 1fr;
     gap: 8px;
     width: 100%;
-    padding: 4px;
+    padding: 0;
   }
   .btn-quiz-grid {
-    background: rgba(8,16,36,0.82);
+    background: rgba(8, 16, 36, 0.88);
     backdrop-filter: blur(8px);
     color: #fff;
-    border: 2px solid rgba(74,158,255,0.75);
+    border: 2px solid rgba(74, 158, 255, 0.75);
     border-radius: 12px;
     padding: 14px 8px;
-    font-size: clamp(13px, 3.5vw, 15px);
+    font-size: clamp(12px, 3.2vw, 15px);
     font-family: 'Noto Sans JP', sans-serif;
     font-weight: 700;
     cursor: pointer;
     text-align: center;
     line-height: 1.4;
     transition: background 0.2s, border-color 0.2s;
-    min-height: 56px;
+    min-height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
   .btn-quiz-grid:disabled { cursor: default; opacity: 0.6; }
-  .btn-quiz-grid.correct  { background: rgba(74,255,127,0.2); border-color: var(--correct); color: var(--correct); }
-  .btn-quiz-grid.incorrect { background: rgba(255,74,74,0.15); border-color: var(--wrong); color: var(--wrong); }
+  .btn-quiz-grid.correct  { background: rgba(74,255,127,0.2);  border-color: var(--correct); color: var(--correct); }
+  .btn-quiz-grid.incorrect{ background: rgba(255,74,74,0.15); border-color: var(--wrong);   color: var(--wrong);   }
+  .btn-quiz-grid:not(:disabled):active { background: rgba(74,158,255,0.2); transform: scale(0.97); }
 
   /* 患者情報フローティングボタン */
   #btn-patient-info {
@@ -636,43 +643,66 @@
     flex: 1;
     min-height: 0;
     overflow: hidden;
+    width: 100%;
   }
   .stage-char {
     position: absolute;
     bottom: 0;
     object-fit: contain;
-    filter: drop-shadow(4px 0 16px rgba(0,0,0,0.8));
-    transition: opacity 0.3s ease;
+    filter: drop-shadow(3px 0 14px rgba(0,0,0,0.85));
+    transition: opacity 0.3s ease, filter 0.3s ease;
     background: transparent;
+    display: block;
+  }
+  .stage-char.dlg-left {
+    left: 0;
+    bottom: 0;
+    height: 65vh;
+    max-width: 52vw;
+    width: auto;
+  }
+  .stage-char.dlg-right {
+    right: 0;
+    bottom: 0;
+    height: 62vh;
+    max-width: 52vw;
+    width: auto;
+  }
+  .stage-char.left {
+    left: 0;
+    bottom: 0;
+    height: 58vh;
+    max-width: 50vw;
+    width: auto;
+  }
+  .stage-char.right {
+    right: 0;
+    bottom: 0;
+    height: 55vh;
+    max-width: 50vw;
+    width: auto;
   }
   .stage-char.center {
     left: 50%;
     transform: translateX(-50%);
-    height: 62vh;
+    bottom: 0;
+    height: 58vh;
     max-width: 70vw;
-  }
-  .stage-char.left {
-    left: 0;
-    height: 100%;
-    max-width: 50vw;
-  }
-  .stage-char.right {
-    right: 0;
-    height: 100%;
-    max-width: 50vw;
-  }
-  .stage-char.dlg-left {
-    left: 0;
-    height: 62vh;
-    max-width: 52vw;
-  }
-  .stage-char.dlg-right {
-    right: 0;
-    height: 62vh;
-    max-width: 52vw;
+    width: auto;
   }
   .stage-char.hidden { opacity: 0; pointer-events: none; }
-  .stage-char.dim    { opacity: 0.4; filter: brightness(0.5); }
+  .stage-char.dim    { opacity: 0.40; filter: brightness(0.4) drop-shadow(3px 0 14px rgba(0,0,0,0.85)); }
+
+  /* choices/quiz screens: stage gets priority, interactive area is capped */
+  #screen-choices .novel-interactive,
+  #screen-homework1 .novel-interactive,
+  #screen-miniquiz .novel-interactive,
+  #screen-quiz1 .novel-interactive,
+  #screen-homework2 .novel-interactive {
+    flex: 0 0 auto;
+    max-height: 220px;
+    overflow-y: auto;
+  }
 </style>
 </head>
 <body>
