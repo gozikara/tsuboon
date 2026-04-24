@@ -44,7 +44,6 @@
     filter: brightness(0.4);
   }
   #game-bg.visible { display: block; }
-  .novel-scene { position: relative; z-index: 10; height: 100%; }
   .novel-win { position: relative; z-index: 100; }
 
   /* ===== BACK BUTTON ===== */
@@ -459,64 +458,6 @@
     padding: 0 !important;
     gap: 0 !important;
   }
-  .novel-scene {
-    flex: 0 1 auto;
-    height: 38vh;
-    max-height: 38vh;
-    min-height: 0;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    gap: 32px;
-    padding-bottom: 0;
-    position: relative;
-    overflow: hidden;
-  }
-  /* ===== Ace Attorney スタイル ダイアログシーン ===== */
-  #screen-dialogue .novel-scene {
-    flex: 1 !important;
-    height: auto !important;
-    max-height: none !important;
-    min-height: 0 !important;
-    display: block !important;
-    position: relative !important;
-    overflow: hidden !important;
-    padding: 0 !important;
-    gap: 0 !important;
-  }
-  #screen-dialogue .char-slot {
-    position: absolute !important;
-    bottom: 0 !important;
-    top: auto !important;
-    display: block !important;
-  }
-  #dlg-slot-left  { left: 0 !important; bottom: 0 !important; position: absolute !important; }
-  #dlg-slot-right { right: 0 !important; bottom: 0 !important; position: absolute !important; }
-  #screen-dialogue .novel-char {
-    height: 62vh !important;
-    width: auto !important;
-    max-width: 52vw !important;
-    object-fit: contain !important;
-    display: block !important;
-    position: relative !important;
-    bottom: 0 !important;
-    filter: drop-shadow(4px 0 20px rgba(0,0,0,0.7)) !important;
-  }
-  #screen-dialogue .char-name {
-    position: absolute;
-    bottom: 8px;
-    background: rgba(0,10,40,0.88);
-    border: 1px solid rgba(74,158,255,0.8);
-    color: #fff;
-    padding: 2px 10px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: bold;
-    white-space: nowrap;
-    z-index: 5;
-  }
-  #dlg-slot-left  .char-name { left:  4px; }
-  #dlg-slot-right .char-name { right: 4px; }
   .novel-interactive {
     flex: 1;
     overflow-y: auto;
@@ -557,48 +498,6 @@
     font-weight: bold;
     z-index: 10;
     white-space: nowrap;
-  }
-  .novel-char {
-    width: auto;
-    max-width: 48%;
-    height: clamp(120px, 38vh, 280px);
-    max-height: 38vh;
-    border-radius: 0;
-    object-fit: contain;
-    background: transparent;
-    flex-shrink: 0;
-    transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
-    filter: drop-shadow(0 8px 16px rgba(0,0,0,0.8));
-  }
-  /* 左右スロット */
-  .char-slot { display:flex; flex-direction:column; align-items:center; transition:opacity 0.35s, filter 0.35s, transform 0.35s; }
-  .char-slot.char-inactive { opacity:0; pointer-events:none; }
-  /* 2キャラ並びシーン */
-  .novel-scene-duo {
-    position: relative !important;
-    display: flex !important;
-    align-items: flex-end !important;
-    justify-content: space-between !important;
-    height: 38vh !important;
-    padding: 0 8px !important;
-    overflow: hidden !important;
-    gap: 0 !important;
-  }
-  .novel-char.dim { opacity: 0.5; filter: brightness(0.6); }
-  .novel-char-wrap {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: flex-end !important;
-    height: 100% !important;
-    gap: 6px;
-  }
-  .novel-scene-duo .novel-char {
-    height: clamp(160px, 36vh, 300px) !important;
-    width: auto !important;
-    max-width: 46vw !important;
-    object-fit: contain !important;
-    display: block !important;
   }
   .novel-phase-label {
     font-size: 0.72rem;
@@ -711,21 +610,6 @@
   .btn-quiz-grid.correct  { background: rgba(74,255,127,0.2); border-color: var(--correct); color: var(--correct); }
   .btn-quiz-grid.incorrect { background: rgba(255,74,74,0.15); border-color: var(--wrong); color: var(--wrong); }
 
-  /* ===== choices画面 患者接地 ===== */
-  #screen-choices .novel-scene {
-    position: relative !important;
-    height: 28vh !important;
-    display: flex !important;
-    align-items: flex-end !important;
-    justify-content: center !important;
-    overflow: hidden !important;
-  }
-  #screen-choices .novel-char {
-    height: 28vh !important;
-    width: auto !important;
-    object-fit: contain !important;
-  }
-
   /* 患者情報フローティングボタン */
   #btn-patient-info {
     position: fixed;
@@ -745,6 +629,50 @@
     transition: transform 0.15s ease;
   }
   #btn-patient-info:active { transform: scale(0.9); }
+
+  /* ===== GAME STAGE ===== */
+  .game-stage {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .stage-char {
+    position: absolute;
+    bottom: 0;
+    object-fit: contain;
+    filter: drop-shadow(4px 0 16px rgba(0,0,0,0.8));
+    transition: opacity 0.3s ease;
+    background: transparent;
+  }
+  .stage-char.center {
+    left: 50%;
+    transform: translateX(-50%);
+    height: 62vh;
+    max-width: 70vw;
+  }
+  .stage-char.left {
+    left: 0;
+    height: 100%;
+    max-width: 50vw;
+  }
+  .stage-char.right {
+    right: 0;
+    height: 100%;
+    max-width: 50vw;
+  }
+  .stage-char.dlg-left {
+    left: 0;
+    height: 62vh;
+    max-width: 52vw;
+  }
+  .stage-char.dlg-right {
+    right: 0;
+    height: 62vh;
+    max-width: 52vw;
+  }
+  .stage-char.hidden { opacity: 0; pointer-events: none; }
+  .stage-char.dim    { opacity: 0.4; filter: brightness(0.5); }
 </style>
 </head>
 <body>
@@ -893,13 +821,11 @@
 
   <!-- ========== DIALOGUE ========== -->
   <div id="screen-dialogue" class="screen novel-screen">
-    <div class="novel-scene">
-      <div class="char-slot" id="dlg-slot-left">
-        <img class="novel-char" id="dlg-img-left" src="" alt="" style="visibility:hidden">
-      </div>
-      <div class="char-slot" id="dlg-slot-right">
-        <img class="novel-char" id="dlg-img-right" src="" alt="" style="visibility:hidden">
-      </div>
+    <div class="game-stage">
+      <img class="stage-char dlg-left hidden"
+           id="dlg-img-left" src="" alt="">
+      <img class="stage-char dlg-right hidden"
+           id="dlg-img-right" src="" alt="">
     </div>
     <div class="novel-win" id="text-window" onclick="handleDialogueTap()">
       <div class="novel-speaker" id="speaker-name">患者さん</div>
@@ -910,10 +836,9 @@
 
   <!-- ========== CHOICES ========== -->
   <div id="screen-choices" class="screen novel-screen">
-    <div class="novel-scene">
-      <div class="novel-char-wrap">
-        <img class="novel-char" src="./patient.png" alt="患者さん">
-      </div>
+    <div class="game-stage">
+      <img class="stage-char center"
+           src="./patient.png" alt="患者さん">
     </div>
     <div class="novel-interactive">
       <div class="choices-list" id="choices-list"></div>
@@ -933,10 +858,9 @@
 
   <!-- ========== HOMEWORK 1 ========== -->
   <div id="screen-homework1" class="screen novel-screen">
-    <div class="novel-scene">
-      <div class="novel-char-wrap">
-        <img class="novel-char" id="hw1-char-img" src="./bon_shocho.png" alt="ボーン院長">
-      </div>
+    <div class="game-stage">
+      <img class="stage-char center"
+           id="hw1-char-img" src="./bon_shocho.png" alt="ボーン院長">
     </div>
     <div class="novel-interactive">
       <div class="evidence-card" id="evidence1">
@@ -959,13 +883,11 @@
 
   <!-- ========== MINI QUIZ ========== -->
   <div id="screen-miniquiz" class="screen novel-screen">
-    <div class="novel-scene novel-scene-duo">
-      <div class="novel-char-wrap">
-        <img class="novel-char" id="mq-char-img" src="./bon_shocho.png" alt="ボーン院長">
-      </div>
-      <div class="novel-char-wrap">
-        <img class="novel-char hero-img" id="mq-tako-img" src="./hero_male.png" alt="タコくん">
-      </div>
+    <div class="game-stage">
+      <img class="stage-char left"
+           id="mq-char-img" src="./bon_shocho.png" alt="ボーン院長">
+      <img class="stage-char right hero-img"
+           id="mq-tako-img" src="./hero_male.png" alt="タコくん">
     </div>
     <div class="novel-interactive">
       <div id="mq-question-wrap">
@@ -983,13 +905,11 @@
 
   <!-- ========== QUIZ 1 ========== -->
   <div id="screen-quiz1" class="screen novel-screen">
-    <div class="novel-scene novel-scene-duo">
-      <div class="novel-char-wrap">
-        <img class="novel-char" id="quiz1-char-img" src="./bon_shocho.png" alt="ボーン院長">
-      </div>
-      <div class="novel-char-wrap">
-        <img class="novel-char hero-img" id="quiz1-tako-img" src="./hero_male.png" alt="タコくん">
-      </div>
+    <div class="game-stage">
+      <img class="stage-char left"
+           id="quiz1-char-img" src="./bon_shocho.png" alt="ボーン院長">
+      <img class="stage-char right hero-img"
+           id="quiz1-tako-img" src="./hero_male.png" alt="タコくん">
     </div>
     <div class="novel-interactive">
       <div class="quiz-options" id="quiz1-options"></div>
@@ -1018,13 +938,11 @@
 
   <!-- ========== HOMEWORK 2 ========== -->
   <div id="screen-homework2" class="screen novel-screen">
-    <div class="novel-scene novel-scene-duo">
-      <div class="novel-char-wrap">
-        <img class="novel-char" id="quiz2-char-img" src="./bon_shocho.png" alt="ボーン院長">
-      </div>
-      <div class="novel-char-wrap">
-        <img class="novel-char hero-img" id="quiz2-tako-img" src="./hero_male.png" alt="タコくん">
-      </div>
+    <div class="game-stage">
+      <img class="stage-char left"
+           id="quiz2-char-img" src="./bon_shocho.png" alt="ボーン院長">
+      <img class="stage-char right hero-img"
+           id="quiz2-tako-img" src="./hero_male.png" alt="タコくん">
     </div>
     <div class="novel-interactive">
       <div class="quiz-options" id="quiz2-options"></div>
@@ -1429,7 +1347,7 @@ function sfxTransition() {
 // =====================================================
 // STATE
 // =====================================================
-const STORAGE_KEY = 'rinsho_ep1_v5';
+const STORAGE_KEY = 'rinsho_ep1_v6';
 
 let state = {
   phase: 'splash',
@@ -1688,39 +1606,36 @@ function showDialogue(idx) {
   if (idx >= dialogues.length) { goToChoices(); return; }
   dlgIdx = idx;
   const d = dialogues[idx];
-  // text/name/speaker/imgSrcはfunction対応
   const dText    = typeof d.text    === 'function' ? d.text()    : d.text;
   const dName    = typeof d.name    === 'function' ? d.name()    : d.name;
   const dSpeaker = typeof d.speaker === 'function' ? d.speaker() : d.speaker;
   const dImgSrc  = typeof d.imgSrc  === 'function' ? d.imgSrc()  : d.imgSrc;
   const isLeft = d.charType === 'patient';
 
-  // 初回リセット
   if (idx === 0) {
     dlgLeftSrc = ''; dlgRightSrc = '';
-    document.getElementById('dlg-img-left').style.visibility = 'hidden';
-    document.getElementById('dlg-img-right').style.visibility = 'hidden';
-    document.getElementById('dlg-slot-left').classList.remove('char-inactive');
-    document.getElementById('dlg-slot-right').classList.remove('char-inactive');
+    document.getElementById('dlg-img-left').className = 'stage-char dlg-left hidden';
+    document.getElementById('dlg-img-right').className = 'stage-char dlg-right hidden';
   }
 
   if (isLeft) {
     dlgLeftSrc = dImgSrc;
     const img = document.getElementById('dlg-img-left');
-    img.src = dImgSrc; img.alt = dName; img.style.visibility = 'visible';
-    document.getElementById('dlg-slot-left').classList.remove('char-inactive');
-    if (dlgRightSrc) document.getElementById('dlg-slot-right').classList.add('char-inactive');
+    img.src = dImgSrc; img.alt = dName;
+    img.className = 'stage-char dlg-left';
+    const right = document.getElementById('dlg-img-right');
+    if (dlgRightSrc) right.classList.add('dim');
   } else {
     dlgRightSrc = dImgSrc;
     const img = document.getElementById('dlg-img-right');
-    img.src = dImgSrc; img.alt = dName; img.style.visibility = 'visible';
-    document.getElementById('dlg-slot-right').classList.remove('char-inactive');
-    if (dlgLeftSrc) document.getElementById('dlg-slot-left').classList.add('char-inactive');
+    img.src = dImgSrc; img.alt = dName;
+    img.className = 'stage-char dlg-right';
+    const left = document.getElementById('dlg-img-left');
+    if (dlgLeftSrc) left.classList.add('dim');
   }
 
   document.getElementById('speaker-name').textContent = dSpeaker;
 
-  // 話者別ボーダー色
   const win = document.getElementById('text-window');
   win.classList.remove('speaker-bon', 'speaker-patient', 'speaker-hero');
   if (d.charType === 'npc')     win.classList.add('speaker-bon');
@@ -2747,7 +2662,7 @@ function finishGoal() {
 // INIT
 // =====================================================
 function init() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5'].forEach(k => {
     localStorage.removeItem(k);
   });
   checkOnboarding();
