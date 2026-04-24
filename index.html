@@ -272,6 +272,17 @@
   .btn-replay:hover { background:rgba(74,158,255,0.15); }
   .btn-retry { background:transparent; color:#777; border:1px solid #444; border-radius:12px; padding:10px 24px; font-size:0.85rem; font-family:'Noto Sans JP',sans-serif; cursor:pointer; width:100%; text-align:center; }
 
+  /* ===== INTRO SCREEN ===== */
+  .intro-line {
+    font-size: 1.25rem; font-weight: 700; color: #fff;
+    opacity: 0; transition: opacity 1.2s ease;
+    text-align: center; line-height: 1.8;
+    letter-spacing: 0.05em;
+  }
+  .intro-line.show { opacity: 1; }
+  #intro-skip-btn { opacity: 0; transition: opacity 1s ease; }
+  #intro-skip-btn.show { opacity: 1; }
+
   /* ===== モード選択 ===== */
   .mode-selector { width:100%; display:flex; flex-direction:column; gap:10px; }
   .gender-btn {
@@ -666,6 +677,14 @@
     <button class="btn-primary" onclick="sfxClick(); finishOnboarding()">▶ はじめる</button>
   </div>
 
+  <!-- ========== INTRO ========== -->
+  <div id="screen-intro" class="screen" style="justify-content:center;align-items:center;gap:28px;background:var(--bg)">
+    <div id="intro-line1" class="intro-line">体の中には、犯人がいる。</div>
+    <div id="intro-line2" class="intro-line">その犯人を特定できるのは——</div>
+    <div id="intro-line3" class="intro-line">鍛えられた治療家だけだ。</div>
+    <button id="intro-skip-btn" class="btn-primary" style="margin-top:12px" onclick="skipIntro()">続ける ▶</button>
+  </div>
+
   <!-- ========== GENDER SELECTION ========== -->
   <div id="screen-gender" class="screen pad20" style="justify-content:center;align-items:center;gap:24px">
     <div style="text-align:center">
@@ -691,8 +710,8 @@
         <img style="width:80px;height:80px;object-fit:contain" src="./bon_shocho.png" alt="ぼん署長">
         <img style="width:80px;height:80px;object-fit:contain" src="./hero_male.png" class="hero-img" alt="タコくん">
       </div>
-      <div style="font-size:2.5rem;font-weight:bold;color:#fff;line-height:1.2">つぼーん</div>
-      <div style="font-size:0.85rem;color:#8899aa;margin-top:6px">「患者さんを救え！ 犯人を倒す旅が始まる。」</div>
+      <div style="font-size:2.5rem;font-weight:bold;color:#fff;line-height:1.2">ツボ刑事</div>
+      <div style="font-size:0.85rem;color:#8899aa;margin-top:6px">体の中の犯人を、特定せよ。</div>
     </div>
     <div class="progress-info" id="saved-progress-msg"></div>
     <button class="btn-primary" onclick="sfxClick(); goToEpisode()">▶ はじめる</button>
@@ -801,8 +820,8 @@
     </div>
     <div class="novel-win">
       <div class="novel-speaker">ぼん署長</div>
-      <div class="choice-prompt">敵の情報を集めろ。<br>患者さんに話を聞くんだ！</div>
-      <div class="novel-context-text" style="color:rgba(255,200,80,0.9);font-size:0.85rem;margin-top:8px">患者さん：「何でも聞いてください…つらいんです…」</div>
+      <div class="choice-prompt">まず患者さんの話を聴け。<br>症状じゃない——その人の人生を聴くんだ。</div>
+      <div class="novel-context-text" style="color:rgba(255,200,80,0.9);font-size:0.85rem;margin-top:8px">患者さん：「先生…3ヶ月、肩がずっと重くて…夕方になると首まで張ってきて…もう、どうしたらいいか…」</div>
       <div class="choice-answer-box" id="choice-answer-box"></div>
     </div>
   </div>
@@ -816,19 +835,20 @@
     </div>
     <div class="novel-interactive">
       <div class="evidence-card" id="evidence1">
-        <div class="ev-title">🔓 根拠を入手！</div>
+        <div class="ev-title">🔓 臨床の証拠・入手！</div>
         <div>
           <strong style="color:var(--gold)">【僧帽筋上部線維】</strong><br>
-          起始：外後頭隆起、項靭帯<br>停止：鎖骨外側1/3<br>作用：肩甲骨の挙上<br><br>
-          → デスクワークで常に収縮<br>
-          → <strong style="color:var(--wrong)">肩こりの原因になりうる</strong>
+          起始：外後頭隆起・項靭帯<br>停止：鎖骨外側1/3<br>作用：肩甲骨の挙上<br><br>
+          → デスクワークで常に収縮し続ける<br>
+          → 夕方に疲弊してこりが生じやすい<br>
+          → <strong style="color:var(--wrong)">肩こりの第一容疑筋として浮上</strong>
         </div>
       </div>
       <button class="btn-next-full" id="btn-tohomework1-next" style="display:none" onclick="sfxClick(); goToMiniQuiz()">⚔️ 試練へ挑む！</button>
     </div>
     <div class="novel-win">
       <div class="novel-speaker">ぼん署長</div>
-      <div class="novel-context-text" id="hw1-win-text">犯人を倒すには"根拠"が必要だ。<br>まずは容疑者リストを確認しろ。</div>
+      <div class="novel-context-text" id="hw1-win-text">話を聴いただけじゃ犯人は倒せん。<br>解剖学の知識が、治療家の武器だ。<br>容疑筋を調べろ。</div>
     </div>
   </div>
 
@@ -852,7 +872,7 @@
     </div>
     <div class="novel-win">
       <div class="novel-speaker">ぼん署長</div>
-      <div class="novel-context-text" id="mq-intro-text">修行の成果を試す時が来た！<br>犯人を倒す知識が身に付いているか？</div>
+      <div class="novel-context-text" id="mq-intro-text">修行の成果を見せてもらおう。<br>容疑筋を絞り込め。</div>
     </div>
   </div>
 
@@ -874,12 +894,12 @@
           <img class="char-img" src="./bon_shocho.png" alt="ぼん署長">
           <div class="memo-title" style="margin-bottom:0">🩺 ぼん署長の臨床メモ</div>
         </div>
-        よくやった。俺の経験を教えておく。<br>
-        僧帽筋上部が犯人のときは、<br>
-        まず<strong>合谷</strong>で全体の緊張を緩めてから<br>
-        <strong>肩井</strong>でピンポイントに攻める。<br>
-        鍼でも指圧でも、この"順番"が大事だ。<br>
-        <span class="memo-salon-link">→ 詳しい手技はオンラインサロンで解説予定です</span>
+        僧帽筋上部が真犯人のとき、<br>
+        俺はこう攻める。<br><br>
+        ① まず「<strong>合谷</strong>」で全体の緊張を緩める<br>
+        ② 次に「<strong>肩井</strong>」で急所を突く<br><br>
+        この順番が犯人を逃さないコツだ。<br>
+        <span class="memo-salon-link">→ 詳しい手技はオンラインサロンで解説予定</span>
       </div>
       <div class="quiz-next" id="quiz1-next">
         <button class="btn-next-full" onclick="sfxClick(); goToPhase5()">次のフェーズへ</button>
@@ -887,7 +907,7 @@
     </div>
     <div class="novel-win">
       <div class="novel-speaker">ぼん署長</div>
-      <div class="novel-context-text">容疑者は4人。<br>犯人の正体を見破れ！</div>
+      <div class="novel-context-text">症状：肩の重さ・夕方悪化・デスクワーク・残業続き<br>この症状の真犯人は？</div>
     </div>
   </div>
 
@@ -906,19 +926,20 @@
       <div class="quiz-feedback" id="quiz2-feedback"></div>
       <button class="btn-next-full" id="btn-quiz2-to-hw2" style="display:none" onclick="sfxClick(); showHw2Step()">次へ →</button>
       <div class="evidence-card" id="evidence2">
-        <div class="ev-title">🔓 根拠を入手！</div>
+        <div class="ev-title">🔓 臨床の証拠・入手！</div>
         <div>
-          <strong style="color:var(--gold)">肩井（GB21）</strong><br>
-          部位：大椎と肩峰を結ぶ線の中点<br>解剖：僧帽筋上、深部に棘上筋<br><br>
+          <strong style="color:var(--gold)">【肩井（GB21）】</strong><br>
+          部位：大椎と肩峰を結ぶ線の中点<br>解剖：僧帽筋上部・深部に棘上筋<br><br>
           <strong style="color:var(--correct)">なぜ効く：</strong><br>
-          僧帽筋のトリガーポイントに一致
+          僧帽筋のトリガーポイントに一致<br>
+          → <strong>真犯人の急所</strong>
         </div>
       </div>
       <button class="btn-next-full" id="btn-tohomework2-next" style="display:none" onclick="sfxClick(); goToClear()">🏆 決着をつけろ！</button>
     </div>
     <div class="novel-win">
       <div class="novel-speaker">ぼん署長</div>
-      <div class="novel-context-text">犯人の正体が分かった。最後の一撃だ。<br>犯人の弱点を突くツボを選べ！</div>
+      <div class="novel-context-text">さあ——秘孔を突け！<br>患者さんを苦しめている真犯人の急所はどこだ！</div>
     </div>
   </div>
 
@@ -927,7 +948,7 @@
   <div id="screen-clear1" class="screen pad20">
     <div style="text-align:center">
       <div class="clear-episode">エピソード 1</div>
-      <div class="clear-title">勝利！犯人を倒した！</div>
+      <div class="clear-title">事件解決！真犯人を特定した！</div>
       <div class="char-duo" style="margin-top:10px">
         <img class="char-img" src="./bon_shocho.png" alt="ぼん署長">
         <img class="char-img" src="./patient.png" alt="患者さん">
@@ -944,13 +965,13 @@
       <div style="display:flex;align-items:flex-start;gap:10px">
         <img class="char-img" src="./patient.png" alt="患者さん" style="flex-shrink:0">
         <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:10px 14px;font-size:0.9rem;line-height:1.7">
-          犯人が…消えた…！<br>体が楽になりました…！ありがとうございます！！
+          あ…！<br>肩が…軽くなっていく…！<br>この感覚…3ヶ月ぶりです…！<br>私…また全力で仕事できる気がします。<br>ありがとうございます、先生…！
         </div>
       </div>
       <div style="display:flex;align-items:flex-start;gap:10px;flex-direction:row-reverse">
         <img class="char-img" src="./bon_shocho.png" alt="ぼん署長" style="flex-shrink:0">
         <div style="background:rgba(74,158,255,0.1);border:1px solid var(--accent);border-radius:12px;padding:10px 14px;font-size:0.9rem;line-height:1.7;text-align:right">
-          患者さんの肩こり、解決だ。<br><span id="clear-player-name-msg"></span>
+          ……治療家ってのは、症状を取る仕事じゃない。<br>その人の人生を——取り戻す仕事だ。<br><span id="clear-player-name-msg"></span>
         </div>
       </div>
     </div>
@@ -1007,11 +1028,11 @@
       <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px">
         <div style="display:flex;align-items:flex-start;gap:10px">
           <img class="char-img-sm" src="./patient.png" alt="患者さん" style="flex-shrink:0;margin-top:2px">
-          <div class="ep2-dialogue" style="margin:0">先生…実はもう1つ相談が…<br>最近、毎日夕方になると<br>頭の後ろがズキズキして…</div>
+          <div class="ep2-dialogue" style="margin:0">あの…先生、<br>知り合いも困っていて…<br>聞いてもらえますか。</div>
         </div>
         <div style="display:flex;align-items:flex-start;gap:10px;flex-direction:row-reverse">
           <img class="char-img-sm" src="./bon_shocho.png" alt="ぼん署長" style="flex-shrink:0;margin-top:2px">
-          <div style="font-size:0.88rem;line-height:1.6;color:#ccc;text-align:right">次の患者が待っている。<br><strong style="color:var(--gold)">エピソード 2 — 頭痛の正体を暴け</strong></div>
+          <div style="font-size:0.88rem;line-height:1.6;color:#ccc;text-align:right">次の事件が来たぞ。<br><strong style="color:var(--gold)">EP2——頭痛の真犯人を暴け。</strong></div>
         </div>
       </div>
       <div class="btn-ep2-lock">⚔️ 続きをプレイ 🔒</div>
@@ -1476,12 +1497,10 @@ function loadPlayerName() {
 // DIALOGUE DATA
 // =====================================================
 const dialogues = [
-  { imgSrc: CHARS.butta.symptom, name: '患者さん', speaker: '患者さん', charType: 'patient',
-    text: () => `${pName()}…！犯人が体を蝕んでいる…！\n肩が重くて動けないんです…\n毎日デスクワークで、夕方になると特にひどくて…` },
-  { imgSrc: CHARS.bon.question,  name: 'ぼん署長', speaker: 'ぼん署長', charType: 'npc',
-    text: () => `見習いよ、患者さんが魔物に侵されている。\n${pName()}の治療の力で\n犯人を倒してくれ！` },
-  { imgSrc: () => heroImg(),     name: () => pName(), speaker: () => pName(), charType: 'you',
-    text: '任せてください、師匠！\n犯人を必ず倒します！' },
+  { imgSrc: CHARS.bon.question, name: 'ぼん署長', speaker: 'ぼん署長', charType: 'npc',
+    text: () => `来たか、${pName()}。\n今日から君はこの院の新人治療家だ。\nさっそく患者さんが来ている。診察室に向かえ。` },
+  { imgSrc: CHARS.bon.question, name: 'ぼん署長', speaker: 'ぼん署長', charType: 'npc',
+    text: '治療家の仕事は症状を取ることじゃない。\n犯人を特定することだ。\n症状はただの——犯人が残した痕跡に過ぎん。' },
 ];
 
 const choiceData = [
@@ -1496,7 +1515,7 @@ const choiceData = [
 const quiz1Data = {
   options: ['A. 三角筋', 'B. 僧帽筋上部', 'C. 肩甲挙筋', 'D. 棘上筋'],
   correct: 1,
-  correctMsg: '犯人の正体は僧帽筋上部だ！\nこいつが患者さんを苦しめていたんだ！',
+  correctMsg: '正解だ。\nデスクワークで収縮し続け、夕方に疲弊する。\nあの患者さんの生活と完全に一致する。\n次は——倒し方を選べ。',
   wrongExplanations: [
     '三角筋は肩の丸みを作る筋肉。腕を上げる動作で使うため、肩こりの"重だるさ"とは症状が異なります',
     null,
@@ -1508,7 +1527,7 @@ const quiz1Data = {
 const quiz2Data = {
   options: ['A. 合谷', 'B. 足三里', 'C. 肩井', 'D. 委中'],
   correct: 2,
-  correctMsg: '肩井だ！これが犯人への必殺技！患者さんを救える！',
+  correctMsg: 'それだ——！秘孔を突け！！',
   wrongExplanations: [
     '合谷（LI4）は万能ツボですが大腸経。全身の緊張緩和には使えますが、僧帽筋の局所ポイントとしては別のツボが最適です',
     '足三里（ST36）は胃経のツボ。消化器系や全身の疲労回復が得意で、肩こりの局所治療には向きません',
@@ -1660,13 +1679,13 @@ function goToPhase3() {
 function restoreHomework1() {
   document.getElementById('btn-tohomework1-next').style.display = 'block';
   document.getElementById('hw1-char-img').src = './bon_shocho.png';
-  document.getElementById('hw1-win-text').innerHTML = '僧帽筋上部…こいつが犯人だ。<br>本当にこいつが犯人か、試練で確かめろ！';
+  document.getElementById('hw1-win-text').innerHTML = '証拠が揃った。次は試練で犯人を確かめろ！';
 }
 
 // ===== MINI QUIZ (Phase 3.5) =====
 const miniQuizData = [
   {
-    intro: '犯人を倒すには武器の知識が必要だ！\nまず第一の試練に挑め！',
+    intro: '修行の成果を見せてもらおう。\n容疑筋を絞り込め。どの筋肉が真犯人だ？',
     q: '僧帽筋上部の起始は___である',
     options: ['A. 外後頭隆起・項靭帯', 'B. 肩甲棘', 'C. 烏口突起', 'D. 鎖骨外側端'],
     correct: 0,
@@ -1679,7 +1698,7 @@ const miniQuizData = [
     ],
   },
   {
-    intro: '第二の試練だ！もう1問いくぞ！',
+    intro: 'もう1問だ。よく考えろ。',
     q: '僧帽筋上部はデスクワーク中に"弛緩"している',
     options: ['A. ○ 正しい', 'B. × 間違い'],
     correct: 1,
@@ -1767,7 +1786,7 @@ function answerMiniQuiz(i) {
 
 function showMiniQuizComplete() {
   document.getElementById('mq-char-img').src = CHARS.bon.correct;
-  document.getElementById('mq-intro-text').textContent = 'いいぞ！準備は整った。\nいよいよ"真犯人"を指名する時間だ。';
+  document.getElementById('mq-intro-text').textContent = '基礎確認OK。\n次は——真犯人を指名する時間だ。';
   document.getElementById('mq-question-wrap').innerHTML = `
     <div class="mq-complete-msg">
       <div class="mq-complete-text">基礎確認OK！<br>法廷へ向かえ</div>
@@ -1827,11 +1846,11 @@ function showPatientInfo() {
   const html = `
     <div style="font-weight:900;font-size:1.05rem;margin-bottom:14px;color:var(--accent)">📋 患者情報</div>
     <div style="line-height:2;font-size:0.9rem">
-      🧑 <strong>患者</strong>：患者さん<br>
-      📍 <strong>症状</strong>：肩が重い・こり感<br>
+      📍 <strong>症状</strong>：肩の重さ・こり感<br>
       ⏰ <strong>タイミング</strong>：夕方に悪化<br>
-      💼 <strong>職業</strong>：デスクワーク<br>
-      📌 <strong>部位</strong>：肩〜首
+      💼 <strong>職業</strong>：デスクワーク・残業続き<br>
+      📌 <strong>部位</strong>：肩〜首にかけて<br>
+      💬 <strong>背景</strong>：仕事へのプレッシャー・パフォーマンス低下への不安
     </div>
     <button class="btn-next-full" style="margin-top:16px" onclick="closeCardOverlay()">閉じる</button>
   `;
@@ -1841,7 +1860,7 @@ function showPatientInfo() {
 function showHomeworkOverlay(n) {
   const contents = {
     1: {
-      book: '筋肉パーフェクト事典 第2章を読んで<br><strong>僧帽筋の起始・停止・作用</strong>を確認しよう',
+      book: '📖「筋肉パーフェクト事典 第2章」を読んで<br><strong>僧帽筋の起始・停止・作用</strong>を確認せよ。',
       nobook: '参考書3冊の合計は約7,700円。<br>オンラインサロンなら月550円〜で<br><strong>同じ内容を動画で学べます。</strong><br><br><span style="color:#ffc832">🔜 オンラインサロン開設準備中</span><br>開設時にはLINEでお知らせします。<br>→ 概要欄からLINE登録しておいてください'
     },
     2: {
@@ -1851,9 +1870,9 @@ function showHomeworkOverlay(n) {
   };
   const c = contents[n];
   const html = `
-    <div class="hw-title" style="margin-bottom:10px">⚔️ 修行</div>
+    <div class="hw-title" style="margin-bottom:10px">⚔️ 修行指令</div>
     <div style="margin-bottom:14px;line-height:1.7">${c.book}</div>
-    <button class="btn-done" style="width:100%;margin-bottom:10px" onclick="hwDone(${n})">✅ 読んだ！</button>
+    <button class="btn-done" style="width:100%;margin-bottom:10px" onclick="hwDone(${n})">✅ 読んだ！進む</button>
     <details style="margin-top:4px">
       <summary class="btn-nobook" style="cursor:pointer;list-style:none">📱 本を持っていない</summary>
       <div class="nobook-card visible" style="margin-top:8px">${c.nobook}</div>
@@ -1879,7 +1898,7 @@ function hwDone(n) {
       showCardOverlay(evidenceEl.innerHTML, () => {
         document.getElementById('btn-tohomework1-next').style.display = 'block';
         document.getElementById('hw1-char-img').src = './bon_shocho.png';
-        document.getElementById('hw1-win-text').innerHTML = '僧帽筋上部…こいつが犯人だ。<br>本当にこいつが犯人か、試練で確かめろ！';
+        document.getElementById('hw1-win-text').innerHTML = '証拠が揃った。次は試練で犯人を確かめろ！';
       });
     } else {
       showCardOverlay(evidenceEl.innerHTML, () => {
@@ -1945,10 +1964,15 @@ function answerQuiz1(i) {
       : '';
     const html = `
       <div style="text-align:center;font-size:2rem;margin-bottom:8px">❌</div>
-      <div style="font-weight:700;margin-bottom:10px">${optText}</div>
-      <div style="line-height:1.7;margin-bottom:4px">${pName()}、惜しい！${expText}</div>
+      <div style="font-weight:700;margin-bottom:10px">惜しい。根拠を確認しろ。</div>
+      <div style="background:rgba(255,200,50,0.1);border:1px solid rgba(255,200,50,0.3);border-radius:10px;padding:12px;margin-bottom:14px;line-height:1.8;font-size:0.9rem">
+        ⚔️ 修行指令<br>
+        その筋肉の起始・停止・作用と<br>
+        患者さんの症状を照らし合わせろ。<br>
+        もう一度考えろ。
+      </div>
       ${hintHtml}
-      <button class="btn-next-full" style="margin-top:16px;background:var(--accent)" onclick="closeCardOverlay()">もう一度考える</button>
+      <button class="btn-next-full" style="margin-top:4px" onclick="closeCardOverlay()">✅ もう一度挑戦する</button>
     `;
     showCardOverlay(html, null);
 
@@ -2012,9 +2036,13 @@ function answerQuiz2(i) {
     showXpGain(10);
     showKoredayo(() => {
       const html = `
-        <div style="text-align:center;font-size:2rem;margin-bottom:8px">✅</div>
-        <div style="font-weight:900;color:var(--correct);font-size:1.1rem;margin-bottom:10px">正解！</div>
-        <div style="line-height:1.7;margin-bottom:16px">${pName()}、${quiz2Data.correctMsg}</div>
+        <div style="text-align:center;font-size:1.5rem;margin-bottom:8px;color:var(--accent);font-weight:900">${pName()}、${quiz2Data.correctMsg}</div>
+        <div style="text-align:center;font-size:1.3rem;font-weight:900;margin:12px 0;color:var(--gold)">⚡「肩井——！！」</div>
+        <div style="text-align:center;line-height:1.8;margin-bottom:16px;color:var(--correct)">
+          💥 真犯人にクリティカルヒット！<br>
+          僧帽筋のトリガーポイントが——<br>
+          消えていく！
+        </div>
         <button class="btn-next-full" onclick="closeCardOverlay()">次へ →</button>
       `;
       showCardOverlay(html, showHw2Step);
@@ -2065,7 +2093,7 @@ function goToClear() {
   state.phase = 'clear'; state.cleared = true; saveState();
   showScreenWithSound('clear1');
   const msgEl = document.getElementById('clear-player-name-msg');
-  if (msgEl) msgEl.textContent = '見事だ' + pName() + '！犯人を撃退した！\n患者さんの体が救われたぞ！';
+  if (msgEl) msgEl.textContent = 'よくやった、' + pName() + '。';
   setTimeout(animateClear, 400);
 }
 
@@ -2501,6 +2529,20 @@ function showObResult() {
   showScreen('onboarding-result');
 }
 
+function showIntro() {
+  showScreen('intro');
+  const delays = [600, 1800, 3000];
+  ['intro-line1','intro-line2','intro-line3'].forEach((id, i) => {
+    setTimeout(() => document.getElementById(id).classList.add('show'), delays[i]);
+  });
+  setTimeout(() => document.getElementById('intro-skip-btn').classList.add('show'), 4000);
+}
+
+function skipIntro() {
+  sfxClick();
+  showTitleScreen();
+}
+
 function finishOnboarding() {
   showScreen('gender');
 }
@@ -2515,7 +2557,7 @@ function selectGender(gender) {
     localStorage.setItem(ONBOARDING_KEY, JSON.stringify(data));
   } catch(e) {}
   applyHeroImages();
-  showTitleScreen();
+  showIntro();
 }
 
 function showTitleScreen() {
@@ -2534,7 +2576,7 @@ function goToEpisode() {
 function goToMode() {
   if (!localStorage.getItem(GOAL_KEY)) {
     const el = document.getElementById('goal-text');
-    if (el) el.textContent = `${pName()}の目標はひとつ。\n\n5つの力をすべて★5にして\n"一人前の施術家"になることだ。\n\n全エピソードをクリアした者には\n【つぼーんマスター】の称号を与える。\n\nまずは最初の患者を救うところからだ。`;
+    if (el) el.textContent = `5つの力を鍛えれば、\n本物の治療家になれる。\n\n行くぞ、${pName()}。`;
     showScreenWithSound('goal');
   } else {
     showScreen('mode');
