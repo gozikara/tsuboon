@@ -2234,23 +2234,39 @@ function showPatientInfo() {
 function showHomeworkOverlay(n) {
   const contents = {
     1: {
-      book: '📖「筋肉パーフェクト事典 第2章」を読んで<br><strong>僧帽筋の起始・停止・作用</strong>を確認せよ。',
-      nobook: '参考書3冊の合計は約7,700円。<br>オンラインサロンなら月550円〜で<br><strong>同じ内容を動画で学べます。</strong><br><br><span style="color:#ffc832">🔜 オンラインサロン開設準備中</span><br>開設時にはLINEでお知らせします。<br>→ 概要欄からLINE登録しておいてください'
+      title: '⚔️ 修行指令①',
+      instruction: '僧帽筋の<strong>起始・停止・作用</strong>を調べよ。<br><span style="font-size:0.82rem;color:#aaa">教科書・ネット・手元の本など何でもOK</span>',
+      anatomy: `<div style="margin-top:10px;background:rgba(74,158,255,0.07);border:1px solid rgba(74,158,255,0.3);border-radius:10px;padding:12px;font-size:0.85rem;line-height:1.9">
+        <div style="color:var(--accent);font-weight:700;margin-bottom:6px">📋 解剖の要点</div>
+        起始：外後頭隆起・項靭帯・第7頸椎〜第12胸椎棘突起<br>
+        停止：鎖骨外側1/3・肩峰・肩甲棘<br>
+        作用：肩甲骨の挙上・上方回旋・内転
+      </div>`,
+      btnLabel: '✅ 調べた！進む',
+      salon: '詳しい触診・臨床応用はオンラインサロンで解説予定'
     },
     2: {
-      book: 'ツボ単で<strong>肩井の取穴法</strong>を確認しよう',
-      nobook: '「ツボ単」は約2,640円。<br><br><span style="color:#ffc832">🔜 オンラインサロン開設準備中</span><br>開設時にはLINEでお知らせします。'
+      title: '⚔️ 修行指令②',
+      instruction: '肩井（GB21）の<strong>取穴法</strong>はここだ。',
+      anatomy: `<div style="margin-top:10px;background:rgba(74,158,255,0.07);border:1px solid rgba(74,158,255,0.3);border-radius:10px;padding:12px;font-size:0.85rem;line-height:1.9">
+        <div style="color:var(--accent);font-weight:700;margin-bottom:6px">📋 取穴の要点</div>
+        部位：大椎（第7頸椎棘突起）と肩峰を結ぶ線の<strong>中点</strong><br>
+        解剖：僧帽筋上部線維・深部に棘上筋<br>
+        特徴：僧帽筋のトリガーポイントに一致
+      </div>`,
+      btnLabel: '✅ 調べた！進む',
+      salon: '詳しい刺鍼角度・補瀉はオンラインサロンで解説予定'
     }
   };
   const c = contents[n];
   const html = `
-    <div class="hw-title" style="margin-bottom:10px">⚔️ 修行指令</div>
-    <div style="margin-bottom:14px;line-height:1.7">${c.book}</div>
-    <button class="btn-done" style="width:100%;margin-bottom:10px" onclick="hwDone(${n})">✅ 読んだ！進む</button>
-    <details style="margin-top:4px">
-      <summary class="btn-nobook" style="cursor:pointer;list-style:none">📱 本を持っていない</summary>
-      <div class="nobook-card visible" style="margin-top:8px">${c.nobook}</div>
-    </details>
+    <div style="font-weight:900;font-size:1rem;margin-bottom:10px;color:var(--gold)">${c.title}</div>
+    <div style="margin-bottom:12px;line-height:1.75;font-size:0.92rem">${c.instruction}</div>
+    ${c.anatomy}
+    <button class="btn-done" style="width:100%;margin-top:14px;margin-bottom:10px" onclick="hwDone(${n})">${c.btnLabel}</button>
+    <div style="text-align:center;margin-top:6px">
+      <span style="color:var(--gold);font-size:0.82rem">🎬 ${c.salon}</span>
+    </div>
   `;
   _hwOverlayMode = true;
   document.getElementById('card-overlay-close').style.display = 'none';
