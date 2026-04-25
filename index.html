@@ -2265,33 +2265,12 @@ function showHomeworkOverlay(n) {
     <div style="font-weight:900;font-size:1rem;margin-bottom:8px;color:var(--gold)">${c.title}</div>
     <div style="font-size:0.88rem;color:#aaa;margin-bottom:10px">${c.instruction}</div>
     ${c.anatomy}
-    <div id="hw-countdown-wrap" style="text-align:center;margin:14px 0">
-      <div style="font-size:0.8rem;color:#aaa;margin-bottom:4px">覚えたらボタンが活性化します</div>
-      <div id="hw-countdown" style="font-size:2rem;font-weight:900;color:var(--gold)">10</div>
-    </div>
-    <button id="hw-done-btn" class="btn-done" style="width:100%;opacity:0.3" disabled onclick="hwDone(${n})">✅ 覚えた！進む</button>
+    <button id="hw-done-btn" class="btn-done" style="width:100%;margin-top:16px" onclick="hwDone(${n})">✅ 覚えた！進む</button>
   `;
 
   _hwOverlayMode = true;
   document.getElementById('card-overlay-close').style.display = 'none';
   showCardOverlay(html, null);
-
-  let count = 10;
-  const timer = setInterval(() => {
-    count--;
-    const el = document.getElementById('hw-countdown');
-    if (!el) { clearInterval(timer); return; }
-    if (count <= 0) {
-      clearInterval(timer);
-      el.textContent = '✓';
-      el.style.color = 'var(--correct)';
-      document.getElementById('hw-countdown-wrap').querySelector('div').textContent = '準備完了！';
-      const btn = document.getElementById('hw-done-btn');
-      if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
-    } else {
-      el.textContent = count;
-    }
-  }, 1000);
 }
 
 function hwDone(n) {
@@ -2351,16 +2330,12 @@ function answerQuiz1(i) {
     quiz1WrongCount++;
 
     const expText = quiz1Data.wrongExplanations[i] || 'この筋肉は今回の症状とは原因が異なります';
-    const hintHtml = quiz1WrongCount >= 3
-      ? `<div style="margin-top:12px;padding:10px;background:rgba(255,200,50,0.1);border-radius:8px;color:var(--gold)">💡 ヒントが欲しい？ サロンの解説動画で詳しく学べます</div>`
-      : '';
     const html = `
       <div style="text-align:center;font-size:2rem;margin-bottom:8px">❌</div>
       <div style="font-weight:700;margin-bottom:10px;color:var(--wrong)">${quiz1Data.options[i]}は違います</div>
       <div style="background:rgba(255,74,74,0.08);border:1px solid rgba(255,74,74,0.3);border-radius:10px;padding:12px;margin-bottom:14px;line-height:1.8;font-size:0.9rem;color:#f0d0d0">
         ${expText}
       </div>
-      ${hintHtml}
       <button class="btn-next-full" style="margin-top:4px" onclick="closeCardOverlay()">✅ もう一度挑戦する</button>
     `;
     showCardOverlay(html, null);
@@ -2446,14 +2421,10 @@ function answerQuiz2(i) {
     quiz2WrongCount++;
 
     const expText = quiz2Data.wrongExplanations[i] || 'このツボでは僧帽筋の局所ポイントとしては最適ではありません';
-    const hintHtml = quiz2WrongCount >= 3
-      ? `<div style="margin-top:12px;padding:10px;background:rgba(255,200,50,0.1);border-radius:8px;color:var(--gold)">💡 ヒントが欲しい？ サロンの解説動画で詳しく学べます</div>`
-      : '';
     const html = `
       <div style="text-align:center;font-size:2rem;margin-bottom:8px">❌</div>
       <div style="font-weight:700;margin-bottom:10px">${optText}</div>
       <div style="line-height:1.7;margin-bottom:4px">${pName()}、惜しい！${expText}</div>
-      ${hintHtml}
       <button class="btn-next-full" style="margin-top:16px;background:var(--accent)" onclick="closeCardOverlay()">もう一度考える</button>
     `;
     showCardOverlay(html, null);
