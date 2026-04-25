@@ -1486,7 +1486,7 @@ function sfxTransition() {
 // =====================================================
 // STATE
 // =====================================================
-const STORAGE_KEY = 'rinsho_ep1_v12';
+const STORAGE_KEY = 'rinsho_ep1_v13';
 
 let state = {
   phase: 'splash',
@@ -2020,18 +2020,21 @@ function renderChoices() {
 
 function selectChoice(i) {
   state.choicesAnswered.add(i); saveState();
-  const box = document.getElementById('choice-answer-box');
-  box.classList.add('visible'); box.textContent = '';
   blipCounter = 0;
-  let idx = 0; const text = choiceData[i].answer;
-  const t = setInterval(() => {
-    idx++; box.textContent = text.slice(0, idx);
-    if (text[idx-1] !== '\n') sfxBlip('patient');
-    if (idx >= text.length) clearInterval(t);
-  }, 30);
+  const text = choiceData[i].answer;
   document.querySelectorAll('#choices-list .btn-choice')[i].classList.add('answered');
   document.querySelectorAll('#choices-list .btn-choice')[i].disabled = true;
   checkChoicesDone();
+
+  const html = `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <img src="./patient.png" style="width:40px;height:40px;object-fit:contain">
+      <div style="font-size:0.8rem;color:var(--gold);font-weight:700">患者さん</div>
+    </div>
+    <div style="font-size:0.95rem;line-height:1.8;white-space:pre-wrap;color:#f0f4ff">${text}</div>
+    <button class="btn-next-full" style="margin-top:16px" onclick="closeCardOverlay()">閉じる</button>
+  `;
+  showCardOverlay(html, null);
 }
 
 function checkChoicesDone() {
@@ -2043,9 +2046,7 @@ function checkChoicesDone() {
 function goToPhase3() {
   if (state.mode === 'intermediate') { goToQuiz1(); return; }
   state.phase = 'homework1'; saveState();
-  showScreenWithSound('homework1');
-  if (state.evidence1Unlocked) restoreHomework1();
-  else setTimeout(() => showHomeworkOverlay(1), 300);
+  showHomeworkOverlay(1);
 }
 
 function restoreHomework1() {
@@ -2235,77 +2236,78 @@ function showHomeworkOverlay(n) {
   const contents = {
     1: {
       title: '⚔️ 修行指令①',
-      instruction: '僧帽筋の<strong>起始・停止・作用</strong>を調べよ。<br><span style="font-size:0.82rem;color:#aaa">教科書・ネット・手元の本など何でもOK</span>',
-      anatomy: `<div style="margin-top:10px;background:rgba(74,158,255,0.07);border:1px solid rgba(74,158,255,0.3);border-radius:10px;padding:12px;font-size:0.85rem;line-height:1.9">
-        <div style="color:var(--accent);font-weight:700;margin-bottom:6px">📋 解剖の要点</div>
-        起始：外後頭隆起・項靭帯・第7頸椎〜第12胸椎棘突起<br>
-        停止：鎖骨外側1/3・肩峰・肩甲棘<br>
+      subject: '僧帽筋',
+      instruction: '以下を暗記せよ',
+      anatomy: `<div style="background:rgba(74,158,255,0.07);border:1px solid rgba(74,158,255,0.3);border-radius:10px;padding:12px;font-size:0.88rem;line-height:2">
+        <div style="color:var(--accent);font-weight:700;margin-bottom:6px">📋 僧帽筋（上部線維）</div>
+        起始：外後頭隆起・項靭帯<br>
+        停止：鎖骨外側1/3<br>
         作用：肩甲骨の挙上・上方回旋・内転
       </div>`,
-      btnLabel: '✅ 調べた！進む',
-      salon: '詳しい触診・臨床応用はオンラインサロンで解説予定'
+      nextFn: 'goToMiniQuiz()',
     },
     2: {
       title: '⚔️ 修行指令②',
-      instruction: '肩井（GB21）の<strong>取穴法</strong>はここだ。',
-      anatomy: `<div style="margin-top:10px;background:rgba(74,158,255,0.07);border:1px solid rgba(74,158,255,0.3);border-radius:10px;padding:12px;font-size:0.85rem;line-height:1.9">
-        <div style="color:var(--accent);font-weight:700;margin-bottom:6px">📋 取穴の要点</div>
-        部位：大椎（第7頸椎棘突起）と肩峰を結ぶ線の<strong>中点</strong><br>
-        解剖：僧帽筋上部線維・深部に棘上筋<br>
-        特徴：僧帽筋のトリガーポイントに一致
+      subject: '肩井',
+      instruction: '取穴法を暗記せよ',
+      anatomy: `<div style="background:rgba(74,158,255,0.07);border:1px solid rgba(74,158,255,0.3);border-radius:10px;padding:12px;font-size:0.88rem;line-height:2">
+        <div style="color:var(--accent);font-weight:700;margin-bottom:6px">📋 肩井（GB21）</div>
+        部位：大椎と肩峰を結ぶ線の<strong>中点</strong><br>
+        解剖：僧帽筋上部・深部に棘上筋<br>
+        特徴：僧帽筋トリガーポイントに一致
       </div>`,
-      btnLabel: '✅ 調べた！進む',
-      salon: '詳しい刺鍼角度・補瀉はオンラインサロンで解説予定'
+      nextFn: 'goToClear()',
     }
   };
   const c = contents[n];
+
   const html = `
-    <div style="font-weight:900;font-size:1rem;margin-bottom:10px;color:var(--gold)">${c.title}</div>
-    <div style="margin-bottom:12px;line-height:1.75;font-size:0.92rem">${c.instruction}</div>
+    <div style="font-weight:900;font-size:1rem;margin-bottom:8px;color:var(--gold)">${c.title}</div>
+    <div style="font-size:0.88rem;color:#aaa;margin-bottom:10px">${c.instruction}</div>
     ${c.anatomy}
-    <button class="btn-done" style="width:100%;margin-top:14px;margin-bottom:10px" onclick="hwDone(${n})">${c.btnLabel}</button>
-    <div style="text-align:center;margin-top:6px">
-      <span style="color:var(--gold);font-size:0.82rem">🎬 ${c.salon}</span>
+    <div id="hw-countdown-wrap" style="text-align:center;margin:14px 0">
+      <div style="font-size:0.8rem;color:#aaa;margin-bottom:4px">覚えたらボタンが活性化します</div>
+      <div id="hw-countdown" style="font-size:2rem;font-weight:900;color:var(--gold)">10</div>
     </div>
+    <button id="hw-done-btn" class="btn-done" style="width:100%;opacity:0.3" disabled onclick="hwDone(${n})">✅ 覚えた！進む</button>
   `;
+
   _hwOverlayMode = true;
   document.getElementById('card-overlay-close').style.display = 'none';
   showCardOverlay(html, null);
+
+  let count = 10;
+  const timer = setInterval(() => {
+    count--;
+    const el = document.getElementById('hw-countdown');
+    if (!el) { clearInterval(timer); return; }
+    if (count <= 0) {
+      clearInterval(timer);
+      el.textContent = '✓';
+      el.style.color = 'var(--correct)';
+      document.getElementById('hw-countdown-wrap').querySelector('div').textContent = '準備完了！';
+      const btn = document.getElementById('hw-done-btn');
+      if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+    } else {
+      el.textContent = count;
+    }
+  }, 1000);
 }
 
 function hwDone(n) {
   sfxClick();
-  if (n === 1) state.evidence1Unlocked = true;
-  else state.evidence2Unlocked = true;
-  saveState();
   _hwOverlayMode = false;
   document.getElementById('card-overlay-close').style.display = '';
   document.getElementById('card-overlay').classList.remove('show');
-  setTimeout(() => {
-    sfxSlide();
-    const evidenceEl = document.getElementById('evidence' + n);
-    if (n === 1) {
-      showCardOverlay(evidenceEl.innerHTML, () => {
-        document.getElementById('btn-tohomework1-next').style.display = 'block';
-        document.getElementById('hw1-char-img').src = './bon_shocho.png';
-        document.getElementById('hw1-win-text').innerHTML = '証拠が揃った。次は試練で犯人を確かめろ！';
-      });
-    } else {
-      showCardOverlay(evidenceEl.innerHTML, () => {
-        if (state.mode === 'intermediate' && !state.quiz2Done) {
-          document.querySelectorAll('#quiz2-options .btn-quiz-grid')
-            .forEach(b => { if (!b.classList.contains('correct')) { b.disabled = false; b.className = 'btn-quiz'; } });
-          document.getElementById('quiz2-feedback').className = 'quiz-feedback';
-          const hint = document.createElement('div');
-          hint.className = 'retry-hint';
-          hint.textContent = '根拠を確認した！もう一度選んでみよう 👆';
-          document.getElementById('quiz2-options').after(hint);
-        } else {
-          document.getElementById('btn-tohomework2-next').style.display = 'block';
-        }
-      });
-    }
-  }, 100);
+  _cardOverlayCb = null;
+
+  if (n === 1) {
+    state.evidence1Unlocked = true; saveState();
+    goToMiniQuiz();
+  } else {
+    state.evidence2Unlocked = true; saveState();
+    goToClear();
+  }
 }
 
 function showClinicalMemo() {
@@ -2330,12 +2332,10 @@ function answerQuiz1(i) {
     showXpGain(10);
     showKoredayo(() => {
       showVillainDefeat(() => {
-        const memoHtml = document.getElementById('quiz1-memo').innerHTML;
         const html = `
           <div style="text-align:center;font-size:2rem;margin-bottom:8px">✅</div>
           <div style="font-weight:900;color:var(--correct);font-size:1.1rem;margin-bottom:10px">正解！</div>
           <div style="line-height:1.7;margin-bottom:14px">${pName()}、${quiz1Data.correctMsg}</div>
-          <div style="margin-bottom:16px">${memoHtml}</div>
           <button class="btn-next-full" onclick="sfxClick(); closeCardOverlay()">次のフェーズへ →</button>
         `;
         showCardOverlay(html, goToPhase5);
@@ -2387,7 +2387,6 @@ function goToPhase5() {
   quiz2WrongCount = 0;
   showScreenWithSound('homework2');
   renderQuiz2();
-  if (state.evidence2Unlocked) restoreHomework2();
 }
 
 function renderQuiz2() {
@@ -2462,11 +2461,7 @@ function answerQuiz2(i) {
 }
 
 function showHw2Step() {
-  document.getElementById('quiz2-options').style.display = 'none';
-  document.getElementById('quiz2-feedback').style.display = 'none';
-  document.getElementById('btn-quiz2-to-hw2').style.display = 'none';
-  if (state.evidence2Unlocked) restoreHomework2();
-  else setTimeout(() => showHomeworkOverlay(2), 300);
+  showHomeworkOverlay(2);
 }
 
 function restoreHomework2() {
@@ -2650,7 +2645,7 @@ function drawRadarChart() {
 
 // リプレイ（全データ完全リセット）
 function replayGame() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12'].forEach(k => {
     localStorage.removeItem(k);
   });
   state = {
@@ -3026,7 +3021,7 @@ function finishGoal() {
 // INIT
 // =====================================================
 function init() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12'].forEach(k => {
     localStorage.removeItem(k);
   });
   checkOnboarding();
