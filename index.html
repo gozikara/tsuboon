@@ -1486,7 +1486,7 @@ function sfxTransition() {
 // =====================================================
 // STATE
 // =====================================================
-const STORAGE_KEY = 'rinsho_ep1_v13';
+const STORAGE_KEY = 'rinsho_ep1_v14';
 
 let state = {
   phase: 'splash',
@@ -1530,8 +1530,8 @@ function getBackTargetMap() {
     lineup:    () => { showScreenWithSound('dialogue'); dlgIdx = 0; showDialogue(0); },
     choices:   () => { showDialogue(dlgIdx); showScreenWithSound('dialogue'); },
     homework1: () => goToChoices(),
-    miniquiz:  () => goToPhase3(),
-    quiz1:     () => state.mode === 'intermediate' ? goToChoices() : goToMiniQuiz(),
+    miniquiz:  () => goToQuiz1(),
+    quiz1:     () => goToChoices(),
     homework2: () => goToQuiz1(),
   };
 }
@@ -2044,9 +2044,7 @@ function checkChoicesDone() {
 
 // ===== PHASE 3: HOMEWORK 1 =====
 function goToPhase3() {
-  if (state.mode === 'intermediate') { goToQuiz1(); return; }
-  state.phase = 'homework1'; saveState();
-  showHomeworkOverlay(1);
+  goToQuiz1();
 }
 
 function restoreHomework1() {
@@ -2164,7 +2162,7 @@ function showMiniQuizComplete() {
   document.getElementById('mq-question-wrap').innerHTML = `
     <div class="mq-complete-msg">
       <div class="mq-complete-text">基礎確認OK！<br>法廷へ向かえ</div>
-      <button class="btn-next-full" onclick="sfxClick(); goToQuiz1()">⚔️ 第4章：鑑別へ</button>
+      <button class="btn-next-full" onclick="sfxClick(); goToPhase5()">⚔️ 次のフェーズへ →</button>
     </div>
   `;
 }
@@ -2311,13 +2309,23 @@ function answerQuiz1(i) {
     showXpGain(10);
     showKoredayo(() => {
       showVillainDefeat(() => {
-        const html = `
-          <div style="text-align:center;font-size:2rem;margin-bottom:8px">✅</div>
-          <div style="font-weight:900;color:var(--correct);font-size:1.1rem;margin-bottom:10px">正解！</div>
-          <div style="line-height:1.7;margin-bottom:14px">${pName()}、${quiz1Data.correctMsg}</div>
-          <button class="btn-next-full" onclick="sfxClick(); closeCardOverlay()">次のフェーズへ →</button>
-        `;
-        showCardOverlay(html, goToPhase5);
+        if (state.mode === 'beginner') {
+          const html = `
+            <div style="text-align:center;font-size:2rem;margin-bottom:8px">✅</div>
+            <div style="font-weight:900;color:var(--correct);font-size:1.1rem;margin-bottom:10px">正解！</div>
+            <div style="line-height:1.7;margin-bottom:14px">僧帽筋が犯人だ。では——こいつを知れ</div>
+            <button class="btn-next-full" onclick="sfxClick(); closeCardOverlay()">修行指令を受け取る →</button>
+          `;
+          showCardOverlay(html, () => showHomeworkOverlay(1));
+        } else {
+          const html = `
+            <div style="text-align:center;font-size:2rem;margin-bottom:8px">✅</div>
+            <div style="font-weight:900;color:var(--correct);font-size:1.1rem;margin-bottom:10px">正解！</div>
+            <div style="line-height:1.7;margin-bottom:14px">${pName()}、${quiz1Data.correctMsg}</div>
+            <button class="btn-next-full" onclick="sfxClick(); closeCardOverlay()">次のフェーズへ →</button>
+          `;
+          showCardOverlay(html, goToPhase5);
+        }
       });
     });
   } else {
@@ -2604,7 +2612,7 @@ function drawRadarChart() {
 
 // リプレイ（全データ完全リセット）
 function replayGame() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13'].forEach(k => {
     localStorage.removeItem(k);
   });
   state = {
@@ -2980,7 +2988,7 @@ function finishGoal() {
 // INIT
 // =====================================================
 function init() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13'].forEach(k => {
     localStorage.removeItem(k);
   });
   checkOnboarding();
