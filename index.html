@@ -1455,7 +1455,7 @@ function sfxTransition() {
 // =====================================================
 // STATE
 // =====================================================
-const STORAGE_KEY = 'rinsho_ep1_v22';
+const STORAGE_KEY = 'rinsho_ep1_v23';
 
 let state = {
   phase: 'splash',
@@ -1950,9 +1950,48 @@ const miniQuizData = [
   },
 ];
 
-let mqIdx = 0;
+const miniQuizData2 = [
+  {
+    intro: '最後の確認じゃ。\n取穴を確実に覚えたか見せよ。',
+    q: '肩井（GB21）は___と___を結ぶ線の中点である',
+    options: ['A. 大椎と肩峰', 'B. 頚椎C7と肩峰', 'C. 大椎と肩鎖関節', 'D. 頭蓋底と肩峰'],
+    correct: 0,
+    correctMsg: '正解！大椎から肩峰までの中点じゃ。しっかり覚えたのじゃ。',
+    wrongMsgs: [
+      null,
+      '頚椎C7は大椎に相当するが、正確には「大椎と肩峰の中点」と覚えよ',
+      '肩鎖関節ではなく肩峰（けんぽう）が正解です',
+      '頭蓋底は関係ありません。大椎（背中の出っ張り）と肩峰の中点です',
+    ],
+  },
+  {
+    intro: 'もう1問。最後の確認じゃ。',
+    q: '肩井（GB21）は___の上に取穴する',
+    options: ['A. 三角筋', 'B. 棘上筋', 'C. 僧帽筋上部線維', 'D. 肩甲挙筋'],
+    correct: 2,
+    correctMsg: '正解！僧帽筋上部線維の上に取穴する。原因筋に直接アプローチするのじゃ！',
+    wrongMsgs: [
+      '三角筋は肩の外側の筋肉。肩井は僧帽筋上部線維の上です',
+      '棘上筋は肩甲骨の上にある腱板の筋肉。肩井の位置とは異なります',
+      null,
+      '肩甲挙筋は頚椎から肩甲骨内側上角に走る筋肉。肩井は僧帽筋上部線維の上です',
+    ],
+  },
+];
 
-function goToMiniQuiz() {
+let mqIdx = 0;
+let _mqData = miniQuizData;
+let _mqDoneFn = null;
+let _mqCompleteIntro = '';
+let _mqCompleteText = '';
+let _mqCompleteBtn = '';
+
+function goToMiniQuiz(data, doneFn, completeIntro, completeText, completeBtn) {
+  _mqData = data || miniQuizData;
+  _mqDoneFn = doneFn || goToPhase5;
+  _mqCompleteIntro = completeIntro || '基礎確認OK。\n次は——秘孔を特定する時間じゃ。';
+  _mqCompleteText = completeText || '基礎確認OK！<br>秘孔をつく準備をしよう';
+  _mqCompleteBtn = completeBtn || '⚔️ 経穴クイズへ';
   mqIdx = 0;
   state.phase = 'miniquiz'; saveState();
   showScreenWithSound('miniquiz');
@@ -1960,7 +1999,15 @@ function goToMiniQuiz() {
 }
 
 function renderMiniQuiz() {
-  const q = miniQuizData[mqIdx];
+  if (!document.getElementById('mq-question')) {
+    document.getElementById('mq-question-wrap').innerHTML = `
+      <div class="mq-question-text" id="mq-question"></div>
+      <div class="quiz-options" id="mq-options"></div>
+      <div class="mq-iine" id="mq-iine"></div>
+      <div id="mq-feedback"></div>
+    `;
+  }
+  const q = _mqData[mqIdx];
   document.getElementById('mq-intro-text').textContent = q.intro;
   document.getElementById('mq-question').textContent = q.q;
 
@@ -1981,7 +2028,7 @@ function renderMiniQuiz() {
 
 function answerMiniQuiz(i) {
   sfxClick();
-  const q = miniQuizData[mqIdx];
+  const q = _mqData[mqIdx];
   const btns = document.querySelectorAll('#mq-options .btn-quiz-grid');
   const optText = q.options[i];
 
@@ -2000,7 +2047,7 @@ function answerMiniQuiz(i) {
     `;
     showCardOverlay(html, () => {
       mqIdx++;
-      if (mqIdx < miniQuizData.length) {
+      if (mqIdx < _mqData.length) {
         document.getElementById('mq-char-img').src = CHARS.bon.mini;
         document.getElementById('mq-tako-img').src = CHARS.tako.thinking;
         renderMiniQuiz();
@@ -2027,11 +2074,11 @@ function answerMiniQuiz(i) {
 
 function showMiniQuizComplete() {
   document.getElementById('mq-char-img').src = CHARS.bon.correct;
-  document.getElementById('mq-intro-text').textContent = '基礎確認OK。\n次は——秘孔を特定する時間じゃ。';
+  document.getElementById('mq-intro-text').textContent = _mqCompleteIntro;
   document.getElementById('mq-question-wrap').innerHTML = `
     <div class="mq-complete-msg">
-      <div class="mq-complete-text">基礎確認OK！<br>秘孔をつく準備をしよう</div>
-      <button class="btn-next-full" onclick="sfxClick(); goToPhase5()">⚔️ 経穴クイズへ</button>
+      <div class="mq-complete-text">${_mqCompleteText}</div>
+      <button class="btn-next-full" onclick="sfxClick(); _mqDoneFn()">${_mqCompleteBtn}</button>
     </div>
   `;
 }
@@ -2151,7 +2198,7 @@ function hwDone(n) {
     goToMiniQuiz();
   } else {
     state.evidence2Unlocked = true; saveState();
-    goToClear();
+    goToMiniQuiz(miniQuizData2, goToClear, '取穴確認OK。\nいざ、秘孔を突くのじゃ！', '取穴確認OK！<br>準備完了じゃ', '🏆 決着をつける！');
   }
 }
 
@@ -2191,7 +2238,7 @@ function answerQuiz1(i) {
           ${anatomyCard}
           <button class="btn-next-full" onclick="sfxClick(); closeCardOverlay()">次へ進む →</button>
         `;
-        showCardOverlay(html, goToPhase5);
+        showCardOverlay(html, goToMiniQuiz);
       });
     });
   } else {
@@ -2454,7 +2501,7 @@ function drawRadarChart() {
 
 // リプレイ（全データ完全リセット）
 function replayGame() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18','rinsho_ep1_v19','rinsho_ep1_v20','rinsho_ep1_v21'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18','rinsho_ep1_v19','rinsho_ep1_v20','rinsho_ep1_v21','rinsho_ep1_v22'].forEach(k => {
     localStorage.removeItem(k);
   });
   state = {
@@ -2830,7 +2877,7 @@ function finishGoal() {
 // INIT
 // =====================================================
 function init() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18','rinsho_ep1_v19','rinsho_ep1_v20','rinsho_ep1_v21'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18','rinsho_ep1_v19','rinsho_ep1_v20','rinsho_ep1_v21','rinsho_ep1_v22'].forEach(k => {
     localStorage.removeItem(k);
   });
   checkOnboarding();
