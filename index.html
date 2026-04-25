@@ -1006,7 +1006,7 @@
     <!-- テキストボックス -->
     <div class="novel-win">
       <div class="novel-speaker">ボーン院長</div>
-      <div class="choice-prompt">情報を集めろ。容疑筋を絞り込む手がかりは——患者さんの話の中にある。</div>
+      <div class="choice-prompt">情報を集めるのじゃ。容疑筋を絞り込む手がかりは——患者さんの話の中にある。</div>
       <div class="choice-answer-box" id="choice-answer-box"></div>
     </div>
   </div>
@@ -1054,7 +1054,7 @@
     </div>
     <div class="novel-win">
       <div class="novel-speaker">ボーン院長</div>
-      <div class="novel-context-text" id="mq-intro-text">修行の成果を見せてもらおう。<br>容疑筋を絞り込め。</div>
+      <div class="novel-context-text" id="mq-intro-text">修行の成果を見せてもらおうかのう。<br>容疑筋を絞り込むのじゃ。</div>
     </div>
   </div>
 
@@ -1087,7 +1087,7 @@
     </div>
     <div class="novel-win">
       <div class="novel-speaker">ボーン院長</div>
-      <div class="novel-context-text">情報収集が終わった。容疑筋を絞り込め。<br>肩の重さ・夕方悪化・デスクワーク・残業続き——<br>この症状を引き起こしている容疑筋はどれだ？</div>
+      <div class="novel-context-text">情報収集が終わった。容疑筋を絞り込むのじゃ。<br>肩の重さ・夕方悪化・デスクワーク・残業続き——<br>この症状を引き起こしている容疑筋はどれかのう？</div>
     </div>
   </div>
 
@@ -1117,7 +1117,7 @@
     </div>
     <div class="novel-win">
       <div class="novel-speaker">ボーン院長</div>
-      <div class="novel-context-text">容疑筋は特定した。<br>あとは秘孔を突くだけだ。<br>僧帽筋の急所——どこだ！</div>
+      <div class="novel-context-text">容疑筋は特定した。<br>あとは秘孔を突くだけじゃ。<br>僧帽筋の秘孔——どれかのう！</div>
     </div>
   </div>
 
@@ -1149,7 +1149,7 @@
       <div style="display:flex;align-items:flex-start;gap:10px;flex-direction:row-reverse">
         <img class="char-img" src="./bon_shocho.png" alt="ボーン院長" style="flex-shrink:0">
         <div style="background:rgba(74,158,255,0.1);border:1px solid var(--accent);border-radius:12px;padding:10px 14px;font-size:0.9rem;line-height:1.7;text-align:right">
-          ……治療家ってのは、症状を取る仕事じゃない。<br>その人の人生を——取り戻す仕事だ。<br><span id="clear-player-name-msg"></span>
+          ……治療家ってのは、症状だけを取る仕事じゃない。<br>その人の人生を——取り戻す仕事じゃ。<br><span id="clear-player-name-msg"></span>
         </div>
       </div>
     </div>
@@ -1240,7 +1240,7 @@
 <div id="villain-overlay">
   <img id="villain-defeat-img" src="./villain.png" alt="僧帽筋タロウ">
   <div id="villain-scream">ぐあああ…！<br>なぜ…バレた…！</div>
-  <div id="villain-bon-msg">真犯人——特定完了だ。<br>次は急所を突け。</div>
+  <div id="villain-bon-msg">容疑筋——特定完了じゃ。<br>次は秘孔を突くのじゃ。</div>
   <button id="villain-continue-btn" class="btn-primary"
     style="width:80%;max-width:300px"
     onclick="closeVillainOverlay()">⚔️ 急所を突きに行く</button>
@@ -1755,29 +1755,23 @@ function loadPlayerName() {
 // DIALOGUE DATA
 // =====================================================
 const dialogues = [
-  // 0: ボーン院長・登場
   { imgSrc: './bon_shocho.png', name: 'ボーン院長', speaker: 'ボーン院長', charType: 'npc',
-    text: () => `来たか、${pName()}。\n今日から君はこの院の新人治療家だ。\nさっそく患者さんが来ている。診察室へ向かえ。` },
+    text: () => `来たか、${pName()}よ。\n今日からお主はこの院の新人治療家じゃ。\nさっそく患者さんが来ておる。施術部屋へ向かうがよい。` },
 
-  // 1: ボーン院長・使命
   { imgSrc: './bon_shocho.png', name: 'ボーン院長', speaker: 'ボーン院長', charType: 'npc',
-    text: '治療家の仕事は症状を取ることじゃない。\n犯人を特定することだ。\n症状はただの——犯人が残した痕跡に過ぎん。' },
+    text: '治療家の仕事は闇雲に施術することではない。\n症状をとり、患者さんを治してあげることじゃ。\nそのためにはまず——犯人を特定せねばならんのう。' },
 
-  // 2: ボーン院長・容疑筋の概念
   { imgSrc: './bon_shocho.png', name: 'ボーン院長', speaker: 'ボーン院長', charType: 'npc',
-    text: 'まず患者さんから情報を集めろ。\n症状・タイミング・職業・生活習慣。\nそれが「容疑筋」を絞り込む唯一の手がかりだ。' },
+    text: 'まず患者さんから情報を集めるのじゃ。\n症状・タイミング・職業・生活習慣。\nそれが「容疑筋」を絞り込む唯一の手がかりじゃ。' },
 
-  // 3: 患者さん・登場（人生の背景）
   { imgSrc: './patient.png', name: '患者さん', speaker: '患者さん', charType: 'patient',
     text: '先生…来てよかった。\n3ヶ月間、肩がずっと重くて…\nパソコン仕事が辛くて、もう辞めようかと思ってたんです。' },
 
-  // 4: 患者さん・もっと深い背景
   { imgSrc: './patient.png', name: '患者さん', speaker: '患者さん', charType: 'patient',
     text: '先月…子どもの運動会も、\n肩と頭が痛くて途中で帰ったんです。\n子どもの顔、見れなくて…' },
 
-  // 5: ボーン院長・問診指示
   { imgSrc: './bon_shocho.png', name: 'ボーン院長', speaker: 'ボーン院長', charType: 'npc',
-    text: () => `${pName()}、聞いたか。\nこの人には——取り戻すべき人生がある。\nまず情報を集めろ。容疑筋を絞り込め。` },
+    text: () => `${pName()}よ、聞いたか。\nこの患者さんには——取り戻すべき人生がある。\nまず情報を集めるのじゃ。容疑筋を絞り込むのじゃ。` },
 ];
 
 const choiceData = [
@@ -1790,13 +1784,13 @@ const choiceData = [
 // QUIZ DATA
 // =====================================================
 const quiz1Data = {
-  options: ['A. 三角筋', 'B. 僧帽筋上部', 'C. 肩甲挙筋', 'D. 棘上筋'],
+  options: ['A. 三角筋', 'B. 僧帽筋上部', 'C. 胸鎖乳突筋', 'D. 棘上筋'],
   correct: 1,
-  correctMsg: '正解だ。\nデスクワークで収縮し続け、夕方に疲弊する。\nあの患者さんの生活と完全に一致する。\n容疑筋の特定——完了だ。\n次は急所を突け。',
+  correctMsg: '正解じゃ。\nデスクワークで収縮し続け、夕方に疲弊する。\nあの患者さんの生活と完全に一致する。\n容疑筋の特定——完了じゃ。\n次は秘孔を突くのじゃ。',
   wrongExplanations: [
     '三角筋は腕を横・前・後ろに動かす筋肉です。デスクワークで酷使される筋肉とは異なり、今回の「肩の重さ・夕方悪化」とは症状パターンが一致しません',
     null,
-    '肩甲挙筋は首〜肩甲骨をつなぐ筋肉で、頸部の疲れには関与しますが、今回の「肩上部の広範囲な重さ・デスクワーク後の夕方悪化」は僧帽筋上部の症状パターンに一致します',
+    '胸鎖乳突筋は頭を傾けたり回旋する筋肉です。首こりには関与しますが、今回の「肩上部の広範囲な重さ・デスクワーク後の夕方悪化」は僧帽筋上部の症状パターンに一致します',
     '棘上筋は腕を横に上げる際に使う筋肉で、五十肩（腱板損傷）との関連が深いです。今回のような「肩の重だるさ」とは原因が異なります',
   ],
 };
@@ -2420,8 +2414,10 @@ function answerQuiz2(i) {
     const html = `
       <div style="text-align:center;font-size:2rem;margin-bottom:8px">❌</div>
       <div style="font-weight:700;margin-bottom:10px">${optText}</div>
-      <div style="line-height:1.7;margin-bottom:4px">${pName()}、惜しい！${expText}</div>
-      <button class="btn-next-full" style="margin-top:16px;background:var(--accent)" onclick="closeCardOverlay()">もう一度考える</button>
+      <div style="background:rgba(255,74,74,0.08);border:1px solid rgba(255,74,74,0.3);border-radius:10px;padding:12px;margin-bottom:14px;line-height:1.8;font-size:0.9rem;color:#f0d0d0">
+        ${expText}
+      </div>
+      <button class="btn-next-full" style="margin-top:4px;background:var(--accent)" onclick="closeCardOverlay()">もう一度考える</button>
     `;
     showCardOverlay(html, null);
   }
