@@ -966,24 +966,6 @@
     </div>
   </div>
 
-  <!-- ========== LINEUP（容疑筋面通し）========== -->
-  <div id="screen-lineup" class="screen novel-screen">
-    <div class="game-stage">
-      <img class="stage-char suspect-left"   src="./villain.png" alt="三角筋ケン">
-      <img class="stage-char suspect-center" src="./villain.png" alt="僧帽筋タロウ">
-      <img class="stage-char suspect-right"  src="./villain.png" alt="肩甲挙筋ミツ">
-    </div>
-    <div class="novel-interactive">
-      <div id="lineup-cards" style="display:flex;flex-direction:column;gap:8px"></div>
-      <div id="lineup-next" style="display:none">
-        <button class="btn-next-full" onclick="sfxClick(); goToChoices()">🔍 問診で容疑筋を絞り込む</button>
-      </div>
-    </div>
-    <div class="novel-win">
-      <div class="novel-speaker">ボーン院長</div>
-      <div class="novel-context-text" id="lineup-win-text"></div>
-    </div>
-  </div>
 
   <!-- ========== CHOICES ========== -->
   <div id="screen-choices" class="screen novel-screen">
@@ -1500,7 +1482,7 @@ function sfxTransition() {
 // =====================================================
 // STATE
 // =====================================================
-const STORAGE_KEY = 'rinsho_ep1_v9';
+const STORAGE_KEY = 'rinsho_ep1_v10';
 
 let state = {
   phase: 'splash',
@@ -1542,7 +1524,7 @@ function getBackTargetMap() {
   return {
     dialogue:  () => { showScreenWithSound('mode'); },
     lineup:    () => { showScreenWithSound('dialogue'); dlgIdx = 0; showDialogue(0); },
-    choices:   () => { goToLineup(); },
+    choices:   () => { showDialogue(dlgIdx); showScreenWithSound('dialogue'); },
     homework1: () => goToChoices(),
     miniquiz:  () => goToPhase3(),
     quiz1:     () => state.mode === 'intermediate' ? goToChoices() : goToMiniQuiz(),
@@ -1564,7 +1546,7 @@ function goBack() {
 // =====================================================
 // SCREEN
 // =====================================================
-const GAME_SCREENS = new Set(['dialogue','lineup','choices','homework1','miniquiz','quiz1','homework2']);
+const GAME_SCREENS = new Set(['dialogue','choices','homework1','miniquiz','quiz1','homework2']);
 const PATIENT_INFO_SCREENS = new Set(['choices','homework1','miniquiz','quiz1','homework2','clear1','clear2','clear3']);
 
 function showScreen(id) {
@@ -1748,10 +1730,10 @@ const quiz1Data = {
   correct: 1,
   correctMsg: '正解だ。\nデスクワークで収縮し続け、夕方に疲弊する。\nあの患者さんの生活と完全に一致する。\n容疑筋の特定——完了だ。\n次は急所を突け。',
   wrongExplanations: [
-    '三角筋は肩の丸みを作る筋肉。腕を上げる動作で使うため、肩こりの"重だるさ"とは症状が異なります',
+    '三角筋は腕を横・前・後ろに動かす筋肉です。デスクワークで酷使される筋肉とは異なり、今回の「肩の重さ・夕方悪化」とは症状パターンが一致しません',
     null,
-    '肩甲挙筋も肩こりの原因にはなりますが、今回の症状（肩上部の広範囲な張り）は僧帽筋上部がより疑わしいです',
-    '棘上筋は腕を横に上げるときに使う筋肉。五十肩との関連が深く、デスクワークの肩こりとは原因が異なります',
+    '肩甲挙筋は首〜肩甲骨をつなぐ筋肉で、頸部の疲れには関与しますが、今回の「肩上部の広範囲な重さ・デスクワーク後の夕方悪化」は僧帽筋上部の症状パターンに一致します',
+    '棘上筋は腕を横に上げる際に使う筋肉で、五十肩（腱板損傷）との関連が深いです。今回のような「肩の重だるさ」とは原因が異なります',
   ],
 };
 
@@ -1868,7 +1850,7 @@ let dlgIdx = 0;
 let dlgLeftSrc = '', dlgRightSrc = '';
 
 function showDialogue(idx) {
-  if (idx >= dialogues.length) { goToLineup(); return; }
+  if (idx >= dialogues.length) { goToChoices(); return; }
   dlgIdx = idx;
   const d = dialogues[idx];
   const dText    = typeof d.text    === 'function' ? d.text()    : d.text;
@@ -2289,12 +2271,9 @@ function answerQuiz1(i) {
       : '';
     const html = `
       <div style="text-align:center;font-size:2rem;margin-bottom:8px">❌</div>
-      <div style="font-weight:700;margin-bottom:10px">惜しい。根拠を確認しろ。</div>
-      <div style="background:rgba(255,200,50,0.1);border:1px solid rgba(255,200,50,0.3);border-radius:10px;padding:12px;margin-bottom:14px;line-height:1.8;font-size:0.9rem">
-        ⚔️ 修行指令<br>
-        その筋肉の起始・停止・作用と<br>
-        患者さんの症状を照らし合わせろ。<br>
-        もう一度考えろ。
+      <div style="font-weight:700;margin-bottom:10px;color:var(--wrong)">${quiz1Data.options[i]}は違います</div>
+      <div style="background:rgba(255,74,74,0.08);border:1px solid rgba(255,74,74,0.3);border-radius:10px;padding:12px;margin-bottom:14px;line-height:1.8;font-size:0.9rem;color:#f0d0d0">
+        ${expText}
       </div>
       ${hintHtml}
       <button class="btn-next-full" style="margin-top:4px" onclick="closeCardOverlay()">✅ もう一度挑戦する</button>
@@ -2586,7 +2565,7 @@ function drawRadarChart() {
 
 // リプレイ（全データ完全リセット）
 function replayGame() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9'].forEach(k => {
     localStorage.removeItem(k);
   });
   state = {
@@ -2674,12 +2653,11 @@ function closeVillainOverlay() {
 // =====================================================
 const PHASE_STEP = {
   dialogue:  0,
-  lineup:    1,
-  choices:   2,
-  homework1: 3,
-  miniquiz:  3,
-  quiz1:     4,
-  homework2: 5,
+  choices:   1,
+  homework1: 2,
+  miniquiz:  2,
+  quiz1:     3,
+  homework2: 4,
 };
 
 function updateStepDots(phase) {
@@ -2963,7 +2941,7 @@ function finishGoal() {
 // INIT
 // =====================================================
 function init() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9'].forEach(k => {
     localStorage.removeItem(k);
   });
   checkOnboarding();
