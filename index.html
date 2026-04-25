@@ -2340,18 +2340,6 @@ function answerQuiz1(i) {
     `;
     showCardOverlay(html, null);
 
-    if (state.mode === 'intermediate' && !state.inlineHw1Shown) {
-      state.inlineHw1Shown = true; saveState();
-      setTimeout(() => {
-        const html = `
-          <div style="color:var(--accent);font-weight:700;margin-bottom:12px">📖 根拠を確認して、もう一度挑戦しよう</div>
-          <div class="hw-title" style="margin-bottom:10px">⚔️ 修行</div>
-          <div style="line-height:1.7;margin-bottom:16px">筋肉パーフェクト事典 第2章を読んで<br><strong>僧帽筋の起始・停止・作用</strong>を確認しよう</div>
-          <button class="btn-done" style="width:100%" onclick="closeCardOverlay()">✅ 読んだ！もう一度挑戦する</button>
-        `;
-        showCardOverlay(html, null);
-      }, 600);
-    }
   }
 }
 
