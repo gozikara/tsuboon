@@ -923,29 +923,22 @@
       <button class="btn-mode playable beginner" onclick="setModeAndStart('beginner')">
         <span class="mode-icon">🔰</span>
         <div>
-          <div class="mode-name">初学者モード</div>
-          <div class="mode-desc">学生・未経験者向け｜ヒントあり</div>
+          <div class="mode-name">ベーシック</div>
+          <div class="mode-desc">原因筋・取穴の基本を習得</div>
         </div>
       </button>
-      <button class="btn-mode playable intermediate" onclick="setModeAndStart('intermediate')">
-        <span class="mode-icon">⚡</span>
-        <div>
-          <div class="mode-name">初級者モード</div>
-          <div class="mode-desc">臨床1〜3年目向け｜ヒントなし</div>
-        </div>
-      </button>
-      <button class="btn-mode locked" onclick="showSalonUnlock('mid')">
+      <button class="btn-mode locked">
         <span class="mode-icon">🔥</span>
         <div>
-          <div class="mode-name">中級者モード <span class="lock-badge">🔒</span></div>
-          <div class="mode-desc">サロン会員限定｜複合症例</div>
+          <div class="mode-name">アドバンス <span class="lock-badge">🔒</span></div>
+          <div class="mode-desc">今後展開予定</div>
         </div>
       </button>
-      <button class="btn-mode locked" onclick="showSalonUnlock('adv')">
+      <button class="btn-mode locked">
         <span class="mode-icon">💀</span>
         <div>
-          <div class="mode-name">上級者モード <span class="lock-badge">🔒</span></div>
-          <div class="mode-desc">サロン会員限定｜指導者レベル</div>
+          <div class="mode-name">プロフェッショナル <span class="lock-badge">🔒</span></div>
+          <div class="mode-desc">今後展開予定</div>
         </div>
       </button>
     </div>
@@ -1462,7 +1455,7 @@ function sfxTransition() {
 // =====================================================
 // STATE
 // =====================================================
-const STORAGE_KEY = 'rinsho_ep1_v21';
+const STORAGE_KEY = 'rinsho_ep1_v22';
 
 let state = {
   phase: 'splash',
@@ -2326,39 +2319,19 @@ function calcAccuracy() {
 function showClearModeMsg() {
   const el = document.getElementById('clear-mode-msg');
   if (!el) return;
-  if (state.mode === 'beginner') {
-    el.className = 'clear-mode-msg beginner-msg';
-    el.innerHTML = `
-      <div class="cmsg-title">⚔️ 見習いの証 獲得！</div>
-      次はヒントなしの<strong>⚡ 勇者モード</strong>に挑戦せよ！<br>
-      同じ犯人を自力で倒せるか？<br>
-      <button class="btn-mode intermediate" style="margin-top:14px;width:100%" onclick="setModeAndStart('intermediate')">
-        <span style="font-size:1.4rem">⚡</span>
-        <span>
-          <div style="font-weight:900;font-size:0.95rem;color:#ffe44e">初級者モードで再挑戦</div>
-          <div style="font-size:0.75rem;color:#bbb;margin-top:2px">ヒントなし・自力で解く</div>
-        </span>
-      </button>`;
-  } else if (state.mode === 'intermediate') {
-    const acc = calcAccuracy();
-    el.className = 'clear-mode-msg intermediate-msg';
-    el.innerHTML = `
-      <div class="cmsg-title">⚔️ 勇者の証 獲得！<span class="accuracy-badge">命中率 ${acc}%</span></div>
-      ${acc === 100
-        ? '全問一撃必殺！伝説の治療士の称号が近い！'
-        : acc >= 50
-          ? '惜しい…もう一度修行して完璧な必殺技を習得しよう！'
-          : '犯人は手強かったか？解説動画で必殺技を磨け！'}
-      <div class="preview-problem">
-        <strong style="color:var(--gold)">🔥 中級者モード プレビュー</strong><br>
-        「問診で得た情報から<em>治療穴の優先順位</em>を組み立てなさい」<br>
-        — 東洋医学的弁証を応用した複合問題（中級者モードで解放）
-      </div>
-      <div style="margin-top:14px;background:rgba(255,200,50,0.08);border:1px solid var(--gold);border-radius:12px;padding:14px;font-size:0.88rem;line-height:1.7;color:#ccc">
-        <span style="color:#ffc832">🔜 オンラインサロン開設準備中</span><br>
-        開設時にはLINEでお知らせします。
-      </div>`;
-  }
+  const acc = calcAccuracy();
+  el.className = 'clear-mode-msg beginner-msg';
+  el.innerHTML = `
+    <div class="cmsg-title">🔰 ベーシック クリア！<span class="accuracy-badge">命中率 ${acc}%</span></div>
+    ${acc === 100
+      ? '全問一撃正解！素晴らしい臨床推論じゃ！'
+      : acc >= 50
+        ? 'よくやったのじゃ。次は一撃で仕留めるのじゃ！'
+        : '原因筋と秘孔の知識を復習してもう一度挑戦するのじゃ！'}
+    <div style="margin-top:14px;background:rgba(255,200,50,0.08);border:1px solid var(--gold);border-radius:12px;padding:14px;font-size:0.88rem;line-height:1.7;color:#ccc">
+      <strong style="color:var(--gold)">🔥 アドバンス・プロフェッショナル</strong><br>
+      より複雑な症例に挑む上位モードを準備中です。
+    </div>`;
   el.style.display = 'block';
 }
 
@@ -2481,7 +2454,7 @@ function drawRadarChart() {
 
 // リプレイ（全データ完全リセット）
 function replayGame() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18','rinsho_ep1_v19','rinsho_ep1_v20'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18','rinsho_ep1_v19','rinsho_ep1_v20','rinsho_ep1_v21'].forEach(k => {
     localStorage.removeItem(k);
   });
   state = {
@@ -2857,7 +2830,7 @@ function finishGoal() {
 // INIT
 // =====================================================
 function init() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18','rinsho_ep1_v19','rinsho_ep1_v20'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18','rinsho_ep1_v19','rinsho_ep1_v20','rinsho_ep1_v21'].forEach(k => {
     localStorage.removeItem(k);
   });
   checkOnboarding();
