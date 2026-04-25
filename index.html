@@ -1124,7 +1124,7 @@
       </div>
       <div style="display:flex;align-items:flex-start;gap:10px;flex-direction:row-reverse">
         <img class="char-img" src="./bon_shocho.png" alt="ボーン院長" style="flex-shrink:0">
-        <div style="background:rgba(74,158,255,0.1);border:1px solid var(--accent);border-radius:12px;padding:10px 14px;font-size:0.9rem;line-height:1.7;text-align:right">
+        <div style="background:rgba(74,158,255,0.1);border:1px solid var(--accent);border-radius:12px;padding:10px 14px;font-size:0.9rem;line-height:1.7;text-align:left">
           ……治療家ってのは、症状だけを取る仕事じゃない。<br>その人の人生を——取り戻す仕事じゃ。<br><span id="clear-player-name-msg"></span>
         </div>
       </div>
@@ -1462,7 +1462,7 @@ function sfxTransition() {
 // =====================================================
 // STATE
 // =====================================================
-const STORAGE_KEY = 'rinsho_ep1_v17';
+const STORAGE_KEY = 'rinsho_ep1_v18';
 
 let state = {
   phase: 'splash',
@@ -1712,7 +1712,9 @@ const CHARS = {
 let playerName = '';
 
 function pName() {
-  return playerName ? playerName + 'さん' : '勇者';
+  if (!playerName) return '勇者';
+  const clean = playerName.replace(/[：:]/g, '').trim();
+  return (clean || '勇者') + 'さん';
 }
 
 function loadPlayerName() {
@@ -2472,7 +2474,7 @@ function drawRadarChart() {
 
 // リプレイ（全データ完全リセット）
 function replayGame() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17'].forEach(k => {
     localStorage.removeItem(k);
   });
   state = {
@@ -2848,7 +2850,7 @@ function finishGoal() {
 // INIT
 // =====================================================
 function init() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17'].forEach(k => {
     localStorage.removeItem(k);
   });
   checkOnboarding();
