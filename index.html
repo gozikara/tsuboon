@@ -1462,7 +1462,7 @@ function sfxTransition() {
 // =====================================================
 // STATE
 // =====================================================
-const STORAGE_KEY = 'rinsho_ep1_v16';
+const STORAGE_KEY = 'rinsho_ep1_v17';
 
 let state = {
   phase: 'splash',
@@ -1554,7 +1554,7 @@ function showScreenWithSound(id) {
 // =====================================================
 // TEXT PAGINATION（2行ページ分割）
 // =====================================================
-const CHARS_PER_LINE = 20;
+const CHARS_PER_LINE = 22;
 const LINES_PER_PAGE = 2;
 
 function splitTextToPages(text) {
@@ -1747,7 +1747,7 @@ const dialogues = [
     text: '先月…子どもの運動会も、\n肩と頭が痛くて途中で帰ったんです。\n子どもの顔、見れなくて…' },
 
   { imgSrc: './bon_shocho.png', name: 'ボーン院長', speaker: 'ボーン院長', charType: 'npc',
-    text: () => `${pName()}よ、聞いたか。\nこの患者さんには——取り戻すべき人生がある。\nまず情報を集めるのじゃ。原因筋を絞り込むのじゃ。` },
+    text: () => `${pName()}よ、聞いたか。\nこの患者さんには——\n取り戻すべき人生がある。\nまず情報を集めるのじゃ。\n原因筋を絞り込むのじゃ。` },
 ];
 
 const choiceData = [
@@ -1930,7 +1930,7 @@ function goToPhase3() {
 // ===== MINI QUIZ (Phase 3.5) =====
 const miniQuizData = [
   {
-    intro: '修行の成果を見せてもらおう。\n容疑筋を絞り込め。どの筋肉が真犯人だ？',
+    intro: '修行の成果を見せてもらおうかのう。\n原因筋を絞り込むのじゃ。',
     q: '僧帽筋上部の起始は___である',
     options: ['A. 外後頭隆起・項靭帯', 'B. 肩甲棘', 'C. 烏口突起', 'D. 鎖骨外側端'],
     correct: 0,
@@ -2472,7 +2472,7 @@ function drawRadarChart() {
 
 // リプレイ（全データ完全リセット）
 function replayGame() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16'].forEach(k => {
     localStorage.removeItem(k);
   });
   state = {
@@ -2848,7 +2848,7 @@ function finishGoal() {
 // INIT
 // =====================================================
 function init() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16'].forEach(k => {
     localStorage.removeItem(k);
   });
   checkOnboarding();
