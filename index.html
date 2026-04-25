@@ -1462,7 +1462,7 @@ function sfxTransition() {
 // =====================================================
 // STATE
 // =====================================================
-const STORAGE_KEY = 'rinsho_ep1_v19';
+const STORAGE_KEY = 'rinsho_ep1_v20';
 
 let state = {
   phase: 'splash',
@@ -1926,11 +1926,7 @@ function checkChoicesDone() {
 
 // ===== PHASE 3: HOMEWORK 1 =====
 function goToPhase3() {
-  if (state.mode === 'beginner') {
-    showHomeworkOverlay(1);
-  } else {
-    goToQuiz1();
-  }
+  goToQuiz1();
 }
 
 // ===== MINI QUIZ (Phase 3.5) =====
@@ -2042,7 +2038,7 @@ function showMiniQuizComplete() {
   document.getElementById('mq-question-wrap').innerHTML = `
     <div class="mq-complete-msg">
       <div class="mq-complete-text">基礎確認OK！<br>秘孔をつく準備をしよう</div>
-      <button class="btn-next-full" onclick="sfxClick(); goToQuiz1()">⚔️ 鑑別へ</button>
+      <button class="btn-next-full" onclick="sfxClick(); goToPhase5()">⚔️ 経穴クイズへ</button>
     </div>
   `;
 }
@@ -2202,7 +2198,10 @@ function answerQuiz1(i) {
           ${anatomyCard}
           <button class="btn-next-full" onclick="sfxClick(); closeCardOverlay()">次へ進む →</button>
         `;
-        showCardOverlay(html, goToPhase5);
+        const afterFn = state.mode === 'beginner'
+          ? () => showHomeworkOverlay(1)
+          : goToPhase5;
+        showCardOverlay(html, afterFn);
       });
     });
   } else {
@@ -2485,7 +2484,7 @@ function drawRadarChart() {
 
 // リプレイ（全データ完全リセット）
 function replayGame() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18','rinsho_ep1_v19'].forEach(k => {
     localStorage.removeItem(k);
   });
   state = {
@@ -2861,7 +2860,7 @@ function finishGoal() {
 // INIT
 // =====================================================
 function init() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18','rinsho_ep1_v19'].forEach(k => {
     localStorage.removeItem(k);
   });
   checkOnboarding();
