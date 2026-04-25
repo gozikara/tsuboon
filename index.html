@@ -1012,30 +1012,6 @@
   </div>
 
   <!-- ========== HOMEWORK 1 ========== -->
-  <div id="screen-homework1" class="screen novel-screen">
-    <div class="game-stage">
-      <img class="stage-char center"
-           id="hw1-char-img" src="./bon_shocho.png" alt="ボーン院長">
-    </div>
-    <div class="novel-interactive">
-      <div class="evidence-card" id="evidence1">
-        <div class="ev-title">🔓 臨床の証拠・入手！</div>
-        <div>
-          <strong style="color:var(--gold)">【僧帽筋上部線維】</strong><br>
-          起始：外後頭隆起・項靭帯<br>停止：鎖骨外側1/3<br>作用：肩甲骨の挙上<br><br>
-          → デスクワークで常に収縮し続ける<br>
-          → 夕方に疲弊してこりが生じやすい<br>
-          → <strong style="color:var(--wrong)">肩こりの第一容疑筋として浮上</strong>
-        </div>
-      </div>
-      <button class="btn-next-full" id="btn-tohomework1-next" style="display:none" onclick="sfxClick(); goToMiniQuiz()">⚔️ 試練へ挑む！</button>
-    </div>
-    <div class="novel-win">
-      <div class="novel-speaker">ボーン院長</div>
-      <div class="novel-context-text" id="hw1-win-text">話を聴いただけじゃ犯人は倒せん。<br>解剖学の知識が、治療家の武器だ。<br>容疑筋を調べろ。</div>
-    </div>
-  </div>
-
   <!-- ========== MINI QUIZ ========== -->
   <div id="screen-miniquiz" class="screen novel-screen">
     <div class="game-stage">
@@ -1110,7 +1086,7 @@
           部位：大椎と肩峰を結ぶ線の中点<br>解剖：僧帽筋上部・深部に棘上筋<br><br>
           <strong style="color:var(--correct)">なぜ効く：</strong><br>
           僧帽筋のトリガーポイントに一致<br>
-          → <strong>真犯人の急所</strong>
+          → <strong>原因筋の秘孔</strong>
         </div>
       </div>
       <button class="btn-next-full" id="btn-tohomework2-next" style="display:none" onclick="sfxClick(); goToClear()">🏆 決着をつけろ！</button>
@@ -1243,7 +1219,7 @@
   <div id="villain-bon-msg">原因筋——特定完了じゃ。<br>次は秘孔を突くのじゃ。</div>
   <button id="villain-continue-btn" class="btn-primary"
     style="width:80%;max-width:300px"
-    onclick="closeVillainOverlay()">⚔️ 急所を突きに行く</button>
+    onclick="closeVillainOverlay()">次へ進む →</button>
 </div>
 
 <!-- ========== CARD OVERLAY ========== -->
@@ -1486,7 +1462,7 @@ function sfxTransition() {
 // =====================================================
 // STATE
 // =====================================================
-const STORAGE_KEY = 'rinsho_ep1_v15';
+const STORAGE_KEY = 'rinsho_ep1_v16';
 
 let state = {
   phase: 'splash',
@@ -1810,96 +1786,6 @@ const quiz2Data = {
 // =====================================================
 // LINEUP
 // =====================================================
-const suspectData = [
-  {
-    name: '三角筋ケン', label: '容疑筋 A',
-    borderColor: 'rgba(80,160,255,0.7)', bgColor: 'rgba(80,160,255,0.10)',
-    claim: '「デスクワークで俺の出番ないっすよ。\n　見当違いじゃないっすか？」',
-    hint: '腕を横に上げる筋肉',
-  },
-  {
-    name: '僧帽筋タロウ', label: '容疑筋 B（最重要）',
-    borderColor: 'rgba(255,80,80,0.8)', bgColor: 'rgba(255,80,80,0.12)',
-    claim: '「オレはずっと働いてきた。\n　悪者扱いするな……！」',
-    hint: '肩の上部・デスクワークで酷使',
-  },
-  {
-    name: '肩甲挙筋ミツ', label: '容疑筋 C',
-    borderColor: 'rgba(255,200,50,0.7)', bgColor: 'rgba(255,200,50,0.10)',
-    claim: '「私も…関係あるかも。\n　でも今回は一番じゃ…」',
-    hint: '首〜肩甲骨をつなぐ筋肉',
-  },
-];
-
-function goToLineup() {
-  state.phase = 'lineup';
-  saveState();
-  showScreenWithSound('lineup');
-  renderLineup();
-}
-
-function renderLineup() {
-  const container = document.getElementById('lineup-cards');
-  container.innerHTML = '';
-  document.getElementById('lineup-next').style.display = 'none';
-
-  const winText = document.getElementById('lineup-win-text');
-  winText.textContent = '';
-  setTimeout(() => {
-    typewriteSimple(winText, '容疑筋たちを紹介する。\nこいつらの中に——犯人がいる。\nよく見ておけ。');
-  }, 200);
-
-  suspectData.forEach((s, i) => {
-    const card = document.createElement('div');
-    card.style.cssText = `
-      background:${s.bgColor};border:2px solid ${s.borderColor};
-      border-radius:12px;padding:10px 14px;
-      opacity:0;transform:translateX(40px);
-      transition:opacity 0.4s ease,transform 0.4s ease;
-    `;
-    card.innerHTML = `
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-        <div style="font-size:0.68rem;color:#888;letter-spacing:0.1em">${s.label}</div>
-        <div style="font-size:0.95rem;font-weight:900;color:#fff">${s.name}</div>
-        <div style="margin-left:auto;font-size:0.68rem;color:#666;
-          background:rgba(255,255,255,0.05);border-radius:6px;
-          padding:2px 7px;border:1px solid rgba(255,255,255,0.1)">${s.hint}</div>
-      </div>
-      <div style="font-size:0.84rem;line-height:1.65;color:#ddd;
-        white-space:pre-wrap;border-left:3px solid ${s.borderColor};
-        padding-left:8px">${s.claim}</div>
-    `;
-    container.appendChild(card);
-
-    setTimeout(() => {
-      card.style.opacity = '1';
-      card.style.transform = 'translateX(0)';
-      sfxSlide();
-      if (i === suspectData.length - 1) {
-        setTimeout(() => {
-          document.getElementById('lineup-next').style.display = 'block';
-          typewriteSimple(
-            document.getElementById('lineup-win-text'),
-            'こいつらの言い訳を\n鵜呑みにするな。\n患者さんの情報で——真犯人を炙り出せ。'
-          );
-        }, 500);
-      }
-    }, 300 + i * 500);
-  });
-}
-
-function typewriteSimple(el, text) {
-  el.textContent = '';
-  let i = 0;
-  const PAUSE = { '。':160, '！':130, '？':130, '…':200, '\n':100 };
-  function next() {
-    if (i >= text.length) return;
-    const c = text[i++];
-    el.textContent = text.slice(0, i);
-    setTimeout(next, PAUSE[c] || 28);
-  }
-  next();
-}
 
 // =====================================================
 // DIALOGUE
@@ -2039,12 +1925,6 @@ function checkChoicesDone() {
 // ===== PHASE 3: HOMEWORK 1 =====
 function goToPhase3() {
   goToQuiz1();
-}
-
-function restoreHomework1() {
-  document.getElementById('btn-tohomework1-next').style.display = 'block';
-  document.getElementById('hw1-char-img').src = './bon_shocho.png';
-  document.getElementById('hw1-win-text').innerHTML = '証拠が揃った。次は試練で犯人を確かめろ！';
 }
 
 // ===== MINI QUIZ (Phase 3.5) =====
@@ -2415,10 +2295,6 @@ function showHw2Step() {
   showHomeworkOverlay(2);
 }
 
-function restoreHomework2() {
-  document.getElementById('btn-tohomework2-next').style.display = 'block';
-}
-
 function toggleNobook(n) {
   sfxClick();
   document.getElementById('nobook-card' + n).classList.toggle('visible');
@@ -2596,7 +2472,7 @@ function drawRadarChart() {
 
 // リプレイ（全データ完全リセット）
 function replayGame() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15'].forEach(k => {
     localStorage.removeItem(k);
   });
   state = {
@@ -2972,7 +2848,7 @@ function finishGoal() {
 // INIT
 // =====================================================
 function init() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15'].forEach(k => {
     localStorage.removeItem(k);
   });
   checkOnboarding();
