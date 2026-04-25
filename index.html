@@ -1954,12 +1954,12 @@ const miniQuizData2 = [
   {
     intro: '最後の確認じゃ。\n取穴を確実に覚えたか見せよ。',
     q: '肩井（GB21）は___と___を結ぶ線の中点である',
-    options: ['A. 大椎と肩峰', 'B. 頚椎C7と肩峰', 'C. 大椎と肩鎖関節', 'D. 頭蓋底と肩峰'],
+    options: ['A. 大椎と肩峰', 'B. 大椎と肩甲棘', 'C. 大椎と肩鎖関節', 'D. 頭蓋底と肩峰'],
     correct: 0,
     correctMsg: '正解！大椎から肩峰までの中点じゃ。しっかり覚えたのじゃ。',
     wrongMsgs: [
       null,
-      '頚椎C7は大椎に相当するが、正確には「大椎と肩峰の中点」と覚えよ',
+      '肩甲棘は僧帽筋中部の停止部。取穴の基準は肩甲棘ではなく肩峰（けんぽう）です',
       '肩鎖関節ではなく肩峰（けんぽう）が正解です',
       '頭蓋底は関係ありません。大椎（背中の出っ張り）と肩峰の中点です',
     ],
@@ -2083,6 +2083,16 @@ function showMiniQuizComplete() {
   `;
 }
 
+function showMiniQuizBridge(icon, title, body, doneFn) {
+  const html = `
+    <div style="text-align:center;font-size:2rem;margin-bottom:8px">${icon}</div>
+    <div style="font-weight:900;font-size:1.05rem;margin-bottom:10px;color:var(--gold)">${title}</div>
+    <div style="line-height:1.8;margin-bottom:16px">${body}</div>
+    <button class="btn-next-full" onclick="sfxClick(); closeCardOverlay()">始める →</button>
+  `;
+  showCardOverlay(html, doneFn);
+}
+
 // ===== PHASE 4: QUIZ 1 =====
 function goToQuiz1() {
   state.phase = 'quiz1'; saveState();
@@ -2198,7 +2208,7 @@ function hwDone(n) {
     goToMiniQuiz();
   } else {
     state.evidence2Unlocked = true; saveState();
-    goToMiniQuiz(miniQuizData2, goToClear, '取穴確認OK。\nいざ、秘孔を突くのじゃ！', '取穴確認OK！<br>準備完了じゃ', '🏆 決着をつける！');
+    showMiniQuizBridge('📍', '取穴の成果を見せてもらおう！', '今確認した肩井の取穴法で確認テストじゃ。', () => goToMiniQuiz(miniQuizData2, goToClear, '取穴確認OK。\nいざ、秘孔を突くのじゃ！', '取穴確認OK！<br>準備完了じゃ', '🏆 決着をつける！'));
   }
 }
 
@@ -2238,7 +2248,7 @@ function answerQuiz1(i) {
           ${anatomyCard}
           <button class="btn-next-full" onclick="sfxClick(); closeCardOverlay()">次へ進む →</button>
         `;
-        showCardOverlay(html, goToMiniQuiz);
+        showCardOverlay(html, () => showMiniQuizBridge('📝', '暗記の成果を見せてもらおう！', '今覚えた僧帽筋の解剖学で確認テストじゃ。', goToMiniQuiz));
       });
     });
   } else {
