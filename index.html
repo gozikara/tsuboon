@@ -888,10 +888,10 @@
   <div id="screen-episode" class="screen pad20" style="justify-content:center;align-items:center;gap:16px">
     <div style="text-align:center">
       <div style="font-size:1.5rem;font-weight:bold;color:#4a9eff">エピソード 1</div>
-      <div style="font-size:1.3rem;font-weight:bold;color:#ffc832;margin-top:6px">「肩こりの真犯人を探せ」</div>
+      <div style="font-size:1.3rem;font-weight:bold;color:#ffc832;margin-top:6px">「肩こりの原因と秘孔を探せ」</div>
     </div>
     <img src="./patient.png" alt="患者さん" style="width:160px;height:160px;object-fit:contain">
-    <button class="btn-primary" onclick="sfxClick(); goToMode()">⚔️ 冒険に出発！</button>
+    <button class="btn-primary" onclick="sfxClick(); goToMode()">🏥 治療院へいく！</button>
   </div>
 
   <!-- ========== GOAL ========== -->
@@ -1462,7 +1462,7 @@ function sfxTransition() {
 // =====================================================
 // STATE
 // =====================================================
-const STORAGE_KEY = 'rinsho_ep1_v18';
+const STORAGE_KEY = 'rinsho_ep1_v19';
 
 let state = {
   phase: 'splash',
@@ -1926,7 +1926,11 @@ function checkChoicesDone() {
 
 // ===== PHASE 3: HOMEWORK 1 =====
 function goToPhase3() {
-  goToQuiz1();
+  if (state.mode === 'beginner') {
+    showHomeworkOverlay(1);
+  } else {
+    goToQuiz1();
+  }
 }
 
 // ===== MINI QUIZ (Phase 3.5) =====
@@ -2127,8 +2131,7 @@ function showHomeworkOverlay(n) {
       anatomy: `<div style="background:rgba(74,158,255,0.07);border:1px solid rgba(74,158,255,0.3);border-radius:10px;padding:12px;font-size:0.88rem;line-height:2">
         <div style="color:var(--accent);font-weight:700;margin-bottom:6px">📋 肩井（GB21）</div>
         部位：大椎と肩峰を結ぶ線の<strong>中点</strong><br>
-        解剖：僧帽筋上部・深部に棘上筋<br>
-        特徴：僧帽筋トリガーポイントに一致
+        解剖：僧帽筋上部線維
       </div>`,
       nextFn: 'goToClear()',
     }
@@ -2185,11 +2188,19 @@ function answerQuiz1(i) {
     showXpGain(10);
     showKoredayo(() => {
       showVillainDefeat(() => {
+        const anatomyCard = state.mode === 'beginner' ? `
+          <div style="background:rgba(74,158,255,0.07);border:1px solid rgba(74,158,255,0.3);border-radius:10px;padding:12px;font-size:0.88rem;line-height:2;margin-bottom:12px">
+            <div style="color:var(--accent);font-weight:700;margin-bottom:6px">📋 僧帽筋（上部線維）</div>
+            起始：外後頭隆起・項靭帯<br>
+            停止：鎖骨外側1/3<br>
+            作用：肩甲骨の挙上・上方回旋・内転
+          </div>` : '';
         const html = `
           <div style="text-align:center;font-size:2rem;margin-bottom:8px">✅</div>
           <div style="font-weight:900;color:var(--correct);font-size:1.1rem;margin-bottom:10px">正解！</div>
-          <div style="line-height:1.7;margin-bottom:8px">僧帽筋が原因じゃ。この筋の解剖学を確認しよう。</div>
-          <button class="btn-next-full" onclick="sfxClick(); closeCardOverlay()">僧帽筋の詳細を見る →</button>
+          <div style="line-height:1.7;margin-bottom:12px">僧帽筋が原因じゃ。この筋の解剖学を確認しよう。確認するんじゃ。</div>
+          ${anatomyCard}
+          <button class="btn-next-full" onclick="sfxClick(); closeCardOverlay()">次へ進む →</button>
         `;
         showCardOverlay(html, goToPhase5);
       });
@@ -2474,7 +2485,7 @@ function drawRadarChart() {
 
 // リプレイ（全データ完全リセット）
 function replayGame() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18'].forEach(k => {
     localStorage.removeItem(k);
   });
   state = {
@@ -2850,7 +2861,7 @@ function finishGoal() {
 // INIT
 // =====================================================
 function init() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18'].forEach(k => {
     localStorage.removeItem(k);
   });
   checkOnboarding();
