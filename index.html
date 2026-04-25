@@ -475,17 +475,18 @@
   .novel-win {
     position: relative;
     z-index: 100;
-    flex: 0 0 auto !important;
+    flex: 0 0 110px !important;
     width: 100%;
-    min-height: 110px;
-    max-height: 28vh;
+    height: 110px !important;
+    min-height: 110px !important;
+    max-height: 110px !important;
     background: rgba(0, 8, 24, 0.92) !important;
     border-top: 3px solid var(--accent) !important;
     border-left: none !important;
     border-right: none !important;
     border-bottom: none !important;
     border-radius: 0 !important;
-    padding: 44px 16px 14px !important;
+    padding: 36px 16px 10px !important;
     overflow: hidden !important;
     box-sizing: border-box;
     backdrop-filter: blur(4px);
@@ -511,9 +512,12 @@
   .novel-win .dialogue-text,
   .novel-context-text {
     font-size: 15px !important;
-    line-height: 1.7 !important;
+    line-height: 1.65 !important;
     white-space: pre-wrap !important;
     color: #f0f4ff;
+    overflow: hidden;
+    display: block;
+    max-height: calc(15px * 1.65 * 2);
   }
   .novel-win .tap-hint { position:absolute; bottom:6px; right:12px; font-size:0.7rem; color:#aaa; animation:blink 1.2s ease infinite; }
   .novel-win .choice-prompt { font-size:14px; line-height:1.6; color:var(--accent); font-weight:700; }
@@ -1482,7 +1486,7 @@ function sfxTransition() {
 // =====================================================
 // STATE
 // =====================================================
-const STORAGE_KEY = 'rinsho_ep1_v10';
+const STORAGE_KEY = 'rinsho_ep1_v12';
 
 let state = {
   phase: 'splash',
@@ -1572,6 +1576,45 @@ function showScreenWithSound(id) {
 }
 
 // =====================================================
+// TEXT PAGINATION（2行ページ分割）
+// =====================================================
+const CHARS_PER_LINE = 20;
+const LINES_PER_PAGE = 2;
+
+function splitTextToPages(text) {
+  const lines = [];
+  text.split('\n').forEach(para => {
+    if (para === '') {
+      lines.push('');
+    } else {
+      let pos = 0;
+      while (pos < para.length) {
+        lines.push(para.slice(pos, pos + CHARS_PER_LINE));
+        pos += CHARS_PER_LINE;
+      }
+    }
+  });
+
+  const pages = [];
+  let i = 0;
+  while (i < lines.length) {
+    const page = [];
+    let count = 0;
+    while (i < lines.length && count < LINES_PER_PAGE) {
+      if (lines[i] === '' && count === 0) { i++; continue; }
+      page.push(lines[i]);
+      count++;
+      i++;
+    }
+    if (page.length > 0) pages.push(page.join('\n'));
+  }
+  return pages.length > 0 ? pages : [text];
+}
+
+let dlgPages = [];
+let dlgPageIdx = 0;
+
+// =====================================================
 // TYPEWRITER
 // =====================================================
 let typeTimer = null, typeFullText = '', typeEl = null;
@@ -1580,29 +1623,45 @@ let typeIdx = 0, typeDone = false, typeCharType = 'you';
 function typewrite(element, text, charType) {
   if (typeTimer) clearTimeout(typeTimer);
   blipCounter = 0;
+  dlgPages = splitTextToPages(text);
+  dlgPageIdx = 0;
+  typewritePage(element, charType);
+}
+
+function typewritePage(element, charType) {
+  if (typeTimer) clearTimeout(typeTimer);
+  blipCounter = 0;
+
+  const pageText = dlgPages[dlgPageIdx];
+  const isLastPage = dlgPageIdx >= dlgPages.length - 1;
+
   typeEl = element;
-  typeFullText = text;
+  typeFullText = pageText;
   typeIdx = 0;
   typeDone = false;
   typeCharType = charType || 'you';
   element.textContent = '';
-  document.getElementById('tap-hint').style.display = 'none';
 
-  const PAUSE_CHARS = { '。': 180, '！': 150, '？': 150, '…': 220, '—': 125, '\n': 120 };
+  const tapHint = document.getElementById('tap-hint');
+  if (tapHint) tapHint.style.display = 'none';
+
+  const PAUSE_CHARS = { '。': 180, '！': 150, '？': 150, '…': 220, '—': 125, '\n': 80 };
   const BASE_SPEED = 30;
 
   function typeNext() {
-    if (typeIdx >= typeFullText.length) {
+    if (typeIdx >= pageText.length) {
       typeDone = true;
-      document.getElementById('tap-hint').style.display = '';
+      if (tapHint) {
+        tapHint.style.display = '';
+        tapHint.textContent = isLastPage ? '▼' : '▶';
+      }
       return;
     }
-    const char = typeFullText[typeIdx];
+    const char = pageText[typeIdx];
     typeIdx++;
-    typeEl.textContent = typeFullText.slice(0, typeIdx);
+    element.textContent = pageText.slice(0, typeIdx);
     if (char !== '\n') sfxBlip(typeCharType);
-    const pause = PAUSE_CHARS[char] || BASE_SPEED;
-    typeTimer = setTimeout(typeNext, pause);
+    typeTimer = setTimeout(typeNext, PAUSE_CHARS[char] || BASE_SPEED);
   }
   typeNext();
 }
@@ -1611,7 +1670,12 @@ function skipType() {
   if (typeTimer) { clearTimeout(typeTimer); typeTimer = null; }
   if (typeEl) typeEl.textContent = typeFullText;
   typeDone = true;
-  document.getElementById('tap-hint').style.display = '';
+  const isLastPage = dlgPageIdx >= dlgPages.length - 1;
+  const tapHint = document.getElementById('tap-hint');
+  if (tapHint) {
+    tapHint.style.display = '';
+    tapHint.textContent = isLastPage ? '▼' : '▶';
+  }
 }
 
 function screenFlash() {
@@ -1886,6 +1950,11 @@ function showDialogue(idx) {
 function handleDialogueTap() {
   if (!typeDone) { skipType(); return; }
   sfxClick();
+  if (dlgPageIdx < dlgPages.length - 1) {
+    dlgPageIdx++;
+    typewritePage(document.getElementById('dialogue-text'), typeCharType);
+    return;
+  }
   showDialogue(dlgIdx + 1);
 }
 
@@ -2565,7 +2634,7 @@ function drawRadarChart() {
 
 // リプレイ（全データ完全リセット）
 function replayGame() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11'].forEach(k => {
     localStorage.removeItem(k);
   });
   state = {
@@ -2941,7 +3010,7 @@ function finishGoal() {
 // INIT
 // =====================================================
 function init() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11'].forEach(k => {
     localStorage.removeItem(k);
   });
   checkOnboarding();
