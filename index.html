@@ -1595,7 +1595,7 @@ const EPISODES = [
     acupoint: '肩井',
     dialogues: [
       { imgSrc: './bon_shocho.png', speaker: 'ボーン院長', charType: 'npc',
-        text: (p) => `来たか、${p}よ。\n今日からお主はこの院の新人治療家じゃ。\nさっそく患者さんが来ておる。施術部屋へ向かうがよい。` },
+        text: (p) => `来たか、${p}よ。\n今日からお主はこの院の新人ツボ探偵治療家じゃ。\nさっそく患者さんが来ておる。施術部屋へ向かうがよい。` },
       { imgSrc: './bon_shocho.png', speaker: 'ボーン院長', charType: 'npc',
         text: '治療家の仕事は闇雲に施術することではない。\n症状をとり、患者さんを治してあげることじゃ。\nそのためにはまず——原因筋を特定せねばならんのう。' },
       { imgSrc: './bon_shocho.png', speaker: 'ボーン院長', charType: 'npc',
@@ -1658,7 +1658,7 @@ const EPISODES = [
       ],
     },
     quiz2CorrectTitle: (p) => `${p}、「肩井だっ！」`,
-    quiz2CorrectSub: '僧帽筋のトリガーポイントが消えていく！',
+    quiz2CorrectSub: '僧帽筋のコリが消えていく！',
     hw2: {
       name: '肩井（けんせい）',
       instruction: '肩井の取穴法を確認しよう',
@@ -1774,7 +1774,7 @@ const EPISODES = [
       ],
     },
     quiz2CorrectTitle: (p) => `${p}、「腎兪だっ！」`,
-    quiz2CorrectSub: '脊柱起立筋のトリガーポイントが消えていく！',
+    quiz2CorrectSub: '脊柱起立筋のコリが消えていく！',
     hw2: {
       name: '腎兪（じんゆ）',
       instruction: '腎兪の取穴法を確認しよう',
@@ -1820,7 +1820,7 @@ let currentEp = null;
 // =====================================================
 // STATE
 // =====================================================
-const STORAGE_KEY = 'rinsho_ep1_v30';
+const STORAGE_KEY = 'rinsho_ep1_v31';
 
 let state = {
   phase: 'splash',
@@ -1889,7 +1889,7 @@ function goBack() {
 // SCREEN
 // =====================================================
 const GAME_SCREENS = new Set(['dialogue','choices','homework1','miniquiz','quiz1','homework2']);
-const PATIENT_INFO_SCREENS = new Set(['choices','homework1','miniquiz','quiz1','homework2','clear1','clear2','clear3']);
+const PATIENT_INFO_SCREENS = new Set(['homework1','miniquiz','quiz1','homework2','clear1','clear2','clear3']);
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -2828,7 +2828,7 @@ function replayGame() {
 }
 
 function _cleanupOldKeys() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18','rinsho_ep1_v19','rinsho_ep1_v20','rinsho_ep1_v21','rinsho_ep1_v22','rinsho_ep1_v23','rinsho_ep1_v24','rinsho_ep1_v25','rinsho_ep1_v26','rinsho_ep1_v27','rinsho_ep1_v28','rinsho_ep1_v29'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18','rinsho_ep1_v19','rinsho_ep1_v20','rinsho_ep1_v21','rinsho_ep1_v22','rinsho_ep1_v23','rinsho_ep1_v24','rinsho_ep1_v25','rinsho_ep1_v26','rinsho_ep1_v27','rinsho_ep1_v28','rinsho_ep1_v29','rinsho_ep1_v30'].forEach(k => {
     localStorage.removeItem(k);
   });
 }
