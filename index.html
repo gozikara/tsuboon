@@ -1813,7 +1813,7 @@ let currentEp = null;
 // =====================================================
 // STATE
 // =====================================================
-const STORAGE_KEY = 'rinsho_ep1_v29';
+const STORAGE_KEY = 'rinsho_ep1_v30';
 
 let state = {
   phase: 'splash',
@@ -2598,16 +2598,18 @@ function answerQuiz2(i) {
     sfxCorrect();
     showXpGain(10);
     showKoredayo(() => {
-      const title = typeof ep.quiz2CorrectTitle === 'function' ? ep.quiz2CorrectTitle(pName()) : ep.quiz2CorrectTitle;
-      const sub = ep.quiz2CorrectSub.replace(/\n/g, '<br>');
-      const html = `
-        <div style="text-align:center;font-size:1.5rem;margin-bottom:8px;color:var(--accent);font-weight:900">${title}</div>
-        <div style="text-align:center;line-height:1.8;margin-bottom:16px;color:var(--correct)">
-          ${sub}
-        </div>
-        <button class="btn-next-full" onclick="closeCardOverlay()">次へ →</button>
-      `;
-      showCardOverlay(html, showHw2Step);
+      showVillainDefeatEnhanced(() => {
+        const title = typeof ep.quiz2CorrectTitle === 'function' ? ep.quiz2CorrectTitle(pName()) : ep.quiz2CorrectTitle;
+        const sub = ep.quiz2CorrectSub.replace(/\n/g, '<br>');
+        const html = `
+          <div style="text-align:center;font-size:1.5rem;margin-bottom:8px;color:var(--accent);font-weight:900">${title}</div>
+          <div style="text-align:center;line-height:1.8;margin-bottom:16px;color:var(--correct)">
+            ${sub}
+          </div>
+          <button class="btn-next-full" onclick="closeCardOverlay()">次へ →</button>
+        `;
+        showCardOverlay(html, showHw2Step);
+      });
     });
   } else {
     btns[i].classList.add('incorrect');
@@ -2805,7 +2807,7 @@ function replayGame() {
 }
 
 function _cleanupOldKeys() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18','rinsho_ep1_v19','rinsho_ep1_v20','rinsho_ep1_v21','rinsho_ep1_v22','rinsho_ep1_v23','rinsho_ep1_v24','rinsho_ep1_v25','rinsho_ep1_v26','rinsho_ep1_v27','rinsho_ep1_v28'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18','rinsho_ep1_v19','rinsho_ep1_v20','rinsho_ep1_v21','rinsho_ep1_v22','rinsho_ep1_v23','rinsho_ep1_v24','rinsho_ep1_v25','rinsho_ep1_v26','rinsho_ep1_v27','rinsho_ep1_v28','rinsho_ep1_v29'].forEach(k => {
     localStorage.removeItem(k);
   });
 }
@@ -2862,6 +2864,60 @@ function showVillainDefeat(cb) {
   overlay.classList.remove('red-bg');
   overlay.classList.add('show');
 
+  function sfxDefeatSimple() {
+    try {
+      const c = actx();
+      const osc = c.createOscillator(); const g = c.createGain();
+      osc.connect(g); g.connect(c.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(200, c.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(60, c.currentTime + 0.5);
+      g.gain.setValueAtTime(0.3, c.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.5);
+      osc.start(c.currentTime); osc.stop(c.currentTime + 0.5);
+    } catch(e) {}
+  }
+
+  setTimeout(() => {
+    img.classList.add('shake');
+    sfxDefeatSimple();
+  }, 300);
+
+  setTimeout(() => {
+    img.classList.remove('shake');
+    img.classList.add('collapse');
+    scream.classList.add('show');
+  }, 900);
+
+  setTimeout(() => { bonMsg.classList.add('show'); }, 1800);
+
+  setTimeout(() => {
+    btn.style.opacity = '1';
+    _villainReady = true;
+  }, 2400);
+}
+
+function showVillainDefeatEnhanced(cb) {
+  _villainCb = cb || null;
+  _villainReady = false;
+
+  const overlay = document.getElementById('villain-overlay');
+  const img     = document.getElementById('villain-defeat-img');
+  const scream  = document.getElementById('villain-scream');
+  const bonMsg  = document.getElementById('villain-bon-msg');
+  const btn     = document.getElementById('villain-continue-btn');
+
+  scream.innerHTML = 'ぐあああ…！<br>秘孔を…突かれた…！';
+  bonMsg.innerHTML = '秘孔——看破完了じゃ。<br>患者を救うのじゃ。';
+
+  img.className     = '';
+  scream.className  = '';
+  bonMsg.className  = '';
+  btn.className     = 'btn-primary';
+  btn.style.opacity = '0';
+  overlay.classList.remove('red-bg');
+  overlay.classList.add('show');
+
   function sfxDefeatBoom() {
     try {
       const c = actx();
@@ -2899,7 +2955,6 @@ function showVillainDefeat(cb) {
   }
 
   setTimeout(() => { overlay.classList.add('red-bg'); }, 200);
-
   setTimeout(() => {
     img.classList.add('shake');
     sfxDefeatBoom();
@@ -2909,14 +2964,8 @@ function showVillainDefeat(cb) {
     app.classList.add('shake-strong');
     app.addEventListener('animationend', () => app.classList.remove('shake-strong'), { once: true });
   }, 400);
-
-  setTimeout(() => {
-    img.classList.remove('shake');
-    img.classList.add('jump-fall');
-  }, 1000);
-
+  setTimeout(() => { img.classList.remove('shake'); img.classList.add('jump-fall'); }, 1000);
   setTimeout(() => { scream.classList.add('show'); }, 1600);
-
   setTimeout(() => {
     sfxDefeatSpin();
     const app = document.getElementById('app');
@@ -2925,19 +2974,9 @@ function showVillainDefeat(cb) {
     app.classList.add('flash-white');
     app.addEventListener('animationend', () => app.classList.remove('flash-white'), { once: true });
   }, 2200);
-
-  setTimeout(() => {
-    img.classList.remove('jump-fall');
-    img.classList.add('spin-out');
-    sfxCorrect();
-  }, 2600);
-
+  setTimeout(() => { img.classList.remove('jump-fall'); img.classList.add('spin-out'); sfxCorrect(); }, 2600);
   setTimeout(() => { bonMsg.classList.add('show'); }, 3200);
-
-  setTimeout(() => {
-    btn.style.opacity = '1';
-    _villainReady = true;
-  }, 4000);
+  setTimeout(() => { btn.style.opacity = '1'; _villainReady = true; }, 4000);
 }
 
 function closeVillainOverlay() {
@@ -2953,6 +2992,8 @@ function closeVillainOverlay() {
   bonMsg.className = '';
   btn.className    = 'btn-primary';
   btn.style.opacity = '0';
+  scream.innerHTML  = 'ぐあああ…！<br>なぜ…バレた…！';
+  bonMsg.innerHTML  = '原因筋——特定完了じゃ。<br>次は秘孔を突くのじゃ。';
   _villainReady = false;
   if (_villainCb) { _villainCb(); _villainCb = null; }
 }
