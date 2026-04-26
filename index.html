@@ -1240,38 +1240,52 @@
     <div style="text-align:center;margin-bottom:4px">
       <div class="clear-title" id="clear2-title">の成長記録</div>
     </div>
-    <!-- レーダーチャート -->
     <div class="radar-section">
       <div class="radar-canvas-wrap">
         <canvas id="radar-canvas" width="260" height="230"></canvas>
       </div>
-      <div class="power-list">
-        <div class="power-row">
-          <div class="power-name">① 触れる力</div>
-          <div class="power-stars">★★☆☆☆</div>
-          <div class="power-score">2/5</div>
+      <div style="background:rgba(74,255,127,0.06);border:1px solid rgba(74,255,127,0.3);border-radius:12px;padding:14px 16px;">
+        <div style="font-size:0.75rem;color:var(--correct);font-weight:700;letter-spacing:0.1em;margin-bottom:10px">
+          ✅ このゲームで鍛えられる力
         </div>
-        <div class="power-row">
-          <div class="power-name">② 見立てる力</div>
-          <div class="power-stars">☆☆☆☆☆</div>
-          <div class="power-score">0/5</div>
-        </div>
-        <div class="power-row">
-          <div class="power-name">③ 選ぶ力</div>
-          <div class="power-stars">★☆☆☆☆</div>
-          <div class="power-score">1/5</div>
-        </div>
-        <div class="power-row">
-          <div class="power-name">④ 施す力</div>
-          <div class="power-lock">🔒 オンラインサロンで解放予定</div>
-        </div>
-        <div class="power-row">
-          <div class="power-name">⑤ 伝える力</div>
-          <div class="power-lock">🔒 オンラインサロンで解放予定</div>
+        <div class="power-list">
+          <div class="power-row">
+            <div class="power-name">① 触れる力</div>
+            <div class="power-stars">★★☆☆☆</div>
+            <div class="power-score">2/5</div>
+          </div>
+          <div class="power-row">
+            <div class="power-name">② 見立てる力</div>
+            <div class="power-stars">★★☆☆☆</div>
+            <div class="power-score">2/5</div>
+          </div>
+          <div class="power-row">
+            <div class="power-name">③ 選ぶ力</div>
+            <div class="power-stars">★☆☆☆☆</div>
+            <div class="power-score">1/5</div>
+          </div>
         </div>
       </div>
-      <div class="radar-salon-cta">
-        <div class="cta-text">④⑤を伸ばすには実技動画・ケーススタディが必要です<br><span style="color:#ffc832">🔜 オンラインサロン開設準備中</span></div>
+      <div style="background:rgba(255,200,50,0.07);border:1px solid var(--gold);border-radius:12px;padding:14px 16px;">
+        <div style="font-size:0.75rem;color:var(--gold);font-weight:700;letter-spacing:0.1em;margin-bottom:10px">
+          🎯 本物の治療家になるには
+        </div>
+        <div class="power-list" style="margin-bottom:12px">
+          <div class="power-row">
+            <div class="power-name" style="color:#ccc">④ 施す力</div>
+            <div style="flex:1;font-size:0.78rem;color:#888">実技・講座でしか鍛えられない</div>
+          </div>
+          <div class="power-row">
+            <div class="power-name" style="color:#ccc">⑤ 伝える力</div>
+            <div style="flex:1;font-size:0.78rem;color:#888">実技・講座でしか鍛えられない</div>
+          </div>
+        </div>
+        <a href="https://tubone.jp/Program#menu"
+           target="_blank"
+           rel="noopener"
+           style="display:block;width:100%;background:var(--gold);color:#0a1628;border:none;border-radius:12px;padding:13px;font-size:1rem;font-family:'Noto Sans JP',sans-serif;font-weight:900;cursor:pointer;text-align:center;text-decoration:none;box-sizing:border-box;">
+          🏥 講座の詳細を見る →
+        </a>
       </div>
     </div>
     <button class="btn-primary" style="margin-top:auto;width:100%;flex-shrink:0" onclick="sfxClick(); showScreen('clear3')">次の冒険へ ▶</button>
@@ -1799,7 +1813,7 @@ let currentEp = null;
 // =====================================================
 // STATE
 // =====================================================
-const STORAGE_KEY = 'rinsho_ep1_v27';
+const STORAGE_KEY = 'rinsho_ep1_v29';
 
 let state = {
   phase: 'splash',
@@ -2702,7 +2716,7 @@ function drawRadarChart() {
   const R = Math.min(W, H) * 0.32;
   const n = 5;
   const labels  = ['① 触れる力','② 見立てる力','③ 選ぶ力','④ 施す力','⑤ 伝える力'];
-  const values  = [2, 0, 1, 0, 0];
+  const values  = [2, 2, 1, 0, 0];
   const locked  = [false, false, false, true, true];
   const angles  = Array.from({length: n}, (_, i) => (i * 2 * Math.PI / n) - Math.PI / 2);
 
@@ -2791,7 +2805,7 @@ function replayGame() {
 }
 
 function _cleanupOldKeys() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18','rinsho_ep1_v19','rinsho_ep1_v20','rinsho_ep1_v21','rinsho_ep1_v22','rinsho_ep1_v23','rinsho_ep1_v24','rinsho_ep1_v25','rinsho_ep1_v26'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18','rinsho_ep1_v19','rinsho_ep1_v20','rinsho_ep1_v21','rinsho_ep1_v22','rinsho_ep1_v23','rinsho_ep1_v24','rinsho_ep1_v25','rinsho_ep1_v26','rinsho_ep1_v27','rinsho_ep1_v28'].forEach(k => {
     localStorage.removeItem(k);
   });
 }
@@ -3052,53 +3066,9 @@ const obQuestions = [
   {
     type: 'text',
     key: 'playerName',
-    q: '勇者よ、汝の名は？',
-    sub: '冒険者名を入力してください（例：タコ丸、ツボ太郎）',
-    placeholder: '冒険者名を入力…',
-  },
-  {
-    key: 'onboarding_job',
-    q: 'あなたのお仕事は？',
-    options: [
-      '鍼灸師・鍼灸学生',
-      '柔道整復師・柔整学生',
-      '整体師・カイロ',
-      'エステ・リラクゼーション',
-      'ヨガ・トレーナー',
-      'まだ資格はない',
-      'その他',
-    ],
-  },
-  {
-    key: 'onboarding_experience',
-    q: '冒険者レベルを教えてください！',
-    options: ['⚔️ はじめての冒険（未経験・学生）', '🗡️ 見習い冒険者（1〜3年）', '⚔️🛡️ 一人前の冒険者（3〜10年）', '👑 ベテラン冒険者（10年以上）'],
-  },
-  {
-    key: 'onboarding_focus',
-    q: '一番伸ばしたい力は？',
-    options: [
-      '① 触れる力（解剖学）',
-      '② 見立てる力（整形外科学）',
-      '③ 選ぶ力（経穴学）',
-      '④ 施す力（実技）',
-      '⑤ 伝える力（説明）',
-    ],
-  },
-  {
-    key: 'onboarding_time',
-    q: '1日どれくらい学べそう？',
-    options: ['5分（ゆるく）', '10分（しっかり）', '15分以上（ガチ）'],
-  },
-  {
-    key: 'onboarding_goal',
-    q: '3ヶ月後、どうなりたい？',
-    options: [
-      '患者に自信を持って説明したい',
-      '解剖学を施術に活かしたい',
-      '独立・開業の基礎を固めたい',
-      'なんとなく学びたい',
-    ],
+    q: '新人くん、君の名前は？',
+    sub: '治療家としての名前を入力してください',
+    placeholder: '名前を入力…',
   },
 ];
 
@@ -3157,9 +3127,8 @@ function renderObQuestion() {
         const val = input.value.trim();
         obAnswers[q.key] = val;
         playerName = val;
-        obIdx++;
-        if (obIdx < obQuestions.length) renderObQuestion();
-        else showObResult();
+        localStorage.setItem(ONBOARDING_KEY, JSON.stringify(obAnswers));
+        finishOnboarding();
       });
       input.addEventListener('keydown', e => {
         if (e.key === 'Enter' && !btn.disabled) btn.click();
