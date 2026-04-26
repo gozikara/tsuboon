@@ -1396,6 +1396,11 @@
   </div>
 </div>
 
+<!-- いっけぇー演出 -->
+<div id="ike-overlay">
+  <div id="ike-text">いっけぇー！！！</div>
+</div>
+
 <script>
 // =====================================================
 // 白背景除去（キャンバス BFS フラッドフィル）
@@ -2512,7 +2517,7 @@ function hwDone(n) {
         </div>
         <button class="btn-next-full" style="background:var(--gold);color:#0a1628;font-size:1.1rem"
           onclick="sfxClick(); closeCardOverlay()">
-          ⚔️ 決着をつける！
+          ⚡ ツボを刺激する
         </button>
       `;
       showCardOverlay(html, () => {
@@ -2656,9 +2661,7 @@ function answerQuiz2(i) {
     state.quiz2Done = true; saveState();
     sfxCorrect();
     showXpGain(10);
-    showKoredayo(() => {
-      showHw2Step();
-    });
+    showHw2Step();
   } else {
     btns[i].classList.add('incorrect');
     btns[i].disabled = true;
