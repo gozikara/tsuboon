@@ -911,6 +911,36 @@
     opacity: 1;
   }
 
+  /* ===== いっけぇー演出 ===== */
+  #ike-overlay {
+    position: fixed; inset: 0; z-index: 450;
+    display: none; align-items: center; justify-content: center;
+    background: transparent; pointer-events: none;
+  }
+  #ike-overlay.show { display: flex; }
+  @keyframes ike-flash {
+    0%   { background: rgba(255,200,50,0); }
+    15%  { background: rgba(255,200,50,0.85); }
+    35%  { background: rgba(255,255,255,0.95); }
+    60%  { background: rgba(255,200,50,0.4); }
+    100% { background: rgba(255,200,50,0); }
+  }
+  @keyframes ike-text-explode {
+    0%   { transform: scale(0.2) rotate(-8deg); opacity: 0; }
+    25%  { transform: scale(1.3) rotate(3deg);  opacity: 1; }
+    50%  { transform: scale(0.95) rotate(-2deg); opacity: 1; }
+    70%  { transform: scale(1.05) rotate(1deg);  opacity: 1; }
+    100% { transform: scale(1) rotate(0deg);     opacity: 0; }
+  }
+  #ike-overlay.show { animation: ike-flash 0.9s ease forwards; }
+  #ike-text {
+    font-size: 4.5rem; font-weight: 900; color: #fff;
+    text-shadow: 0 0 40px rgba(255,200,50,1), 0 0 80px rgba(255,150,0,0.9),
+                 4px 4px 0 #b85c00, -2px -2px 0 #ff6600;
+    letter-spacing: 0.05em; text-align: center; line-height: 1.3;
+    animation: ike-text-explode 0.9s cubic-bezier(0.16,1,0.3,1) forwards;
+  }
+
   /* ===== ふりがな ===== */
   ruby {
     display: inline-flex;
@@ -2505,29 +2535,40 @@ function hwDone(n) {
   } else {
     showKoredayo(() => {
       const ep = currentEp;
-      const html = `
-        <div style="text-align:center;margin-bottom:16px">
-          <div style="font-size:2.5rem;margin-bottom:8px">⚔️</div>
-          <div style="font-size:1.3rem;font-weight:900;color:var(--gold);margin-bottom:8px">
-            準備完了じゃ！
-          </div>
-          <div style="font-size:0.9rem;color:#ccc;line-height:1.7">
-            ${ep ? ep.hw2.name : 'ツボ'}を特定した。<br>あとは秘孔を突くだけじゃ。
-          </div>
-        </div>
-        <button class="btn-next-full" style="background:var(--gold);color:#0a1628;font-size:1.1rem"
-          onclick="sfxClick(); closeCardOverlay()">
-          ⚡ ツボを刺激する
-        </button>
-      `;
-      showCardOverlay(html, () => {
-        showVillainDefeatEnhanced(() => {
-          state.evidence2Unlocked = true; saveState();
-          const mq2data = ep ? ep.miniQuizData2 : [];
-          showMiniQuizBridge('📍', '取穴の成果を見せてもらおう！', `今確認した${ep ? ep.hw2.name : '取穴'}の取穴法で確認テストじゃ。`,
-            () => goToMiniQuiz(mq2data, goToClear, '取穴確認OK。\nいざ、決着をつけるのじゃ！', '取穴確認OK！<br>準備完了じゃ', '🏆 決着をつける！'));
-        });
-      });
+      const mq2data = ep ? ep.miniQuizData2 : [];
+      goToMiniQuiz(
+        mq2data,
+        () => {
+          const html = `
+            <div style="text-align:center;margin-bottom:16px">
+              <div style="font-size:2.5rem;margin-bottom:8px">🎯</div>
+              <div style="font-size:1.2rem;font-weight:900;color:var(--gold);margin-bottom:8px">
+                的確に秘孔をつく準備完了！
+              </div>
+              <div style="font-size:0.9rem;color:#ccc;line-height:1.7">
+                ${ep ? ep.hw2.name : 'ツボ'}の場所を完璧に把握した。<br>
+                あとは——刺激するだけじゃ。
+              </div>
+            </div>
+            <button class="btn-next-full"
+              style="background:var(--gold);color:#0a1628;font-size:1.1rem;font-weight:900"
+              onclick="sfxClick(); closeCardOverlay()">
+              ⚡ ツボを刺激する
+            </button>
+          `;
+          showCardOverlay(html, () => {
+            showIke(() => {
+              showVillainDefeatEnhanced(() => {
+                state.evidence2Unlocked = true; saveState();
+                goToClear();
+              });
+            });
+          });
+        },
+        '取穴確認OK。\n的確に秘孔をつく準備完了じゃ！',
+        '取穴確認OK！<br>準備完了じゃ',
+        '🎯 的確に秘孔をつく準備完了'
+      );
     });
   }
 }
@@ -2889,6 +2930,44 @@ function showKoredayo(cb) {
     overlay.style.opacity = '0';
     setTimeout(() => { if (cb) cb(); }, 300);
   }, 700);
+}
+
+function showIke(cb) {
+  try {
+    const c = actx();
+    const osc1 = c.createOscillator(); const g1 = c.createGain();
+    osc1.connect(g1); g1.connect(c.destination);
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(80, c.currentTime);
+    osc1.frequency.exponentialRampToValueAtTime(40, c.currentTime + 0.4);
+    g1.gain.setValueAtTime(0.8, c.currentTime);
+    g1.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.4);
+    osc1.start(c.currentTime); osc1.stop(c.currentTime + 0.4);
+    const osc2 = c.createOscillator(); const g2 = c.createGain();
+    osc2.connect(g2); g2.connect(c.destination);
+    osc2.type = 'square';
+    osc2.frequency.setValueAtTime(2000, c.currentTime);
+    osc2.frequency.exponentialRampToValueAtTime(800, c.currentTime + 0.3);
+    g2.gain.setValueAtTime(0.2, c.currentTime);
+    g2.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.3);
+    osc2.start(c.currentTime); osc2.stop(c.currentTime + 0.3);
+    const app = document.getElementById('app');
+    app.classList.remove('shake-strong'); void app.offsetWidth;
+    app.classList.add('shake-strong');
+    app.addEventListener('animationend', () => app.classList.remove('shake-strong'), { once: true });
+  } catch(e) {}
+
+  const overlay = document.getElementById('ike-overlay');
+  const text    = document.getElementById('ike-text');
+  overlay.classList.add('show');
+  text.style.animation = 'none';
+  void text.offsetWidth;
+  text.style.animation = '';
+
+  setTimeout(() => {
+    overlay.classList.remove('show');
+    setTimeout(() => { if (cb) cb(); }, 100);
+  }, 900);
 }
 
 // =====================================================
