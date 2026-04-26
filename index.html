@@ -3424,13 +3424,7 @@ const FURIGANA_MAP = [
 ];
 
 function addFurigana(text) {
-  if (!text) return text;
-  if (text.includes('<ruby>')) return text;
-  let result = text;
-  for (const { k, r } of FURIGANA_MAP) {
-    result = result.split(k).join(`<ruby>${k}<rt>${r}</rt></ruby>`);
-  }
-  return result;
+  return text;
 }
 
 // =====================================================
