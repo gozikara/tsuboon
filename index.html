@@ -2208,13 +2208,17 @@ function answerMiniQuiz(i) {
   }
 }
 
+function _callMqDoneFn() {
+  if (_mqDoneFn) _mqDoneFn();
+}
+
 function showMiniQuizComplete() {
   document.getElementById('mq-char-img').src = CHARS.bon.correct;
   document.getElementById('mq-intro-text').textContent = _mqCompleteIntro;
   document.getElementById('mq-question-wrap').innerHTML = `
     <div class="mq-complete-msg">
       <div class="mq-complete-text">${_mqCompleteText}</div>
-      <button class="btn-next-full" onclick="sfxClick(); _mqDoneFn()">${_mqCompleteBtn}</button>
+      <button class="btn-next-full" onclick="sfxClick(); _callMqDoneFn()">${_mqCompleteBtn}</button>
     </div>
   `;
 }
@@ -2271,10 +2275,14 @@ function showCardOverlay(html, afterCloseFn) {
 }
 
 function closeCardOverlay(e) {
-  if (_hwOverlayMode) return;
-  if (e && e.target.id !== 'card-overlay' && e.target.id !== 'card-overlay-close') return;
+  if (_hwOverlayMode && e !== undefined) return;
+  if (e !== undefined && e.target !== document.getElementById('card-overlay')
+      && e.target.id !== 'card-overlay-close') return;
+
+  _hwOverlayMode = false;
   document.getElementById('card-overlay').classList.remove('show');
-  if (_cardOverlayCb) { _cardOverlayCb(); _cardOverlayCb = null; }
+  document.getElementById('card-overlay-close').style.display = '';
+  if (_cardOverlayCb) { const cb = _cardOverlayCb; _cardOverlayCb = null; cb(); }
 }
 
 function showPatientInfo() {
