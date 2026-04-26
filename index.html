@@ -1836,7 +1836,7 @@ let currentEp = null;
 // =====================================================
 // STATE
 // =====================================================
-const STORAGE_KEY = 'rinsho_ep1_v31';
+const STORAGE_KEY = 'rinsho_ep1_v32';
 
 let state = {
   phase: 'splash',
@@ -2498,10 +2498,13 @@ function hwDone(n) {
     state.evidence1Unlocked = true; saveState();
     goToMiniQuiz();
   } else {
-    state.evidence2Unlocked = true; saveState();
-    const ep = currentEp;
-    showMiniQuizBridge('📍', '取穴の成果を見せてもらおう！', `今確認した${ep ? ep.hw2.name : '取穴'}の取穴法で確認テストじゃ。`,
-      () => goToMiniQuiz(ep ? ep.miniQuizData2 : [], goToClear, '取穴確認OK。\nいざ、秘孔を突くのじゃ！', '取穴確認OK！<br>準備完了じゃ', '🏆 決着をつける！'));
+    showVillainDefeatEnhanced(() => {
+      state.evidence2Unlocked = true; saveState();
+      const ep = currentEp;
+      const mq2data = ep ? ep.miniQuizData2 : [];
+      showMiniQuizBridge('📍', '取穴の成果を見せてもらおう！', `今確認した${ep ? ep.hw2.name : '取穴'}の取穴法で確認テストじゃ。`,
+        () => goToMiniQuiz(mq2data, goToClear, '取穴確認OK。\nいざ、決着をつけるのじゃ！', '取穴確認OK！<br>準備完了じゃ', '🏆 決着をつける！'));
+    });
   }
 }
 
@@ -2833,7 +2836,7 @@ function replayGame() {
 }
 
 function _cleanupOldKeys() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18','rinsho_ep1_v19','rinsho_ep1_v20','rinsho_ep1_v21','rinsho_ep1_v22','rinsho_ep1_v23','rinsho_ep1_v24','rinsho_ep1_v25','rinsho_ep1_v26','rinsho_ep1_v27','rinsho_ep1_v28','rinsho_ep1_v29','rinsho_ep1_v30'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18','rinsho_ep1_v19','rinsho_ep1_v20','rinsho_ep1_v21','rinsho_ep1_v22','rinsho_ep1_v23','rinsho_ep1_v24','rinsho_ep1_v25','rinsho_ep1_v26','rinsho_ep1_v27','rinsho_ep1_v28','rinsho_ep1_v29','rinsho_ep1_v30','rinsho_ep1_v31'].forEach(k => {
     localStorage.removeItem(k);
   });
 }
