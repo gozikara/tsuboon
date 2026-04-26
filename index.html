@@ -840,6 +840,76 @@
   .ep-status.cleared { background: rgba(74,255,127,0.15); color: var(--correct); }
   .ep-status.playable { background: rgba(74,158,255,0.15); color: var(--accent); }
   .ep-status.locked { background: rgba(255,255,255,0.07); color: #666; }
+
+  /* ===== 強化版撃破演出 ===== */
+  @keyframes villain-jump-fall {
+    0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+    20%  { transform: translateY(-40px) rotate(-5deg) scale(1.1); opacity: 1; }
+    40%  { transform: translateY(-20px) rotate(5deg) scale(1.05); opacity: 1; }
+    70%  { transform: translateY(60px) rotate(-15deg) scale(0.85); opacity: 0.6; }
+    100% { transform: translateY(120px) rotate(-30deg) scale(0.5); opacity: 0; }
+  }
+  @keyframes villain-spin-out {
+    0%   { transform: rotate(0deg) scale(1); opacity: 1; }
+    60%  { transform: rotate(180deg) scale(0.6); opacity: 0.5; }
+    100% { transform: rotate(360deg) scale(0); opacity: 0; }
+  }
+  @keyframes scream-typewriter {
+    from { clip-path: inset(0 100% 0 0); }
+    to   { clip-path: inset(0 0% 0 0); }
+  }
+  @keyframes bon-msg-slidein {
+    0%   { transform: translateY(30px); opacity: 0; }
+    60%  { transform: translateY(-6px); opacity: 1; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes bg-red-fade {
+    0%   { background: rgba(180, 0, 0, 0.7); }
+    40%  { background: rgba(120, 0, 0, 0.5); }
+    100% { background: rgba(0, 0, 0, 0.85); }
+  }
+  @keyframes shake-strong {
+    0%,100% { transform: translateX(0) translateY(0) rotate(0deg); }
+    15%     { transform: translateX(-10px) translateY(-4px) rotate(-2deg); }
+    30%     { transform: translateX(10px) translateY(4px) rotate(2deg); }
+    45%     { transform: translateX(-8px) translateY(-2px) rotate(-1deg); }
+    60%     { transform: translateX(8px) translateY(2px) rotate(1deg); }
+    75%     { transform: translateX(-4px) translateY(-1px); }
+    90%     { transform: translateX(4px) translateY(1px); }
+  }
+  @keyframes text-shake {
+    0%,100% { transform: translateX(0); }
+    20%     { transform: translateX(-4px); }
+    40%     { transform: translateX(4px); }
+    60%     { transform: translateX(-3px); }
+    80%     { transform: translateX(3px); }
+  }
+  @keyframes flash-white {
+    0%   { opacity: 1; }
+    10%  { opacity: 0; background: rgba(255,255,255,0.95); }
+    25%  { opacity: 1; }
+    40%  { opacity: 0.2; }
+    55%  { opacity: 1; }
+    70%  { opacity: 0.4; }
+    100% { opacity: 1; }
+  }
+
+  #villain-overlay.red-bg { animation: bg-red-fade 1.8s ease forwards; }
+  #app.flash-white { animation: flash-white 0.5s ease; }
+  #app.shake-strong { animation: shake-strong 0.5s ease; }
+
+  #villain-defeat-img.jump-fall { animation: villain-jump-fall 1.0s ease forwards; }
+  #villain-defeat-img.spin-out  { animation: villain-spin-out 0.6s ease forwards; }
+
+  #villain-scream { clip-path: inset(0 100% 0 0); }
+  #villain-scream.show {
+    animation: scream-typewriter 0.6s steps(12) forwards,
+               text-shake 0.3s ease 0.6s 2;
+  }
+  #villain-bon-msg.show {
+    animation: bon-msg-slidein 0.5s ease forwards;
+    opacity: 1;
+  }
 </style>
 </head>
 <body>
@@ -1729,7 +1799,7 @@ let currentEp = null;
 // =====================================================
 // STATE
 // =====================================================
-const STORAGE_KEY = 'rinsho_ep1_v26';
+const STORAGE_KEY = 'rinsho_ep1_v27';
 
 let state = {
   phase: 'splash',
@@ -2721,7 +2791,7 @@ function replayGame() {
 }
 
 function _cleanupOldKeys() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18','rinsho_ep1_v19','rinsho_ep1_v20','rinsho_ep1_v21','rinsho_ep1_v22','rinsho_ep1_v23','rinsho_ep1_v24','rinsho_ep1_v25'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18','rinsho_ep1_v19','rinsho_ep1_v20','rinsho_ep1_v21','rinsho_ep1_v22','rinsho_ep1_v23','rinsho_ep1_v24','rinsho_ep1_v25','rinsho_ep1_v26'].forEach(k => {
     localStorage.removeItem(k);
   });
 }
@@ -2763,28 +2833,97 @@ let _villainReady = false;
 function showVillainDefeat(cb) {
   _villainCb = cb || null;
   _villainReady = false;
-  const overlay  = document.getElementById('villain-overlay');
-  const img      = document.getElementById('villain-defeat-img');
-  const scream   = document.getElementById('villain-scream');
-  const bonMsg   = document.getElementById('villain-bon-msg');
-  const btn      = document.getElementById('villain-continue-btn');
 
-  img.className    = '';
-  scream.className = '';
-  bonMsg.className = '';
-  btn.className    = 'btn-primary';
+  const overlay = document.getElementById('villain-overlay');
+  const img     = document.getElementById('villain-defeat-img');
+  const scream  = document.getElementById('villain-scream');
+  const bonMsg  = document.getElementById('villain-bon-msg');
+  const btn     = document.getElementById('villain-continue-btn');
+
+  img.className     = '';
+  scream.className  = '';
+  bonMsg.className  = '';
+  btn.className     = 'btn-primary';
   btn.style.opacity = '0';
+  overlay.classList.remove('red-bg');
   overlay.classList.add('show');
 
-  setTimeout(() => { img.classList.add('shake'); sfxWrong(); }, 300);
-  setTimeout(() => { img.classList.remove('shake'); img.classList.add('flash'); sfxKoredayo(); }, 800);
-  setTimeout(() => { img.classList.remove('flash'); scream.classList.add('show'); }, 1400);
-  setTimeout(() => { img.classList.add('collapse'); sfxCorrect(); }, 2200);
-  setTimeout(() => { bonMsg.classList.add('show'); }, 3000);
+  function sfxDefeatBoom() {
+    try {
+      const c = actx();
+      const osc1 = c.createOscillator(); const g1 = c.createGain();
+      osc1.connect(g1); g1.connect(c.destination);
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(120, c.currentTime);
+      osc1.frequency.exponentialRampToValueAtTime(40, c.currentTime + 0.6);
+      g1.gain.setValueAtTime(0.7, c.currentTime);
+      g1.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.6);
+      osc1.start(c.currentTime); osc1.stop(c.currentTime + 0.6);
+      const osc2 = c.createOscillator(); const g2 = c.createGain();
+      osc2.connect(g2); g2.connect(c.destination);
+      osc2.type = 'square';
+      osc2.frequency.setValueAtTime(1800, c.currentTime + 0.1);
+      osc2.frequency.exponentialRampToValueAtTime(600, c.currentTime + 0.5);
+      g2.gain.setValueAtTime(0.15, c.currentTime + 0.1);
+      g2.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.5);
+      osc2.start(c.currentTime + 0.1); osc2.stop(c.currentTime + 0.5);
+    } catch(e) {}
+  }
+
+  function sfxDefeatSpin() {
+    try {
+      const c = actx();
+      const osc = c.createOscillator(); const g = c.createGain();
+      osc.connect(g); g.connect(c.destination);
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(400, c.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(60, c.currentTime + 0.6);
+      g.gain.setValueAtTime(0.2, c.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.6);
+      osc.start(c.currentTime); osc.stop(c.currentTime + 0.6);
+    } catch(e) {}
+  }
+
+  setTimeout(() => { overlay.classList.add('red-bg'); }, 200);
+
+  setTimeout(() => {
+    img.classList.add('shake');
+    sfxDefeatBoom();
+    const app = document.getElementById('app');
+    app.classList.remove('shake-strong');
+    void app.offsetWidth;
+    app.classList.add('shake-strong');
+    app.addEventListener('animationend', () => app.classList.remove('shake-strong'), { once: true });
+  }, 400);
+
+  setTimeout(() => {
+    img.classList.remove('shake');
+    img.classList.add('jump-fall');
+  }, 1000);
+
+  setTimeout(() => { scream.classList.add('show'); }, 1600);
+
+  setTimeout(() => {
+    sfxDefeatSpin();
+    const app = document.getElementById('app');
+    app.classList.remove('flash-white');
+    void app.offsetWidth;
+    app.classList.add('flash-white');
+    app.addEventListener('animationend', () => app.classList.remove('flash-white'), { once: true });
+  }, 2200);
+
+  setTimeout(() => {
+    img.classList.remove('jump-fall');
+    img.classList.add('spin-out');
+    sfxCorrect();
+  }, 2600);
+
+  setTimeout(() => { bonMsg.classList.add('show'); }, 3200);
+
   setTimeout(() => {
     btn.style.opacity = '1';
     _villainReady = true;
-  }, 3800);
+  }, 4000);
 }
 
 function closeVillainOverlay() {
