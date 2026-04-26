@@ -1673,7 +1673,7 @@ const EPISODES = [
         options: ['A. 三角筋', 'B. 棘上筋', 'C. 僧帽筋上部線維', 'D. 肩甲挙筋'],
         correct: 2,
         correctMsg: '正解！僧帽筋上部線維の上に取穴する。原因筋に直接アプローチするのじゃ！',
-        wrongMsgs: ['三角筋は肩の外側の筋肉。肩井は僧帽筋上部線維の上です', '棘上筋は肩甲骨の上にある腱板の筋肉。肩井の位置とは異なります', null, '肩甲挙筋は頚椎から肩甲骨内側上角に走る筋肉。肩井は僧帽筋上部線維の上です'],
+        wrongMsgs: ['三角筋は肩の外側の筋肉。肩井の位置とは異なります', '棘上筋は肩甲骨の上にある腱板の筋肉。肩井の位置とは異なります', null, '肩甲挙筋は頚椎から肩甲骨内側上角に走る筋肉。肩井の位置とは異なります'],
       },
     ],
     clearPatientText: 'あ…！<br>肩が…軽くなっていく…！<br>この感覚…3ヶ月ぶりです…！<br>私…また全力で仕事できる気がします。<br>ありがとうございます、先生…！',
@@ -2334,7 +2334,6 @@ function showMiniQuizComplete() {
 
 function showMiniQuizBridge(icon, title, body, doneFn) {
   const html = `
-    <div style="text-align:center;font-size:2rem;margin-bottom:8px">${icon}</div>
     <div style="font-weight:900;font-size:1.05rem;margin-bottom:10px;color:var(--gold)">${title}</div>
     <div style="line-height:1.8;margin-bottom:16px">${body}</div>
     <button class="btn-next-full" onclick="sfxClick(); closeCardOverlay()">始める →</button>
