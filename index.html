@@ -2498,12 +2498,31 @@ function hwDone(n) {
     state.evidence1Unlocked = true; saveState();
     goToMiniQuiz();
   } else {
-    showVillainDefeatEnhanced(() => {
-      state.evidence2Unlocked = true; saveState();
+    showKoredayo(() => {
       const ep = currentEp;
-      const mq2data = ep ? ep.miniQuizData2 : [];
-      showMiniQuizBridge('📍', '取穴の成果を見せてもらおう！', `今確認した${ep ? ep.hw2.name : '取穴'}の取穴法で確認テストじゃ。`,
-        () => goToMiniQuiz(mq2data, goToClear, '取穴確認OK。\nいざ、決着をつけるのじゃ！', '取穴確認OK！<br>準備完了じゃ', '🏆 決着をつける！'));
+      const html = `
+        <div style="text-align:center;margin-bottom:16px">
+          <div style="font-size:2.5rem;margin-bottom:8px">⚔️</div>
+          <div style="font-size:1.3rem;font-weight:900;color:var(--gold);margin-bottom:8px">
+            準備完了じゃ！
+          </div>
+          <div style="font-size:0.9rem;color:#ccc;line-height:1.7">
+            ${ep ? ep.hw2.name : 'ツボ'}を特定した。<br>あとは秘孔を突くだけじゃ。
+          </div>
+        </div>
+        <button class="btn-next-full" style="background:var(--gold);color:#0a1628;font-size:1.1rem"
+          onclick="sfxClick(); closeCardOverlay()">
+          ⚔️ 決着をつける！
+        </button>
+      `;
+      showCardOverlay(html, () => {
+        showVillainDefeatEnhanced(() => {
+          state.evidence2Unlocked = true; saveState();
+          const mq2data = ep ? ep.miniQuizData2 : [];
+          showMiniQuizBridge('📍', '取穴の成果を見せてもらおう！', `今確認した${ep ? ep.hw2.name : '取穴'}の取穴法で確認テストじゃ。`,
+            () => goToMiniQuiz(mq2data, goToClear, '取穴確認OK。\nいざ、決着をつけるのじゃ！', '取穴確認OK！<br>準備完了じゃ', '🏆 決着をつける！'));
+        });
+      });
     });
   }
 }
