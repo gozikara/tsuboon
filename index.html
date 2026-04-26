@@ -910,6 +910,10 @@
     animation: bon-msg-slidein 0.5s ease forwards;
     opacity: 1;
   }
+
+  /* ===== ふりがな ===== */
+  ruby { ruby-align: center; }
+  rt { font-size: 0.55em; color: rgba(255,255,255,0.6); letter-spacing: 0.02em; }
 </style>
 </head>
 <body>
@@ -2257,7 +2261,7 @@ function renderMiniQuiz() {
   }
   const q = _mqData[mqIdx];
   document.getElementById('mq-intro-text').textContent = q.intro;
-  document.getElementById('mq-question').textContent = q.q;
+  document.getElementById('mq-question').innerHTML = addFurigana(q.q);
 
   const container = document.getElementById('mq-options');
   container.innerHTML = '';
@@ -2268,7 +2272,7 @@ function renderMiniQuiz() {
 
   q.options.forEach((opt, i) => {
     const btn = document.createElement('button');
-    btn.className = 'btn-quiz-grid'; btn.textContent = opt;
+    btn.className = 'btn-quiz-grid'; btn.innerHTML = addFurigana(opt);
     btn.onclick = () => answerMiniQuiz(i);
     container.appendChild(btn);
   });
@@ -2359,7 +2363,7 @@ function renderQuiz1() {
   container.className = 'quiz-options-grid';
   quiz1Data.options.forEach((opt, i) => {
     const btn = document.createElement('button');
-    btn.className = 'btn-quiz-grid'; btn.textContent = opt;
+    btn.className = 'btn-quiz-grid'; btn.innerHTML = addFurigana(opt);
     btn.onclick = () => answerQuiz1(i);
     container.appendChild(btn);
   });
@@ -2398,15 +2402,30 @@ function closeCardOverlay(e) {
 
 function showPatientInfo() {
   sfxClick();
-  const html = `
-    <div style="font-weight:900;font-size:1.05rem;margin-bottom:14px;color:var(--accent)">📋 患者情報</div>
-    <div style="line-height:2;font-size:0.9rem">
+  const ep = currentEp;
+  let content = '';
+
+  if (ep && ep.id === 2) {
+    content = `
+      📍 <strong>症状</strong>：腰の重だるさ<br>
+      ⏰ <strong>タイミング</strong>：立ち続けると悪化・横になると楽<br>
+      💼 <strong>職業</strong>：美容師・1日中立ち仕事<br>
+      📌 <strong>部位</strong>：背骨の両脇・腰の外側<br>
+      💬 <strong>背景</strong>：休日も寝てるだけ・笑顔を保てない辛さ
+    `;
+  } else {
+    content = `
       📍 <strong>症状</strong>：肩の重さ・こり感<br>
       ⏰ <strong>タイミング</strong>：夕方に悪化<br>
       💼 <strong>職業</strong>：デスクワーク・残業続き<br>
       📌 <strong>部位</strong>：肩〜首にかけて<br>
       💬 <strong>背景</strong>：仕事へのプレッシャー・パフォーマンス低下への不安
-    </div>
+    `;
+  }
+
+  const html = `
+    <div style="font-weight:900;font-size:1.05rem;margin-bottom:14px;color:var(--accent)">📋 患者情報</div>
+    <div style="line-height:2;font-size:0.9rem">${content}</div>
     <button class="btn-next-full" style="margin-top:16px" onclick="closeCardOverlay()">閉じる</button>
   `;
   showCardOverlay(html, null);
@@ -2496,7 +2515,7 @@ function answerQuiz1(i) {
         const anatomyCardHtml = `
           <div style="background:rgba(74,158,255,0.07);border:1px solid rgba(74,158,255,0.3);border-radius:10px;padding:12px;font-size:0.88rem;line-height:2;margin-bottom:12px">
             <div style="color:var(--accent);font-weight:700;margin-bottom:6px">📋 ${ep.anatomyCard.name}</div>
-            ${ep.anatomyCard.lines.join('<br>')}
+            ${ep.anatomyCard.lines.map(l => addFurigana(l)).join('<br>')}
           </div>`;
         const html = `
           <div style="text-align:center;font-size:2rem;margin-bottom:8px">✅</div>
@@ -2539,7 +2558,7 @@ function resumeFromQuiz1Done() {
   const anatomyCardHtml = `
     <div style="background:rgba(74,158,255,0.07);border:1px solid rgba(74,158,255,0.3);border-radius:10px;padding:12px;font-size:0.88rem;line-height:2;margin-bottom:12px">
       <div style="color:var(--accent);font-weight:700;margin-bottom:6px">📋 ${ep.anatomyCard.name}</div>
-      ${ep.anatomyCard.lines.join('<br>')}
+      ${ep.anatomyCard.lines.map(l => addFurigana(l)).join('<br>')}
     </div>`;
   const html = `
     <div style="text-align:center;font-size:2rem;margin-bottom:8px">📋</div>
@@ -2570,7 +2589,7 @@ function renderQuiz2() {
   container.style.display = '';
   quiz2Data.options.forEach((opt, i) => {
     const btn = document.createElement('button');
-    btn.className = 'btn-quiz-grid'; btn.textContent = opt;
+    btn.className = 'btn-quiz-grid'; btn.innerHTML = addFurigana(opt);
     btn.onclick = () => answerQuiz2(i);
     container.appendChild(btn);
   });
@@ -3298,6 +3317,123 @@ function goToMode() {
 function finishGoal() {
   localStorage.setItem(GOAL_KEY, '1');
   showScreenWithSound('mode');
+}
+
+// =====================================================
+// ふりがなヘルパー
+// =====================================================
+const FURIGANA_MAP = [
+  ['僧帽筋上部線維', 'そうぼうきんじょうぶせんい'],
+  ['僧帽筋上部',     'そうぼうきんじょうぶ'],
+  ['僧帽筋中部',     'そうぼうきんちゅうぶ'],
+  ['僧帽筋下部',     'そうぼうきんかぶ'],
+  ['僧帽筋',         'そうぼうきん'],
+  ['脊柱起立筋',     'せきちゅうきりつきん'],
+  ['腸肋筋',         'ちょうろっきん'],
+  ['最長筋',         'さいちょうきん'],
+  ['棘筋',           'きょくきん'],
+  ['多裂筋',         'たれつきん'],
+  ['腰方形筋',       'こしほうけいきん'],
+  ['腸腰筋',         'ちょうようきん'],
+  ['大臀筋',         'だいでんきん'],
+  ['中臀筋',         'ちゅうでんきん'],
+  ['梨状筋',         'りじょうきん'],
+  ['大腿四頭筋',     'だいたいしとうきん'],
+  ['大腿筋膜張筋',   'だいたいきんまくちょうきん'],
+  ['腓腹筋',         'ひふくきん'],
+  ['下腿三頭筋',     'かたいさんとうきん'],
+  ['長腓骨筋',       'ちょうひこつきん'],
+  ['前脛骨筋',       'ぜんけいこつきん'],
+  ['薄筋',           'はっきん'],
+  ['菱形筋',         'りょうけいきん'],
+  ['肩甲挙筋',       'けんこうきょきん'],
+  ['棘上筋',         'きょくじょうきん'],
+  ['棘下筋',         'きょくかきん'],
+  ['三角筋前部',     'さんかくきんぜんぶ'],
+  ['三角筋',         'さんかくきん'],
+  ['大胸筋',         'だいきょうきん'],
+  ['小胸筋',         'しょうきょうきん'],
+  ['広背筋',         'こうはいきん'],
+  ['胸鎖乳突筋',     'きょうさにゅうとつきん'],
+  ['斜角筋群',       'しゃかくきんぐん'],
+  ['後頭下筋群',     'こうとうかきんぐん'],
+  ['板状筋',         'ばんじょうきん'],
+  ['烏口腕筋',       'うこうわんきん'],
+  ['短橈側手根伸筋', 'たんとうそくしゅこんしんきん'],
+  ['手根屈筋群',     'しゅこんくっきんぐん'],
+  ['前腕屈筋群',     'ぜんわんくっきんぐん'],
+  ['第1背側骨間筋',  'だいいちはいそくこっかんきん'],
+  ['肩井',   'けんせい'],
+  ['腎兪',   'じんゆ'],
+  ['大椎',   'だいつい'],
+  ['肩峰',   'けんぽう'],
+  ['肩甲棘', 'けんこうきょく'],
+  ['合谷',   'ごうこく'],
+  ['足三里', 'あしさんり'],
+  ['委中',   'いちゅう'],
+  ['承山',   'しょうざん'],
+  ['懸鐘',   'けんしょう'],
+  ['解谿',   'かいけい'],
+  ['梁丘',   'りょうきゅう'],
+  ['曲泉',   'きょくせん'],
+  ['環跳',   'かんちょう'],
+  ['秩辺',   'ちっぺん'],
+  ['風池',   'ふうち'],
+  ['風府',   'ふうふ'],
+  ['風市',   'ふうし'],
+  ['天窓',   'てんそう'],
+  ['天柱',   'てんちゅう'],
+  ['天宗',   'てんそう'],
+  ['膏肓',   'こうこう'],
+  ['大腸兪', 'だいちょうゆ'],
+  ['志室',   'ししつ'],
+  ['気海兪', 'きかいゆ'],
+  ['三焦兪', 'さんしょうゆ'],
+  ['次髎',   'じりょう'],
+  ['上髎',   'じょうりょう'],
+  ['三陰交', 'さんいんこう'],
+  ['内関',   'ないかん'],
+  ['大陵',   'たいりょう'],
+  ['手三里', 'てさんり'],
+  ['肩髃',   'けんぐう'],
+  ['肩髎',   'けんりょう'],
+  ['扶突',   'ふとつ'],
+  ['中府',   'ちゅうふ'],
+  ['太陽',   'たいよう'],
+  ['起始',       'きし'],
+  ['停止',       'ていし'],
+  ['支配神経',   'しはいしんけい'],
+  ['脊髄神経後枝','せきずいしんけいこうし'],
+  ['腸骨稜',     'ちょうこつりょう'],
+  ['仙骨',       'せんこつ'],
+  ['胸腰筋膜',   'きょうようきんまく'],
+  ['棘突起',     'きょくとっき'],
+  ['横突起',     'おうとっき'],
+  ['肋骨角',     'ろっこつかく'],
+  ['肋骨',       'ろっこつ'],
+  ['外後頭隆起', 'がいこうとうりゅうき'],
+  ['項靭帯',     'こうじんたい'],
+  ['鎖骨外側',   'さこつがいそく'],
+  ['烏口突起',   'うこうとっき'],
+  ['肩甲骨',     'けんこうこつ'],
+  ['腰椎',       'ようつい'],
+  ['胸椎',       'きょうつい'],
+  ['頚椎',       'けいつい'],
+  ['後正中線',   'こうせいちゅうせん'],
+  ['恥骨結合',   'ちこつけつごう'],
+  ['坐骨結節',   'ざこつけっせつ'],
+  ['大転子',     'だいてんし'],
+];
+
+function addFurigana(text) {
+  let result = text;
+  FURIGANA_MAP.forEach(([kanji, yomi]) => {
+    result = result.replace(
+      new RegExp(kanji, 'g'),
+      `<ruby>${kanji}<rt>${yomi}</rt></ruby>`
+    );
+  });
+  return result;
 }
 
 // =====================================================
