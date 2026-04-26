@@ -16,7 +16,13 @@
       "Bash(cp image/2.png hero_male.png)",
       "Bash(cp image/3.png bon_shocho.png)",
       "Bash(cp image/4.png patient.png)",
-      "Bash(cp image/5.png villain.png)"
+      "Bash(cp image/5.png villain.png)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "Bash(node --check index.html)",
+      "Bash(node --check /tmp/check.js)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ]
   }
 }
