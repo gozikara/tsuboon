@@ -793,11 +793,9 @@
   #villain-bon-msg.show { opacity: 1; }
 
   #villain-continue-btn {
-    opacity: 0;
     transition: opacity 0.4s ease;
     margin-top: 24px;
   }
-  #villain-continue-btn.show { opacity: 1; }
 
   @keyframes villain-shake {
     0%,100% { transform: translateX(0) rotate(0deg); }
@@ -809,6 +807,40 @@
   #villain-defeat-img.shake {
     animation: villain-shake 0.5s ease;
   }
+
+  /* ===== EPISODE SELECT ===== */
+  .ep-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(74,158,255,0.25);
+    border-radius: 14px;
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    width: 100%;
+    text-align: left;
+    color: #fff;
+    font-family: 'Noto Sans JP', sans-serif;
+  }
+  .ep-card:not(:disabled):hover { background: rgba(74,158,255,0.1); }
+  .ep-card:disabled { opacity: 0.45; cursor: not-allowed; }
+  .ep-card.ep-cleared { border-color: rgba(74,255,127,0.4); }
+  .ep-num {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: var(--accent);
+    min-width: 44px;
+    text-align: center;
+  }
+  .ep-info { flex: 1; }
+  .ep-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 3px; }
+  .ep-meta { font-size: 0.78rem; color: #aaa; }
+  .ep-status { font-size: 0.78rem; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+  .ep-status.cleared { background: rgba(74,255,127,0.15); color: var(--correct); }
+  .ep-status.playable { background: rgba(74,158,255,0.15); color: var(--accent); }
+  .ep-status.locked { background: rgba(255,255,255,0.07); color: #666; }
 </style>
 </head>
 <body>
@@ -948,6 +980,15 @@
     </div>
   </div>
 
+  <!-- ========== EPISODE SELECT ========== -->
+  <div id="screen-episode-select" class="screen pad20">
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-size:0.8rem;color:#aaa;margin-bottom:4px">ベーシックモード</div>
+      <div style="font-weight:900;font-size:1.3rem;color:var(--gold)">エピソードを選ぼう</div>
+    </div>
+    <div id="episode-list" style="display:flex;flex-direction:column;gap:12px;overflow-y:auto;flex:1"></div>
+  </div>
+
   <!-- ========== DIALOGUE ========== -->
   <div id="screen-dialogue" class="screen novel-screen">
     <div class="game-stage">
@@ -1051,7 +1092,7 @@
         <span class="memo-salon-link">→ 詳しい手技はオンラインサロンで解説予定</span>
       </div>
       <div class="quiz-next" id="quiz1-next">
-        <button class="btn-next-full" onclick="sfxClick(); goToPhase5()">次のフェーズへ</button>
+        <button class="btn-next-full" onclick="sfxClick(); resumeFromQuiz1Done()">次のフェーズへ</button>
       </div>
     </div>
     <div class="novel-win">
@@ -1086,7 +1127,7 @@
     </div>
     <div class="novel-win">
       <div class="novel-speaker">ボーン院長</div>
-      <div class="novel-context-text">原因筋は特定した。<br>あとは秘孔を突くだけじゃ。<br>僧帽筋の秘孔——どれかのう！</div>
+      <div class="novel-context-text" id="hw2-context-text">原因筋は特定した。<br>あとは秘孔を突くだけじゃ。<br>僧帽筋の秘孔——どれかのう！</div>
     </div>
   </div>
 
@@ -1094,7 +1135,7 @@
   <!-- ========== CLEAR 1: クリア演出 ========== -->
   <div id="screen-clear1" class="screen pad20">
     <div style="text-align:center">
-      <div class="clear-episode">エピソード 1</div>
+      <div class="clear-episode" id="clear-episode-label">エピソード 1</div>
       <div class="clear-title">事件解決！真犯人を特定した！</div>
       <div class="char-duo" style="margin-top:10px">
         <img class="char-img" src="./bon_shocho.png" alt="ボーン院長">
@@ -1111,7 +1152,7 @@
     <div style="width:100%;display:flex;flex-direction:column;gap:10px">
       <div style="display:flex;align-items:flex-start;gap:10px">
         <img class="char-img" src="./patient.png" alt="患者さん" style="flex-shrink:0">
-        <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:10px 14px;font-size:0.9rem;line-height:1.7">
+        <div id="clear-patient-text" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:10px 14px;font-size:0.9rem;line-height:1.7">
           あ…！<br>肩が…軽くなっていく…！<br>この感覚…3ヶ月ぶりです…！<br>私…また全力で仕事できる気がします。<br>ありがとうございます、先生…！
         </div>
       </div>
@@ -1206,12 +1247,12 @@
 </div>
 
 <!-- ========== 容疑筋撃破オーバーレイ ========== -->
-<div id="villain-overlay">
+<div id="villain-overlay" onclick="tapVillainOverlay()">
   <img id="villain-defeat-img" src="./villain.png" alt="僧帽筋タロウ">
   <div id="villain-scream">ぐあああ…！<br>なぜ…バレた…！</div>
   <div id="villain-bon-msg">原因筋——特定完了じゃ。<br>次は秘孔を突くのじゃ。</div>
   <button id="villain-continue-btn" class="btn-primary"
-    style="width:80%;max-width:300px"
+    style="width:80%;max-width:300px;opacity:0"
     onclick="closeVillainOverlay()">次へ進む →</button>
 </div>
 
@@ -1453,9 +1494,217 @@ function sfxTransition() {
 }
 
 // =====================================================
+// EPISODES
+// =====================================================
+const EPISODES = [
+  {
+    id: 1,
+    title: '肩こりの真犯人',
+    symptom: '肩こり',
+    muscle: '僧帽筋上部',
+    acupoint: '肩井',
+    dialogues: [
+      { imgSrc: './bon_shocho.png', speaker: 'ボーン院長', charType: 'npc',
+        text: (p) => `来たか、${p}よ。\n今日からお主はこの院の新人治療家じゃ。\nさっそく患者さんが来ておる。施術部屋へ向かうがよい。` },
+      { imgSrc: './bon_shocho.png', speaker: 'ボーン院長', charType: 'npc',
+        text: '治療家の仕事は闇雲に施術することではない。\n症状をとり、患者さんを治してあげることじゃ。\nそのためにはまず——原因筋を特定せねばならんのう。' },
+      { imgSrc: './bon_shocho.png', speaker: 'ボーン院長', charType: 'npc',
+        text: 'まず患者さんから情報を集めるのじゃ。\n症状・タイミング・職業・生活習慣。\nそれが「原因筋」を絞り込む唯一の手がかりじゃ。' },
+      { imgSrc: './patient.png', speaker: '患者さん', charType: 'patient',
+        text: '先生…来てよかった。\n3ヶ月間、肩がずっと重くて…\nパソコン仕事が辛くて、もう辞めようかと思ってたんです。' },
+      { imgSrc: './patient.png', speaker: '患者さん', charType: 'patient',
+        text: '先月…子どもの運動会も、\n肩と頭が痛くて途中で帰ったんです。\n子どもの顔、見れなくて…' },
+      { imgSrc: './bon_shocho.png', speaker: 'ボーン院長', charType: 'npc',
+        text: (p) => `${p}よ、聞いたか。\nこの患者さんには——\n取り戻すべき人生がある。\nまず情報を集めるのじゃ。\n原因筋を絞り込むのじゃ。` },
+    ],
+    choiceData: [
+      { label: 'どこが一番痛い？',    answer: 'ここ…肩の上あたりが重くて。\n首の付け根から肩先にかけてです' },
+      { label: 'いつから痛い？',      answer: '3ヶ月くらい前から。\n在宅ワークが増えてからですね…' },
+      { label: 'どんな時に痛くなる？', answer: 'パソコンを2〜3時間やった後がひどくて。\n夕方になると頭痛もしてきます' },
+    ],
+    quiz1Data: {
+      options: ['A. 三角筋', 'B. 僧帽筋上部', 'C. 胸鎖乳突筋', 'D. 棘上筋'],
+      correct: 1,
+      correctMsg: '正解じゃ。\nデスクワークで収縮し続け、夕方に疲弊する。\nあの患者さんの生活と完全に一致する。\n原因筋の特定——完了じゃ。\n次は秘孔を突くのじゃ。',
+      wrongExplanations: [
+        '三角筋は腕を横・前・後ろに動かす筋肉です。デスクワークで酷使される筋肉とは異なり、今回の「肩の重さ・夕方悪化」とは症状パターンが一致しません',
+        null,
+        '胸鎖乳突筋は頭を傾けたり回旋する筋肉です。首こりには関与しますが、今回の「肩上部の広範囲な重さ・デスクワーク後の夕方悪化」は僧帽筋上部の症状パターンに一致します',
+        '棘上筋は腕を横に上げる際に使う筋肉で、五十肩（腱板損傷）との関連が深いです。今回のような「肩の重だるさ」とは原因が異なります',
+      ],
+    },
+    anatomyCard: {
+      intro: '僧帽筋が原因じゃ。この筋の解剖学を確認しよう。確認するんじゃ。',
+      name: '僧帽筋（上部線維）',
+      lines: ['起始：外後頭隆起・項靭帯', '停止：鎖骨外側1/3', '作用：肩甲骨の挙上・上方回旋・内転'],
+    },
+    miniQuizData: [
+      {
+        intro: '修行の成果を見せてもらおうかのう。\n原因筋を絞り込むのじゃ。',
+        q: '僧帽筋上部の起始は___である',
+        options: ['A. 外後頭隆起・項靭帯', 'B. 肩甲棘', 'C. 烏口突起', 'D. 鎖骨外側端'],
+        correct: 0,
+        correctMsg: '正解！外後頭隆起から鎖骨まで走る大きな筋肉だ。経験値獲得！',
+        wrongMsgs: [null, '肩甲棘は僧帽筋の"中部"の停止部。上部とは異なります', '烏口突起は小胸筋や烏口腕筋の付着部です', '鎖骨外側端は僧帽筋上部の"停止"であり起始ではありません'],
+      },
+      {
+        intro: 'もう1問だ。よく考えろ。',
+        q: '僧帽筋上部はデスクワーク中に"弛緩"している',
+        options: ['A. ○ 正しい', 'B. × 間違い'],
+        correct: 1,
+        correctMsg: '正解！デスクワーク中、僧帽筋上部は持続的に収縮し続けます。これが血流障害と疲労物質の蓄積を引き起こし、肩こりの原因となります。',
+        wrongMsgs: ['デスクワーク中は肩が上がり、僧帽筋上部は常に収縮しています。だから疲労して肩こりになるんです', null],
+      },
+    ],
+    quiz2Data: {
+      options: ['A. 合谷', 'B. 足三里', 'C. 肩井', 'D. 委中'],
+      correct: 2,
+      correctMsg: 'それだ——！秘孔を突け！！',
+      wrongExplanations: [
+        '合谷は万能ツボですが大腸経。全身の緊張緩和には使えますが、僧帽筋の局所ポイントとしては別のツボが最適です',
+        '足三里は胃経のツボ。消化器系や全身の疲労回復が得意で、肩こりの局所治療には向きません',
+        null,
+        '委中は膀胱経で"腰背は委中に求む"と言われるツボ。腰痛には抜群ですが、肩こりには経絡が異なります',
+      ],
+    },
+    quiz2CorrectTitle: (p) => `${p}、肩井だ——！！`,
+    quiz2CorrectSub: '僧帽筋のトリガーポイントが——\n消えていく！',
+    hw2: {
+      name: '肩井（けんせい）',
+      instruction: '肩井の取穴法を確認しよう',
+      location: '大椎と肩峰を結ぶ線の<strong>中点</strong>',
+      anatomy: '僧帽筋上部線維',
+    },
+    miniQuizData2: [
+      {
+        intro: '最後の確認じゃ。\n取穴を確実に覚えたか見せよ。',
+        q: '肩井は___と___を結ぶ線の中点である',
+        options: ['A. 大椎と肩峰', 'B. 大椎と肩甲棘', 'C. 大椎と肩鎖関節', 'D. 頭蓋底と肩峰'],
+        correct: 0,
+        correctMsg: '正解！大椎から肩峰までの中点じゃ。しっかり覚えたのじゃ。',
+        wrongMsgs: [null, '肩甲棘は僧帽筋中部の停止部。取穴の基準は肩甲棘ではなく肩峰（けんぽう）です', '肩鎖関節ではなく肩峰（けんぽう）が正解です', '頭蓋底は関係ありません。大椎（背中の出っ張り）と肩峰の中点です'],
+      },
+      {
+        intro: 'もう1問。最後の確認じゃ。',
+        q: '肩井は___の上に取穴する',
+        options: ['A. 三角筋', 'B. 棘上筋', 'C. 僧帽筋上部線維', 'D. 肩甲挙筋'],
+        correct: 2,
+        correctMsg: '正解！僧帽筋上部線維の上に取穴する。原因筋に直接アプローチするのじゃ！',
+        wrongMsgs: ['三角筋は肩の外側の筋肉。肩井は僧帽筋上部線維の上です', '棘上筋は肩甲骨の上にある腱板の筋肉。肩井の位置とは異なります', null, '肩甲挙筋は頚椎から肩甲骨内側上角に走る筋肉。肩井は僧帽筋上部線維の上です'],
+      },
+    ],
+    clearPatientText: 'あ…！<br>肩が…軽くなっていく…！<br>この感覚…3ヶ月ぶりです…！<br>私…また全力で仕事できる気がします。<br>ありがとうございます、先生…！',
+    clearPatientName: '田中さん',
+    hw2ContextText: '原因筋は特定した。<br>あとは秘孔を突くだけじゃ。<br>僧帽筋の秘孔——どれかのう！',
+  },
+  {
+    id: 2,
+    title: '腰痛の真犯人',
+    symptom: '腰痛',
+    muscle: '腸肋筋',
+    acupoint: '腎兪',
+    dialogues: [
+      { imgSrc: './bon_shocho.png', speaker: 'ボーン院長', charType: 'npc',
+        text: (p) => `来たか、${p}よ。\n今日からお主はこの院の新人治療家じゃ。\nさっそく患者さんが来ておる。施術部屋へ向かうがよい。` },
+      { imgSrc: './bon_shocho.png', speaker: 'ボーン院長', charType: 'npc',
+        text: '治療家の仕事は闇雲に施術することではない。\n症状をとり、患者さんを治してあげることじゃ。\nそのためにはまず——原因筋を特定せねばならんのう。' },
+      { imgSrc: './bon_shocho.png', speaker: 'ボーン院長', charType: 'npc',
+        text: 'まず患者さんから情報を集めるのじゃ。\n症状・タイミング・職業・生活習慣。\nそれが「原因筋」を絞り込む唯一の手がかりじゃ。' },
+      { imgSrc: './patient.png', speaker: '患者さん', charType: 'patient',
+        text: '腰が…もう\nずっと痛くて。\n仕事中も\nずっとズキズキするんです。' },
+      { imgSrc: './patient.png', speaker: '患者さん', charType: 'patient',
+        text: '休みの日は\n結局、家で寝てるだけで…\n何もできない。\nそれが一番、しんどいです。' },
+      { imgSrc: './bon_shocho.png', speaker: 'ボーン院長', charType: 'npc',
+        text: (p) => `${p}よ、\nその腰の重さ——\nわしには分かるぞ。\n手がかりを集めるのじゃ。` },
+    ],
+    choiceData: [
+      { label: '痛みはどこですか？', answer: '腰の中央より\n少し外側です…\n背骨の横あたりが\n一番ズキズキします。' },
+      { label: '仕事の姿勢は？', answer: 'トラックに\n何時間も乗って…\nずっと同じ姿勢で\n座ってるんです。' },
+      { label: '動くと痛みは変わりますか？', answer: '前に屈むより\n後ろに反ると\nもっと痛くて…\n朝の立ち上がりが\n一番きつい。' },
+    ],
+    quiz1Data: {
+      options: ['A. 最長筋', 'B. 腸肋筋', 'C. 腰方形筋', 'D. 多裂筋'],
+      correct: 1,
+      correctMsg: '正解じゃ。\n背骨外側の痛み——\n後屈で増悪するパターン。\nまさに腸肋筋の仕業じゃ。\n原因筋の特定——完了じゃ。\n次は秘孔を突くのじゃ。',
+      wrongExplanations: [
+        '最長筋は脊柱起立筋の中央列じゃ。痛みの位置がより内側になる。今回の訴えとは一致せん。',
+        null,
+        '腰方形筋は側屈動作での痛みが主体じゃ。後屈増悪のパターンとは異なる。',
+        '多裂筋は椎骨間の深部筋じゃ。局所の深い痛みが主体で、今回の広い分布とは合わん。',
+      ],
+    },
+    anatomyCard: {
+      intro: '腸肋筋が原因じゃ。この筋の解剖学を確認しよう。確認するんじゃ。',
+      name: '腸肋筋（iliocostalis muscle）',
+      lines: ['起始：仙骨・腸骨稜・胸腰筋膜', '停止：肋骨角（下位から上位へ）', '作用：脊柱の伸展・側屈', '支配神経：脊髄神経後枝 L1〜L3'],
+    },
+    miniQuizData: [
+      {
+        intro: '修行の成果を見せてもらおうかのう。\n原因筋を絞り込むのじゃ。',
+        q: '腸肋筋の起始は\n仙骨・（　　）・胸腰筋膜である。',
+        options: ['A. 腸骨稜', 'B. 恥骨結合', 'C. 坐骨結節', 'D. 大転子'],
+        correct: 0,
+        correctMsg: '正確じゃ。腸骨稜から力強く立ち上がる筋じゃ。よく覚えておくのじゃ。',
+        wrongMsgs: [null, '恥骨結合は腹直筋などの起始じゃ。脊柱起立筋群とは位置が異なる。', '坐骨結節はハムストリングスの起始じゃ。腸肋筋の起始とは別の場所じゃ。', '大転子は中殿筋などの停止じゃ。腸肋筋とは無関係じゃ。'],
+      },
+      {
+        intro: 'もう1問だ。よく考えろ。',
+        q: '腸肋筋の主な作用は\n脊柱の伸展と（　　）である。',
+        options: ['A. 側屈', 'B. 回旋'],
+        correct: 0,
+        correctMsg: '正解じゃ。伸展と側屈——この二つを押さえよ。',
+        wrongMsgs: [null, '回旋は半棘筋や回旋筋の主作用じゃ。腸肋筋の主作用とは異なる。'],
+      },
+    ],
+    quiz2Data: {
+      options: ['A. 大腸兪', 'B. 志室', 'C. 腎兪', 'D. 気海兪'],
+      correct: 2,
+      correctMsg: 'それだ——！秘孔を突け！！',
+      wrongExplanations: [
+        '大腸兪は第4腰椎棘突起下外方1寸5分じゃ。腸肋筋の緊張への直接的な効果は腎兪に劣る。',
+        '志室は第2腰椎棘突起下外方3寸じゃ。取穴位置が外方に離れすぎておる。',
+        null,
+        '気海兪は第3腰椎棘突起下外方1寸5分じゃ。腎の気を補う腎兪とは効能が異なる。',
+      ],
+    },
+    quiz2CorrectTitle: (p) => `${p}、腎兪だ——！！`,
+    quiz2CorrectSub: '腸肋筋のトリガーポイントが——\n消えていく！',
+    hw2: {
+      name: '腎兪（じんゆ）',
+      instruction: '腎兪の取穴法を確認しよう',
+      location: '第2腰椎棘突起下、後正中線の<strong>外方1寸5分</strong>',
+      anatomy: '腸肋筋',
+    },
+    miniQuizData2: [
+      {
+        intro: '最後の確認じゃ。\n取穴を確実に覚えたか見せよ。',
+        q: '腎兪は第（　　）腰椎棘突起下\n外方1寸5分に取穴する。',
+        options: ['A. 第1腰椎', 'B. 第2腰椎', 'C. 第3腰椎', 'D. 第4腰椎'],
+        correct: 1,
+        correctMsg: '正確じゃ。第2腰椎——しっかり刻み込むのじゃ。',
+        wrongMsgs: ['第1腰椎棘突起下外方1寸5分は三焦兪の取穴部位じゃ。腎兪とは一椎骨ずれておる。', null, '第3腰椎棘突起下外方1寸5分は気海兪の取穴部位じゃ。一椎骨下方になる。', '第4腰椎棘突起下外方1寸5分は大腸兪の取穴部位じゃ。腎兪より二椎骨下方じゃ。'],
+      },
+      {
+        intro: 'もう1問。最後の確認じゃ。',
+        q: '腎兪の取穴時に触れる筋は\n（　　）である。',
+        options: ['A. 多裂筋', 'B. 最長筋', 'C. 腸肋筋', 'D. 腰方形筋'],
+        correct: 2,
+        correctMsg: '正解じゃ。腸肋筋の上に位置する——取穴の感覚を忘れるでないぞ。',
+        wrongMsgs: ['多裂筋は脊柱のより深部・内側に位置する深層筋じゃ。腎兪の直下とは異なる。', '最長筋は腸肋筋の内側に位置する脊柱起立筋の中央列じゃ。腎兪の取穴部位とはずれておる。', null, '腰方形筋は腸骨稜と第12肋骨の間に位置する深層筋じゃ。腎兪の表層にはない。'],
+      },
+    ],
+    clearPatientText: 'あ…腰が<br>軽い気がします。<br>久しぶりに——<br>休みの日に<br>外に出られそうで…<br>ありがとうございます、先生…！',
+    clearPatientName: '斉藤さん',
+    hw2ContextText: '原因筋は特定した。<br>あとは秘孔を突くだけじゃ。<br>腸肋筋の秘孔——どれかのう！',
+  },
+];
+
+let currentEp = null;
+
+// =====================================================
 // STATE
 // =====================================================
-const STORAGE_KEY = 'rinsho_ep1_v23';
+const STORAGE_KEY = 'rinsho_ep1_v24';
 
 let state = {
   phase: 'splash',
@@ -1487,6 +1736,10 @@ function loadState() {
     const s = JSON.parse(raw);
     s.choicesAnswered = new Set(s.choicesAnswered || []);
     state = s;
+    if (s.clearedEpisodes) state.clearedEpisodes = s.clearedEpisodes;
+    if (s.epId) {
+      currentEp = EPISODES.find(e => e.id === s.epId) || EPISODES[0];
+    }
   } catch(e) {}
 }
 
@@ -1723,60 +1976,8 @@ function loadPlayerName() {
 }
 
 // =====================================================
-// DIALOGUE DATA
+// DIALOGUE DATA (now in EPISODES array)
 // =====================================================
-const dialogues = [
-  { imgSrc: './bon_shocho.png', name: 'ボーン院長', speaker: 'ボーン院長', charType: 'npc',
-    text: () => `来たか、${pName()}よ。\n今日からお主はこの院の新人治療家じゃ。\nさっそく患者さんが来ておる。施術部屋へ向かうがよい。` },
-
-  { imgSrc: './bon_shocho.png', name: 'ボーン院長', speaker: 'ボーン院長', charType: 'npc',
-    text: '治療家の仕事は闇雲に施術することではない。\n症状をとり、患者さんを治してあげることじゃ。\nそのためにはまず——原因筋を特定せねばならんのう。' },
-
-  { imgSrc: './bon_shocho.png', name: 'ボーン院長', speaker: 'ボーン院長', charType: 'npc',
-    text: 'まず患者さんから情報を集めるのじゃ。\n症状・タイミング・職業・生活習慣。\nそれが「原因筋」を絞り込む唯一の手がかりじゃ。' },
-
-  { imgSrc: './patient.png', name: '患者さん', speaker: '患者さん', charType: 'patient',
-    text: '先生…来てよかった。\n3ヶ月間、肩がずっと重くて…\nパソコン仕事が辛くて、もう辞めようかと思ってたんです。' },
-
-  { imgSrc: './patient.png', name: '患者さん', speaker: '患者さん', charType: 'patient',
-    text: '先月…子どもの運動会も、\n肩と頭が痛くて途中で帰ったんです。\n子どもの顔、見れなくて…' },
-
-  { imgSrc: './bon_shocho.png', name: 'ボーン院長', speaker: 'ボーン院長', charType: 'npc',
-    text: () => `${pName()}よ、聞いたか。\nこの患者さんには——\n取り戻すべき人生がある。\nまず情報を集めるのじゃ。\n原因筋を絞り込むのじゃ。` },
-];
-
-const choiceData = [
-  { label: 'どこが一番痛い？',    answer: 'ここ…肩の上あたりが重くて。\n首の付け根から肩先にかけてです' },
-  { label: 'いつから痛い？',      answer: '3ヶ月くらい前から。\n在宅ワークが増えてからですね…' },
-  { label: 'どんな時に痛くなる？', answer: 'パソコンを2〜3時間やった後がひどくて。\n夕方になると頭痛もしてきます' },
-];
-
-// =====================================================
-// QUIZ DATA
-// =====================================================
-const quiz1Data = {
-  options: ['A. 三角筋', 'B. 僧帽筋上部', 'C. 胸鎖乳突筋', 'D. 棘上筋'],
-  correct: 1,
-  correctMsg: '正解じゃ。\nデスクワークで収縮し続け、夕方に疲弊する。\nあの患者さんの生活と完全に一致する。\n原因筋の特定——完了じゃ。\n次は秘孔を突くのじゃ。',
-  wrongExplanations: [
-    '三角筋は腕を横・前・後ろに動かす筋肉です。デスクワークで酷使される筋肉とは異なり、今回の「肩の重さ・夕方悪化」とは症状パターンが一致しません',
-    null,
-    '胸鎖乳突筋は頭を傾けたり回旋する筋肉です。首こりには関与しますが、今回の「肩上部の広範囲な重さ・デスクワーク後の夕方悪化」は僧帽筋上部の症状パターンに一致します',
-    '棘上筋は腕を横に上げる際に使う筋肉で、五十肩（腱板損傷）との関連が深いです。今回のような「肩の重だるさ」とは原因が異なります',
-  ],
-};
-
-const quiz2Data = {
-  options: ['A. 合谷', 'B. 足三里', 'C. 肩井', 'D. 委中'],
-  correct: 2,
-  correctMsg: 'それだ——！秘孔を突け！！',
-  wrongExplanations: [
-    '合谷（LI4）は万能ツボですが大腸経。全身の緊張緩和には使えますが、僧帽筋の局所ポイントとしては別のツボが最適です',
-    '足三里（ST36）は胃経のツボ。消化器系や全身の疲労回復が得意で、肩こりの局所治療には向きません',
-    null,
-    '委中（BL40）は膀胱経で"腰背は委中に求む"と言われるツボ。腰痛には抜群ですが、肩こりには経絡が異なります',
-  ],
-};
 
 // =====================================================
 // LINEUP
@@ -1789,10 +1990,11 @@ let dlgIdx = 0;
 let dlgLeftSrc = '', dlgRightSrc = '';
 
 function showDialogue(idx) {
-  if (idx >= dialogues.length) { goToChoices(); return; }
+  const dlgs = currentEp ? currentEp.dialogues : [];
+  if (idx >= dlgs.length) { goToChoices(); return; }
   dlgIdx = idx;
-  const d = dialogues[idx];
-  const dText    = typeof d.text    === 'function' ? d.text()    : d.text;
+  const d = dlgs[idx];
+  const dText    = typeof d.text    === 'function' ? d.text(pName()) : d.text;
   const dSpeaker = typeof d.speaker === 'function' ? d.speaker() : d.speaker;
   const dImgSrc  = typeof d.imgSrc  === 'function' ? d.imgSrc()  : d.imgSrc;
 
@@ -1839,21 +2041,9 @@ function handleDialogueTap() {
 function setModeAndStart(mode) {
   sfxClick();
   loadPlayerName();
-  if (state.mode !== mode) {
-    state = {
-      phase: 'dialogue', mode,
-      choicesAnswered: new Set(),
-      evidence1Unlocked: false, evidence2Unlocked: false,
-      quiz1Done: false, quiz2Done: false, cleared: false,
-      quiz1FirstCorrect: null, quiz2FirstCorrect: null,
-      inlineHw1Shown: false, inlineHw1Done: false,
-    };
-  } else {
-    state.phase = 'dialogue';
-  }
+  if (!state.clearedEpisodes) state.clearedEpisodes = [];
   saveState();
-  showScreenWithSound('dialogue');
-  dlgIdx = 0; showDialogue(0);
+  goToEpisodeSelect();
 }
 
 function showSalonUnlock(type) {
@@ -1882,6 +2072,7 @@ function renderChoices() {
   const box = document.getElementById('choice-answer-box');
   box.textContent = ''; box.classList.remove('visible');
 
+  const choiceData = currentEp ? currentEp.choiceData : [];
   choiceData.forEach((c, i) => {
     const btn = document.createElement('button');
     btn.className = 'btn-choice';
@@ -1896,7 +2087,7 @@ function renderChoices() {
 function selectChoice(i) {
   state.choicesAnswered.add(i); saveState();
   blipCounter = 0;
-  const text = choiceData[i].answer;
+  const text = currentEp ? currentEp.choiceData[i].answer : '';
   document.querySelectorAll('#choices-list .btn-choice')[i].classList.add('answered');
   document.querySelectorAll('#choices-list .btn-choice')[i].disabled = true;
   checkChoicesDone();
@@ -1913,7 +2104,8 @@ function selectChoice(i) {
 }
 
 function checkChoicesDone() {
-  if (state.choicesAnswered.size >= 3)
+  const total = currentEp ? currentEp.choiceData.length : 3;
+  if (state.choicesAnswered.size >= total)
     document.getElementById('choices-next').classList.add('visible');
 }
 
@@ -1923,71 +2115,15 @@ function goToPhase3() {
 }
 
 // ===== MINI QUIZ (Phase 3.5) =====
-const miniQuizData = [
-  {
-    intro: '修行の成果を見せてもらおうかのう。\n原因筋を絞り込むのじゃ。',
-    q: '僧帽筋上部の起始は___である',
-    options: ['A. 外後頭隆起・項靭帯', 'B. 肩甲棘', 'C. 烏口突起', 'D. 鎖骨外側端'],
-    correct: 0,
-    correctMsg: '正解！外後頭隆起から鎖骨まで走る大きな筋肉だ。経験値獲得！',
-    wrongMsgs: [
-      null,
-      '肩甲棘は僧帽筋の"中部"の停止部。上部とは異なります',
-      '烏口突起は小胸筋や烏口腕筋の付着部です',
-      '鎖骨外側端は僧帽筋上部の"停止"であり起始ではありません',
-    ],
-  },
-  {
-    intro: 'もう1問だ。よく考えろ。',
-    q: '僧帽筋上部はデスクワーク中に"弛緩"している',
-    options: ['A. ○ 正しい', 'B. × 間違い'],
-    correct: 1,
-    correctMsg: '正解！デスクワーク中、僧帽筋上部は持続的に収縮し続けます。これが血流障害と疲労物質の蓄積を引き起こし、肩こりの原因となります。',
-    wrongMsgs: [
-      'デスクワーク中は肩が上がり、僧帽筋上部は常に収縮しています。だから疲労して肩こりになるんです',
-      null,
-    ],
-  },
-];
-
-const miniQuizData2 = [
-  {
-    intro: '最後の確認じゃ。\n取穴を確実に覚えたか見せよ。',
-    q: '肩井（GB21）は___と___を結ぶ線の中点である',
-    options: ['A. 大椎と肩峰', 'B. 大椎と肩甲棘', 'C. 大椎と肩鎖関節', 'D. 頭蓋底と肩峰'],
-    correct: 0,
-    correctMsg: '正解！大椎から肩峰までの中点じゃ。しっかり覚えたのじゃ。',
-    wrongMsgs: [
-      null,
-      '肩甲棘は僧帽筋中部の停止部。取穴の基準は肩甲棘ではなく肩峰（けんぽう）です',
-      '肩鎖関節ではなく肩峰（けんぽう）が正解です',
-      '頭蓋底は関係ありません。大椎（背中の出っ張り）と肩峰の中点です',
-    ],
-  },
-  {
-    intro: 'もう1問。最後の確認じゃ。',
-    q: '肩井（GB21）は___の上に取穴する',
-    options: ['A. 三角筋', 'B. 棘上筋', 'C. 僧帽筋上部線維', 'D. 肩甲挙筋'],
-    correct: 2,
-    correctMsg: '正解！僧帽筋上部線維の上に取穴する。原因筋に直接アプローチするのじゃ！',
-    wrongMsgs: [
-      '三角筋は肩の外側の筋肉。肩井は僧帽筋上部線維の上です',
-      '棘上筋は肩甲骨の上にある腱板の筋肉。肩井の位置とは異なります',
-      null,
-      '肩甲挙筋は頚椎から肩甲骨内側上角に走る筋肉。肩井は僧帽筋上部線維の上です',
-    ],
-  },
-];
-
 let mqIdx = 0;
-let _mqData = miniQuizData;
+let _mqData = null;
 let _mqDoneFn = null;
 let _mqCompleteIntro = '';
 let _mqCompleteText = '';
 let _mqCompleteBtn = '';
 
 function goToMiniQuiz(data, doneFn, completeIntro, completeText, completeBtn) {
-  _mqData = data || miniQuizData;
+  _mqData = data || (currentEp && currentEp.miniQuizData) || [];
   _mqDoneFn = doneFn || goToPhase5;
   _mqCompleteIntro = completeIntro || '基礎確認OK。\n次は——秘孔を特定する時間じゃ。';
   _mqCompleteText = completeText || '基礎確認OK！<br>秘孔をつく準備をしよう';
@@ -2102,6 +2238,7 @@ function goToQuiz1() {
 }
 
 function renderQuiz1() {
+  const quiz1Data = currentEp ? currentEp.quiz1Data : { options: [], correct: 0, wrongExplanations: [] };
   const container = document.getElementById('quiz1-options');
   container.innerHTML = '';
   container.className = 'quiz-options-grid';
@@ -2170,17 +2307,17 @@ function showHomeworkOverlay(n) {
       </div>`,
       nextFn: 'goToMiniQuiz()',
     },
-    2: {
+    2: currentEp ? {
       title: '⚔️ 取穴の確認',
-      subject: '肩井',
-      instruction: '肩井（GB21）の取穴法を確認しよう',
+      subject: currentEp.hw2.name,
+      instruction: currentEp.hw2.instruction,
       anatomy: `<div style="background:rgba(74,158,255,0.07);border:1px solid rgba(74,158,255,0.3);border-radius:10px;padding:12px;font-size:0.88rem;line-height:2">
-        <div style="color:var(--accent);font-weight:700;margin-bottom:6px">📋 肩井（GB21）</div>
-        部位：大椎と肩峰を結ぶ線の<strong>中点</strong><br>
-        解剖：僧帽筋上部線維
+        <div style="color:var(--accent);font-weight:700;margin-bottom:6px">📋 ${currentEp.hw2.name}</div>
+        部位：${currentEp.hw2.location}<br>
+        解剖：${currentEp.hw2.anatomy}
       </div>`,
       nextFn: 'goToClear()',
-    }
+    } : {}
   };
   const c = contents[n];
 
@@ -2208,7 +2345,9 @@ function hwDone(n) {
     goToMiniQuiz();
   } else {
     state.evidence2Unlocked = true; saveState();
-    showMiniQuizBridge('📍', '取穴の成果を見せてもらおう！', '今確認した肩井の取穴法で確認テストじゃ。', () => goToMiniQuiz(miniQuizData2, goToClear, '取穴確認OK。\nいざ、秘孔を突くのじゃ！', '取穴確認OK！<br>準備完了じゃ', '🏆 決着をつける！'));
+    const ep = currentEp;
+    showMiniQuizBridge('📍', '取穴の成果を見せてもらおう！', `今確認した${ep ? ep.hw2.name : '取穴'}の取穴法で確認テストじゃ。`,
+      () => goToMiniQuiz(ep ? ep.miniQuizData2 : [], goToClear, '取穴確認OK。\nいざ、秘孔を突くのじゃ！', '取穴確認OK！<br>準備完了じゃ', '🏆 決着をつける！'));
   }
 }
 
@@ -2220,8 +2359,9 @@ function showClinicalMemo() {
 
 function answerQuiz1(i) {
   sfxClick();
+  const ep = currentEp;
+  const quiz1Data = ep ? ep.quiz1Data : { options: [], correct: 0, wrongExplanations: [] };
   const btns = document.querySelectorAll('#quiz1-options .btn-quiz-grid');
-  const optText = quiz1Data.options[i];
 
   if (i === quiz1Data.correct) {
     btns.forEach(b => b.disabled = true);
@@ -2234,21 +2374,20 @@ function answerQuiz1(i) {
     showXpGain(10);
     showKoredayo(() => {
       showVillainDefeat(() => {
-        const anatomyCard = `
+        const anatomyCardHtml = `
           <div style="background:rgba(74,158,255,0.07);border:1px solid rgba(74,158,255,0.3);border-radius:10px;padding:12px;font-size:0.88rem;line-height:2;margin-bottom:12px">
-            <div style="color:var(--accent);font-weight:700;margin-bottom:6px">📋 僧帽筋（上部線維）</div>
-            起始：外後頭隆起・項靭帯<br>
-            停止：鎖骨外側1/3<br>
-            作用：肩甲骨の挙上・上方回旋・内転
+            <div style="color:var(--accent);font-weight:700;margin-bottom:6px">📋 ${ep.anatomyCard.name}</div>
+            ${ep.anatomyCard.lines.join('<br>')}
           </div>`;
         const html = `
           <div style="text-align:center;font-size:2rem;margin-bottom:8px">✅</div>
           <div style="font-weight:900;color:var(--correct);font-size:1.1rem;margin-bottom:10px">正解！</div>
-          <div style="line-height:1.7;margin-bottom:12px">僧帽筋が原因じゃ。この筋の解剖学を確認しよう。確認するんじゃ。</div>
-          ${anatomyCard}
+          <div style="line-height:1.7;margin-bottom:12px">${ep.anatomyCard.intro}</div>
+          ${anatomyCardHtml}
           <button class="btn-next-full" onclick="sfxClick(); closeCardOverlay()">次へ進む →</button>
         `;
-        showCardOverlay(html, () => showMiniQuizBridge('📝', '暗記の成果を見せてもらおう！', '今覚えた僧帽筋の解剖学で確認テストじゃ。', goToMiniQuiz));
+        showCardOverlay(html, () => showMiniQuizBridge('📝', '暗記の成果を見せてもらおう！', '今覚えた解剖学で確認テストじゃ。',
+          () => goToMiniQuiz(ep.miniQuizData, goToPhase5)));
       });
     });
   } else {
@@ -2270,20 +2409,42 @@ function answerQuiz1(i) {
       <button class="btn-next-full" style="margin-top:4px" onclick="closeCardOverlay()">✅ もう一度挑戦する</button>
     `;
     showCardOverlay(html, null);
-
   }
 }
 
+
+// quiz1Done状態からの復帰（戻るボタンで戻った場合など）
+function resumeFromQuiz1Done() {
+  const ep = currentEp;
+  if (!ep) { goToPhase5(); return; }
+  const anatomyCardHtml = `
+    <div style="background:rgba(74,158,255,0.07);border:1px solid rgba(74,158,255,0.3);border-radius:10px;padding:12px;font-size:0.88rem;line-height:2;margin-bottom:12px">
+      <div style="color:var(--accent);font-weight:700;margin-bottom:6px">📋 ${ep.anatomyCard.name}</div>
+      ${ep.anatomyCard.lines.join('<br>')}
+    </div>`;
+  const html = `
+    <div style="text-align:center;font-size:2rem;margin-bottom:8px">📋</div>
+    <div style="font-weight:900;color:var(--accent);font-size:1.05rem;margin-bottom:10px">解剖の確認</div>
+    <div style="line-height:1.7;margin-bottom:12px">${ep.anatomyCard.intro}</div>
+    ${anatomyCardHtml}
+    <button class="btn-next-full" onclick="sfxClick(); closeCardOverlay()">次へ進む →</button>
+  `;
+  showCardOverlay(html, () => showMiniQuizBridge('📝', '暗記の成果を見せてもらおう！', '今覚えた解剖学で確認テストじゃ。',
+    () => goToMiniQuiz(ep.miniQuizData, goToPhase5)));
+}
 
 // ===== PHASE 5: HOMEWORK 2 / QUIZ 2 =====
 function goToPhase5() {
   state.phase = 'homework2'; saveState();
   quiz2WrongCount = 0;
+  const ctxEl = document.getElementById('hw2-context-text');
+  if (ctxEl && currentEp) ctxEl.innerHTML = currentEp.hw2ContextText;
   showScreenWithSound('homework2');
   renderQuiz2();
 }
 
 function renderQuiz2() {
+  const quiz2Data = currentEp ? currentEp.quiz2Data : { options: [], correct: 0, wrongExplanations: [] };
   const container = document.getElementById('quiz2-options');
   container.innerHTML = '';
   container.className = 'quiz-options-grid';
@@ -2305,6 +2466,8 @@ function renderQuiz2() {
 
 function answerQuiz2(i) {
   sfxClick();
+  const ep = currentEp;
+  const quiz2Data = ep ? ep.quiz2Data : { options: [], correct: 0, wrongExplanations: [] };
   const btns = document.querySelectorAll('#quiz2-options .btn-quiz-grid');
   const optText = quiz2Data.options[i];
 
@@ -2318,11 +2481,12 @@ function answerQuiz2(i) {
     sfxCorrect();
     showXpGain(10);
     showKoredayo(() => {
+      const title = typeof ep.quiz2CorrectTitle === 'function' ? ep.quiz2CorrectTitle(pName()) : ep.quiz2CorrectTitle;
+      const sub = ep.quiz2CorrectSub.replace(/\n/g, '<br>');
       const html = `
-        <div style="text-align:center;font-size:1.5rem;margin-bottom:8px;color:var(--accent);font-weight:900">${pName()}、肩井だ——！！</div>
+        <div style="text-align:center;font-size:1.5rem;margin-bottom:8px;color:var(--accent);font-weight:900">${title}</div>
         <div style="text-align:center;line-height:1.8;margin-bottom:16px;color:var(--correct)">
-          僧帽筋のトリガーポイントが——<br>
-          消えていく！
+          ${sub}
         </div>
         <button class="btn-next-full" onclick="closeCardOverlay()">次へ →</button>
       `;
@@ -2337,7 +2501,7 @@ function answerQuiz2(i) {
     sfxWrong();
     quiz2WrongCount++;
 
-    const expText = quiz2Data.wrongExplanations[i] || 'このツボでは僧帽筋の局所ポイントとしては最適ではありません';
+    const expText = quiz2Data.wrongExplanations[i] || 'このツボでは局所ポイントとしては最適ではありません';
     const html = `
       <div style="text-align:center;font-size:2rem;margin-bottom:8px">❌</div>
       <div style="font-weight:700;margin-bottom:10px">${optText}</div>
@@ -2361,8 +2525,17 @@ function toggleNobook(n) {
 
 // ===== CLEAR =====
 function goToClear() {
-  state.phase = 'clear'; state.cleared = true; saveState();
+  state.phase = 'clear'; state.cleared = true;
+  if (!state.clearedEpisodes) state.clearedEpisodes = [];
+  if (currentEp && !state.clearedEpisodes.includes(currentEp.id)) {
+    state.clearedEpisodes.push(currentEp.id);
+  }
+  saveState();
   showScreenWithSound('clear1');
+  const epEl = document.getElementById('clear-episode-label');
+  if (epEl && currentEp) epEl.textContent = `エピソード ${currentEp.id}`;
+  const patEl = document.getElementById('clear-patient-text');
+  if (patEl && currentEp) patEl.innerHTML = currentEp.clearPatientText;
   const msgEl = document.getElementById('clear-player-name-msg');
   if (msgEl) msgEl.textContent = 'よくやった、' + pName() + '。';
   setTimeout(animateClear, 400);
@@ -2511,17 +2684,13 @@ function drawRadarChart() {
 
 // リプレイ（全データ完全リセット）
 function replayGame() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18','rinsho_ep1_v19','rinsho_ep1_v20','rinsho_ep1_v21','rinsho_ep1_v22'].forEach(k => {
+  goToEpisodeSelect();
+}
+
+function _cleanupOldKeys() {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18','rinsho_ep1_v19','rinsho_ep1_v20','rinsho_ep1_v21','rinsho_ep1_v22','rinsho_ep1_v23'].forEach(k => {
     localStorage.removeItem(k);
   });
-  state = {
-    phase: 'mode', mode: null, choicesAnswered: new Set(),
-    evidence1Unlocked: false, evidence2Unlocked: false,
-    quiz1Done: false, quiz2Done: false, cleared: false,
-    quiz1FirstCorrect: null, quiz2FirstCorrect: null,
-    inlineHw1Shown: false, inlineHw1Done: false,
-  };
-  showScreen('mode');
 }
 
 // =====================================================
@@ -2557,8 +2726,10 @@ function showKoredayo(cb) {
 // =====================================================
 let _villainCb = null;
 
+let _villainReady = false;
 function showVillainDefeat(cb) {
   _villainCb = cb || null;
+  _villainReady = false;
   const overlay  = document.getElementById('villain-overlay');
   const img      = document.getElementById('villain-defeat-img');
   const scream   = document.getElementById('villain-scream');
@@ -2568,7 +2739,8 @@ function showVillainDefeat(cb) {
   img.className    = '';
   scream.className = '';
   bonMsg.className = '';
-  btn.className    = '';
+  btn.className    = 'btn-primary';
+  btn.style.opacity = '0';
   overlay.classList.add('show');
 
   setTimeout(() => { img.classList.add('shake'); sfxWrong(); }, 300);
@@ -2576,7 +2748,10 @@ function showVillainDefeat(cb) {
   setTimeout(() => { img.classList.remove('flash'); scream.classList.add('show'); }, 1400);
   setTimeout(() => { img.classList.add('collapse'); sfxCorrect(); }, 2200);
   setTimeout(() => { bonMsg.classList.add('show'); }, 3000);
-  setTimeout(() => { btn.classList.add('show'); }, 3800);
+  setTimeout(() => {
+    btn.style.opacity = '1';
+    _villainReady = true;
+  }, 3800);
 }
 
 function closeVillainOverlay() {
@@ -2590,8 +2765,14 @@ function closeVillainOverlay() {
   img.className    = '';
   scream.className = '';
   bonMsg.className = '';
-  btn.className    = '';
+  btn.className    = 'btn-primary';
+  btn.style.opacity = '0';
+  _villainReady = false;
   if (_villainCb) { _villainCb(); _villainCb = null; }
+}
+
+function tapVillainOverlay() {
+  if (_villainReady) closeVillainOverlay();
 }
 
 // =====================================================
@@ -2635,6 +2816,59 @@ function resetGame() {
     inlineHw1Shown: false, inlineHw1Done: false,
   };
   showScreen('splash');
+}
+
+// =====================================================
+// EPISODE SELECT
+// =====================================================
+function goToEpisodeSelect() {
+  showScreen('episode-select');
+  renderEpisodeSelect();
+}
+
+function renderEpisodeSelect() {
+  const list = document.getElementById('episode-list');
+  list.innerHTML = '';
+  const cleared = state.clearedEpisodes || [];
+  EPISODES.forEach((ep) => {
+    const isCleared = cleared.includes(ep.id);
+    const isUnlocked = ep.id === 1 || cleared.includes(ep.id - 1);
+    const card = document.createElement('button');
+    card.className = 'ep-card' + (isCleared ? ' ep-cleared' : '');
+    card.disabled = !isUnlocked;
+    const statusClass = isCleared ? 'cleared' : isUnlocked ? 'playable' : 'locked';
+    const statusText = isCleared ? '✅ クリア済み' : isUnlocked ? '▶ プレイ' : '🔒 未解放';
+    card.innerHTML = `
+      <div class="ep-num">EP${ep.id}</div>
+      <div class="ep-info">
+        <div class="ep-title">${ep.title}</div>
+        <div class="ep-meta">${ep.muscle} → ${ep.acupoint}</div>
+      </div>
+      <div class="ep-status ${statusClass}">${statusText}</div>
+    `;
+    if (isUnlocked) {
+      card.onclick = () => { sfxClick(); selectEpisode(ep.id); };
+    }
+    list.appendChild(card);
+  });
+}
+
+function selectEpisode(id) {
+  currentEp = EPISODES.find(e => e.id === id);
+  const prevCleared = state.clearedEpisodes || [];
+  state = {
+    phase: 'dialogue', mode: 'beginner', epId: id,
+    choicesAnswered: new Set(),
+    evidence1Unlocked: false, evidence2Unlocked: false,
+    quiz1Done: false, quiz2Done: false, cleared: false,
+    quiz1FirstCorrect: null, quiz2FirstCorrect: null,
+    inlineHw1Shown: false, inlineHw1Done: false,
+    clearedEpisodes: prevCleared,
+  };
+  saveState();
+  showScreenWithSound('dialogue');
+  dlgIdx = 0;
+  showDialogue(0);
 }
 
 // =====================================================
@@ -2887,9 +3121,9 @@ function finishGoal() {
 // INIT
 // =====================================================
 function init() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18','rinsho_ep1_v19','rinsho_ep1_v20','rinsho_ep1_v21','rinsho_ep1_v22'].forEach(k => {
-    localStorage.removeItem(k);
-  });
+  _cleanupOldKeys();
+  loadState();
+  if (!currentEp) currentEp = EPISODES[0];
   checkOnboarding();
 }
 
