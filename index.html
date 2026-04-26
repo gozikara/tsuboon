@@ -835,8 +835,7 @@
     text-align: center;
   }
   .ep-info { flex: 1; }
-  .ep-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 3px; }
-  .ep-meta { font-size: 0.78rem; color: #aaa; }
+  .ep-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 3px; white-space: pre-line; line-height: 1.5; }
   .ep-status { font-size: 0.78rem; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
   .ep-status.cleared { background: rgba(74,255,127,0.15); color: var(--correct); }
   .ep-status.playable { background: rgba(74,158,255,0.15); color: var(--accent); }
@@ -1499,7 +1498,7 @@ function sfxTransition() {
 const EPISODES = [
   {
     id: 1,
-    title: '肩こりの真犯人',
+    title: '肩こりで娘の運動会に\nいけないパパを救え',
     symptom: '肩こり',
     muscle: '僧帽筋上部',
     acupoint: '肩井',
@@ -1599,7 +1598,7 @@ const EPISODES = [
   },
   {
     id: 2,
-    title: '腰のだるさの真犯人',
+    title: '腰痛で笑顔を失った\n美容師さんを救え',
     symptom: '腰のだるさ',
     muscle: '脊柱起立筋',
     acupoint: '腎兪',
@@ -1730,7 +1729,7 @@ let currentEp = null;
 // =====================================================
 // STATE
 // =====================================================
-const STORAGE_KEY = 'rinsho_ep1_v25';
+const STORAGE_KEY = 'rinsho_ep1_v26';
 
 let state = {
   phase: 'splash',
@@ -2722,7 +2721,7 @@ function replayGame() {
 }
 
 function _cleanupOldKeys() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18','rinsho_ep1_v19','rinsho_ep1_v20','rinsho_ep1_v21','rinsho_ep1_v22','rinsho_ep1_v23','rinsho_ep1_v24'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18','rinsho_ep1_v19','rinsho_ep1_v20','rinsho_ep1_v21','rinsho_ep1_v22','rinsho_ep1_v23','rinsho_ep1_v24','rinsho_ep1_v25'].forEach(k => {
     localStorage.removeItem(k);
   });
 }
@@ -2876,7 +2875,6 @@ function renderEpisodeSelect() {
       <div class="ep-num">EP${ep.id}</div>
       <div class="ep-info">
         <div class="ep-title">${ep.title}</div>
-        <div class="ep-meta">${ep.muscle} → ${ep.acupoint}</div>
       </div>
       <div class="ep-status ${statusClass}">${statusText}</div>
     `;
