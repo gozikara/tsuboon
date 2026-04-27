@@ -3298,8 +3298,8 @@ const obQuestions = [
   {
     type: 'text',
     key: 'playerName',
-    q: '新人くん、君の名前は？',
-    sub: '治療家としての名前を入力してください',
+    q: '新人治療家さん、君の名前は？',
+    sub: '',
     placeholder: '名前を入力…',
   },
 ];
@@ -3335,16 +3335,16 @@ function renderObQuestion() {
   setTimeout(() => {
     if (q.type === 'text') {
       body.innerHTML = `
-        <div class="char-duo" style="margin-bottom:4px">
-          <img class="char-img" src="${heroImg()}" alt="主人公">
+        <div class="char-duo" style="margin-bottom:4px;justify-content:center;gap:16px">
+          <img class="char-img" src="./hero_male.png" alt="男性主人公">
+          <img class="char-img" src="./hero_female.png" alt="女性主人公">
         </div>
         <div class="ob-question">${q.q}</div>
-        ${q.sub ? `<div style="font-size:0.8rem;color:#8899aa;margin-bottom:10px">${q.sub}</div>` : ''}
         <div class="ob-options" id="ob-options">
           <input id="ob-name-input" type="text" placeholder="${q.placeholder}"
             style="width:100%;padding:14px;font-size:1rem;border-radius:10px;border:2px solid var(--accent);background:rgba(0,10,30,0.8);color:#fff;outline:none;box-sizing:border-box;margin-bottom:12px"
             maxlength="20">
-          <button id="ob-name-btn" class="btn-primary" style="width:100%;opacity:0.4" disabled>これが我が名！</button>
+          <button id="ob-name-btn" class="btn-primary" style="width:100%;opacity:0.4" disabled>次へ</button>
         </div>
       `;
       const input = document.getElementById('ob-name-input');
