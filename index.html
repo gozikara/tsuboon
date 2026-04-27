@@ -245,7 +245,7 @@
   }
 
   /* ===== CLEAR ===== */
-  #screen-clear1, #screen-clear2, #screen-clear2b, #screen-clear3 { align-items:center; justify-content:flex-start; gap:12px; padding:20px; overflow-y:auto; }
+  #screen-clear1, #screen-clear2, #screen-clear2b { align-items:center; justify-content:flex-start; gap:12px; padding:20px; overflow-y:auto; }
   .clear-episode { font-size:0.85rem; color:var(--accent); letter-spacing:0.15em; }
   .clear-title { font-size:1.4rem; font-weight:900; color:var(--gold); text-align:center; text-shadow:0 0 20px rgba(255,200,50,0.6); }
   .stars-row { display:flex; gap:10px; font-size:1.8rem; filter:drop-shadow(0 0 8px rgba(255,200,50,0.7)); }
@@ -1379,27 +1379,6 @@
           📩 公式ラインで案内を受け取る →
         </a>
       </div>
-    </div>
-    <button class="btn-primary" style="margin-top:auto;width:100%;flex-shrink:0" onclick="sfxClick(); showScreen('clear3')">次の事件へ。</button>
-  </div>
-
-  <!-- ========== CLEAR 3: 次の冒険へ ========== -->
-  <div id="screen-clear3" class="screen pad20">
-    <!-- EP2プレビュー -->
-    <div class="ep2-teaser">
-      <div class="ep2-label">次回 — エピソード 2</div>
-      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px">
-        <div style="display:flex;align-items:flex-start;gap:10px">
-          <img class="char-img-sm" src="./patient.png" alt="患者さん" style="flex-shrink:0;margin-top:2px">
-          <div class="ep2-dialogue" style="margin:0">あの…先生、<br>知り合いも困っていて…<br>聞いてもらえますか。</div>
-        </div>
-        <div style="display:flex;align-items:flex-start;gap:10px;flex-direction:row-reverse">
-          <img class="char-img-sm" src="./bon_shocho.png" alt="ボーン院長" style="flex-shrink:0;margin-top:2px">
-          <div style="font-size:0.88rem;line-height:1.6;color:#ccc;text-align:right">次の事件が来たぞ。<br><strong style="color:var(--gold)">EP2——頭痛の真犯人を暴け。</strong></div>
-        </div>
-      </div>
-      <div class="btn-ep2-lock">⚔️ 続きをプレイ 🔒</div>
-      <div class="ep2-hint"><span style="color:#ffc832">🔜 EP2はオンラインサロン開設後に配信予定</span><br>LINE登録で配信通知を受け取る</div>
     </div>
     <button class="btn-primary" style="margin-top:auto;width:100%;flex-shrink:0" onclick="sfxClick(); replayGame()">ホームに戻る</button>
   </div>
