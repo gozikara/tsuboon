@@ -2543,7 +2543,7 @@ function showHomeworkOverlay(n) {
     <div style="font-weight:900;font-size:1rem;margin-bottom:8px;color:var(--gold)">${c.title}</div>
     <div style="font-size:0.88rem;color:#aaa;margin-bottom:10px">${c.instruction}</div>
     ${c.anatomy}
-    <button id="hw-done-btn" class="btn-done" style="width:100%;margin-top:16px" onclick="hwDone(${n})">✅ 覚えた！進む</button>
+    <button id="hw-done-btn" class="btn-done" style="width:100%;margin-top:16px" onclick="hwDone(${n})">${n === 2 ? '確認テストを始める →' : '✅ 覚えた！進む'}</button>
   `;
 
   _hwOverlayMode = true;
@@ -2563,45 +2563,38 @@ function hwDone(n) {
     goToMiniQuiz();
   } else {
     const ep = currentEp;
-    showMiniQuizBridge(
-        '📍',
-        '暗記の成果を見せてもらおう！',
-        `今確認した${ep ? ep.hw2.name : '取穴'}の取穴法で確認テストじゃ。`,
-        () => {
-          const mq2data = ep ? ep.miniQuizData2 : [];
-          goToMiniQuiz(
-            mq2data,
-            () => {
-              const html = `
-                <div style="text-align:center;margin-bottom:16px">
-                  <div style="font-size:2.5rem;margin-bottom:8px">🎯</div>
-                  <div style="font-size:1.2rem;font-weight:900;color:var(--gold);margin-bottom:8px">
-                    的確に秘孔をつく準備完了！
-                  </div>
-                  <div style="font-size:0.9rem;color:#ccc;line-height:1.7">
-                    ${ep ? ep.hw2.name : 'ツボ'}の場所を完璧に把握した。<br>
-                    あとは——刺激するだけじゃ。
-                  </div>
-                </div>
-                <button class="btn-next-full"
-                  style="background:var(--gold);color:#0a1628;font-size:1.1rem;font-weight:900"
-                  onclick="sfxClick(); closeCardOverlay()">
-                  ⚡ ツボを刺激する
-                </button>
-              `;
-              showCardOverlay(html, () => {
-                showIke(() => {
-                  showVillainDefeatEnhanced(() => {
-                    state.evidence2Unlocked = true; saveState();
-                    goToClear();
-                  });
-                });
-              });
-            },
-            null, null, null
-          );
-        }
-      );
+    const mq2data = ep ? ep.miniQuizData2 : [];
+    goToMiniQuiz(
+      mq2data,
+      () => {
+        const html = `
+          <div style="text-align:center;margin-bottom:16px">
+            <div style="font-size:2.5rem;margin-bottom:8px">🎯</div>
+            <div style="font-size:1.2rem;font-weight:900;color:var(--gold);margin-bottom:8px">
+              的確に秘孔をつく準備完了！
+            </div>
+            <div style="font-size:0.9rem;color:#ccc;line-height:1.7">
+              ${ep ? ep.hw2.name : 'ツボ'}の場所を完璧に把握した。<br>
+              あとは——刺激するだけじゃ。
+            </div>
+          </div>
+          <button class="btn-next-full"
+            style="background:var(--gold);color:#0a1628;font-size:1.1rem;font-weight:900"
+            onclick="sfxClick(); closeCardOverlay()">
+            ⚡ ツボを刺激する
+          </button>
+        `;
+        showCardOverlay(html, () => {
+          showIke(() => {
+            showVillainDefeatEnhanced(() => {
+              state.evidence2Unlocked = true; saveState();
+              goToClear();
+            });
+          });
+        });
+      },
+      null, null, null
+    );
   }
 }
 
