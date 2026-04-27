@@ -2297,7 +2297,7 @@ function goToMiniQuiz(data, doneFn, completeIntro, completeText, completeBtn) {
   _mqDoneFn = doneFn || goToPhase5;
   _mqCompleteIntro = completeIntro || '基礎確認OK。\n次は——秘孔を特定する時間じゃ。';
   _mqCompleteText = completeText || '基礎確認OK！<br>秘孔をつく準備をしよう';
-  _mqCompleteBtn = completeBtn || '⚔️ 経穴クイズへ';
+  _mqCompleteBtn = completeBtn != null ? completeBtn : null;
   mqIdx = 0;
   state.phase = 'miniquiz'; saveState();
   showScreenWithSound('miniquiz');
@@ -2357,8 +2357,10 @@ function answerMiniQuiz(i) {
         document.getElementById('mq-char-img').src = CHARS.bon.mini;
         document.getElementById('mq-tako-img').src = CHARS.tako.thinking;
         renderMiniQuiz();
-      } else {
+      } else if (_mqCompleteBtn) {
         showMiniQuizComplete();
+      } else {
+        _callMqDoneFn();
       }
     });
   } else {
@@ -2587,9 +2589,7 @@ function hwDone(n) {
                 });
               });
             },
-            '取穴確認OK。\n的確に秘孔をつく準備完了じゃ！',
-            '',
-            '🎯 的確に秘孔をつく準備完了'
+            null, null, null
           );
         }
       );
@@ -3062,7 +3062,7 @@ function showVillainDefeatEnhanced(cb) {
   const btn     = document.getElementById('villain-continue-btn');
 
   scream.innerHTML = 'ぐあああ…！<br>秘孔を…突かれた…！';
-  bonMsg.innerHTML = '秘孔——看破完了じゃ。<br>患者を救うのじゃ。';
+  bonMsg.innerHTML = 'よくぞ秘孔を見極めた。<br>この調子で患者を救っていくのじゃ。';
 
   img.className     = '';
   scream.className  = '';
