@@ -245,7 +245,7 @@
   }
 
   /* ===== CLEAR ===== */
-  #screen-clear1, #screen-clear2, #screen-clear3 { align-items:center; justify-content:flex-start; gap:12px; padding:20px; overflow-y:auto; }
+  #screen-clear1, #screen-clear2, #screen-clear2b, #screen-clear3 { align-items:center; justify-content:flex-start; gap:12px; padding:20px; overflow-y:auto; }
   .clear-episode { font-size:0.85rem; color:var(--accent); letter-spacing:0.15em; }
   .clear-title { font-size:1.4rem; font-weight:900; color:var(--gold); text-align:center; text-shadow:0 0 20px rgba(255,200,50,0.6); }
   .stars-row { display:flex; gap:10px; font-size:1.8rem; filter:drop-shadow(0 0 8px rgba(255,200,50,0.7)); }
@@ -1331,6 +1331,30 @@
           </div>
         </div>
       </div>
+      <div style="background:rgba(255,200,50,0.07);border:1px solid var(--gold);border-radius:12px;padding:16px;">
+        <div style="font-size:0.88rem;color:#ccc;line-height:1.8;margin-bottom:12px;text-align:center">
+          オンラインサロンでは<br>解剖学やツボの詳細を解説するぞ。
+        </div>
+        <div style="font-size:0.78rem;color:#aaa;line-height:1.6;margin-bottom:12px;text-align:center">
+          オンラインサロン開設時にLINEでお知らせします
+        </div>
+        <a href="https://lin.ee/r2uGtAB"
+           target="_blank"
+           rel="noopener"
+           style="display:block;width:100%;background:var(--gold);color:#0a1628;border:none;border-radius:12px;padding:13px;font-size:1rem;font-family:'Noto Sans JP',sans-serif;font-weight:900;cursor:pointer;text-align:center;text-decoration:none;box-sizing:border-box;">
+          📩 公式ラインで案内を受け取る →
+        </a>
+      </div>
+    </div>
+    <button class="btn-primary" style="margin-top:auto;width:100%;flex-shrink:0" onclick="sfxClick(); showScreen('clear2b')">次の事件へ。</button>
+  </div>
+
+  <!-- ========== CLEAR 2b: 本物の治療家になるには ========== -->
+  <div id="screen-clear2b" class="screen pad20">
+    <div style="text-align:center;margin-bottom:4px">
+      <div class="clear-title">本物の治療家になるには</div>
+    </div>
+    <div style="width:100%">
       <div style="background:rgba(255,200,50,0.07);border:1px solid var(--gold);border-radius:12px;padding:14px 16px;">
         <div style="font-size:0.75rem;color:var(--gold);font-weight:700;letter-spacing:0.1em;margin-bottom:10px">
           🎯 本物の治療家になるには
@@ -1352,11 +1376,11 @@
            target="_blank"
            rel="noopener"
            style="display:block;width:100%;background:var(--gold);color:#0a1628;border:none;border-radius:12px;padding:13px;font-size:1rem;font-family:'Noto Sans JP',sans-serif;font-weight:900;cursor:pointer;text-align:center;text-decoration:none;box-sizing:border-box;">
-          📩 LINEで案内を受け取る →
+          📩 公式ラインで案内を受け取る →
         </a>
       </div>
     </div>
-    <button class="btn-primary" style="margin-top:auto;width:100%;flex-shrink:0" onclick="sfxClick(); showScreen('clear3')">次の冒険へ ▶</button>
+    <button class="btn-primary" style="margin-top:auto;width:100%;flex-shrink:0" onclick="sfxClick(); showScreen('clear3')">次の事件へ。</button>
   </div>
 
   <!-- ========== CLEAR 3: 次の冒険へ ========== -->
