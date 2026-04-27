@@ -2595,6 +2595,7 @@ function hwDone(n) {
           </button>
         `;
         showCardOverlay(html, () => {
+          document.getElementById('ike-text').textContent = 'いっけぇー！！！';
           showIke(() => {
             showVillainDefeatEnhanced(() => {
               state.evidence2Unlocked = true; saveState();
@@ -2756,17 +2757,9 @@ function answerQuiz2(i) {
     state.quiz2Done = true; saveState();
     sfxCorrect();
     showXpGain(10);
-    const epDeclareHtml = `
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-direction:row-reverse">
-        <img src="${heroImg()}" style="width:48px;height:48px;object-fit:contain">
-        <div style="font-size:1.1rem;font-weight:900;color:var(--gold);line-height:1.7;text-align:right">
-          （${ep ? ep.muscle : ''}の上部にあるツボ…）<br>
-          <span style="font-size:1.2rem;color:#fff">${ep ? ep.acupoint : ''}だ！</span>
-        </div>
-      </div>
-      <button class="btn-next-full" style="margin-top:16px;background:var(--gold);color:#0a1628" onclick="sfxClick(); closeCardOverlay()">⚡ 秘孔をつく！</button>
-    `;
-    showCardOverlay(epDeclareHtml, () => showHw2Step());
+    document.getElementById('ike-text').innerHTML =
+      `これだっ！<br><span style="font-size:3rem">${ep ? ep.acupoint : ''}！</span>`;
+    showIke(() => showHw2Step());
   } else {
     btns[i].classList.add('incorrect');
     btns[i].disabled = true;
