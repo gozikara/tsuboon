@@ -914,6 +914,16 @@
     opacity: 1;
   }
 
+  /* ===== 主人公セリフボックス ===== */
+  .novel-win.speaker-hero {
+    border-top-color: var(--correct) !important;
+    background: rgba(0, 30, 15, 0.93) !important;
+  }
+  .novel-speaker.hero-speaker {
+    background: var(--correct);
+    color: #0a1628;
+  }
+
   /* ===== いっけぇー演出 ===== */
   #ike-overlay {
     position: fixed; inset: 0; z-index: 450;
@@ -1285,6 +1295,8 @@
         </div>
       </div>
     </div>
+    <!-- クリア後掛け合い -->
+    <div id="clear-hero-msg" style="width:100%"></div>
     <button class="btn-primary" style="margin-top:auto;width:100%;flex-shrink:0" onclick="sfxClick(); showClear2()">成長を確認する ▶</button>
   </div>
 
@@ -1649,17 +1661,21 @@ const EPISODES = [
     acupoint: '肩井',
     dialogues: [
       { imgSrc: './bon_shocho.png', speaker: 'ボーン院長', charType: 'npc',
-        text: (p) => `来たか、${p}よ。\n今日からお主はこの院の新人——\nいや、ツボ探偵治療家じゃ。\n事件現場へ向かうのじゃ。` },
+        text: (p) => `来たか、${p}よ。\n患者が来ておる。` },
+      { imgSrc: heroImg, speaker: p => pName(), charType: 'hero',
+        text: '（どんな症状だろう…）' },
       { imgSrc: './bon_shocho.png', speaker: 'ボーン院長', charType: 'npc',
-        text: '治療家の仕事は闇雲に施術することではない。\n症状をとり、患者さんを治してあげることじゃ。\nそのためにはまず——原因筋を特定せねばならんのう。' },
-      { imgSrc: './bon_shocho.png', speaker: 'ボーン院長', charType: 'npc',
-        text: 'まず患者さんから情報を集めるのじゃ。\n症状・タイミング・職業・生活習慣。\nそれが「原因筋」を絞り込む唯一の手がかりじゃ。' },
+        text: 'まず話を聞いてみろ。\nお主はどう見る？' },
       { imgSrc: './patient.png', speaker: '患者さん', charType: 'patient',
         text: '先生…来てよかった。\n3ヶ月間、肩がずっと重くて…\nパソコン仕事が辛くて、もう辞めようかと思ってたんです。' },
       { imgSrc: './patient.png', speaker: '患者さん', charType: 'patient',
         text: '先月…子どもの運動会も、\n肩と頭が痛くて途中で帰ったんです。\n子どもの顔、見れなくて…' },
+      { imgSrc: heroImg, speaker: p => pName(), charType: 'hero',
+        text: '（デスクワーク、夕方悪化か…\n絞れてきた）' },
       { imgSrc: './bon_shocho.png', speaker: 'ボーン院長', charType: 'npc',
-        text: (p) => `${p}よ、聞いたか。\nこの患者さんには——\n取り戻すべき人生がある。\nまず情報を集めるのじゃ。\n原因筋を絞り込むのじゃ。` },
+        text: (p) => `どうじゃ、${p}よ。\n当たりはついたか？` },
+      { imgSrc: heroImg, speaker: p => pName(), charType: 'hero',
+        text: 'ああ、見えてきた。' },
     ],
     choiceData: [
       { label: 'どこが一番痛い？',    answer: 'ここ…肩の上あたりが重くて。\n首の付け根から肩先にかけてです' },
@@ -1874,7 +1890,7 @@ let currentEp = null;
 // =====================================================
 // STATE
 // =====================================================
-const STORAGE_KEY = 'rinsho_ep1_v32';
+const STORAGE_KEY = 'rinsho_ep1_v33';
 
 let state = {
   phase: 'splash',
@@ -2179,17 +2195,25 @@ function showDialogue(idx) {
   if (d.charType === 'patient') {
     imgLeft.src = dImgSrc;
     imgLeft.className = 'stage-char dlg-left';
+  } else if (d.charType === 'hero') {
+    imgRight.src = heroImg();
+    imgRight.className = 'stage-char dlg-right';
   } else {
     imgRight.src = dImgSrc;
     imgRight.className = 'stage-char dlg-right';
   }
 
-  document.getElementById('speaker-name').textContent = dSpeaker;
+  const speakerEl = document.getElementById('speaker-name');
+  speakerEl.textContent = dSpeaker;
   const win = document.getElementById('text-window');
   win.classList.remove('speaker-bon', 'speaker-patient', 'speaker-hero');
+  speakerEl.classList.remove('hero-speaker');
   if (d.charType === 'npc')     win.classList.add('speaker-bon');
   if (d.charType === 'patient') win.classList.add('speaker-patient');
-  if (d.charType === 'you')     win.classList.add('speaker-hero');
+  if (d.charType === 'hero') {
+    win.classList.add('speaker-hero');
+    speakerEl.classList.add('hero-speaker');
+  }
 
   typewrite(document.getElementById('dialogue-text'), dText, d.charType);
 }
@@ -2539,22 +2563,7 @@ function hwDone(n) {
     goToMiniQuiz();
   } else {
     const ep = currentEp;
-    const acuCardHtml = `
-      <div style="background:rgba(74,158,255,0.07);border:1px solid rgba(74,158,255,0.3);border-radius:10px;padding:12px;font-size:0.88rem;line-height:2;margin-bottom:12px">
-        <div style="color:var(--accent);font-weight:700;margin-bottom:6px">📋 ${ep ? ep.hw2.name : '経穴'}</div>
-        部位：${ep ? ep.hw2.location : ''}<br>
-        解剖：${ep ? ep.hw2.anatomy : ''}
-      </div>
-    `;
-    const confirmHtml = `
-      <div style="text-align:center;font-size:2rem;margin-bottom:8px">✅</div>
-      <div style="font-weight:900;color:var(--correct);font-size:1.1rem;margin-bottom:10px">正解！</div>
-      <div style="line-height:1.7;margin-bottom:12px">${ep ? ep.hw2.name : '経穴'}の取穴部位を確認するのじゃ。</div>
-      ${acuCardHtml}
-      <button class="btn-next-full" onclick="sfxClick(); closeCardOverlay()">次へ進む →</button>
-    `;
-    showCardOverlay(confirmHtml, () => {
-      showMiniQuizBridge(
+    showMiniQuizBridge(
         '📍',
         '暗記の成果を見せてもらおう！',
         `今確認した${ep ? ep.hw2.name : '取穴'}の取穴法で確認テストじゃ。`,
@@ -2593,7 +2602,6 @@ function hwDone(n) {
           );
         }
       );
-    });
   }
 }
 
@@ -2618,7 +2626,25 @@ function answerQuiz1(i) {
     state.quiz1Done = true; saveState();
     sfxCorrect();
     showXpGain(10);
-    showKoredayo(() => {
+    const declareHtml = `
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-direction:row-reverse">
+        <img src="${heroImg()}" style="width:48px;height:48px;object-fit:contain">
+        <div style="font-size:1rem;font-weight:900;color:var(--correct);line-height:1.7;text-align:right">
+          これだ。${ep ? ep.muscle : ''}だ。<br>
+          <span style="font-size:0.85rem;font-weight:400;color:#ccc">
+            デスクワークで収縮し続け、夕方に疲弊する。<br>症状と一致する。
+          </span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <img src="./bon_shocho.png" style="width:48px;height:48px;object-fit:contain">
+        <div style="font-size:0.95rem;color:var(--accent);font-weight:700">
+          正解じゃ。筋が良い。
+        </div>
+      </div>
+      <button class="btn-next-full" style="margin-top:16px" onclick="sfxClick(); closeCardOverlay()">次へ →</button>
+    `;
+    showCardOverlay(declareHtml, () => showKoredayo(() => {
       showVillainDefeat(() => {
         const anatomyCardHtml = `
           <div style="background:rgba(74,158,255,0.07);border:1px solid rgba(74,158,255,0.3);border-radius:10px;padding:12px;font-size:0.88rem;line-height:2;margin-bottom:12px">
@@ -2635,7 +2661,7 @@ function answerQuiz1(i) {
         showCardOverlay(html, () => showMiniQuizBridge('📝', '暗記の成果を見せてもらおう！', '今覚えた解剖学で確認テストじゃ。',
           () => goToMiniQuiz(ep.miniQuizData, goToPhase5)));
       });
-    });
+    }));
   } else {
     btns[i].classList.add('incorrect');
     btns[i].disabled = true;
@@ -2726,7 +2752,17 @@ function answerQuiz2(i) {
     state.quiz2Done = true; saveState();
     sfxCorrect();
     showXpGain(10);
-    showHw2Step();
+    const epDeclareHtml = `
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-direction:row-reverse">
+        <img src="${heroImg()}" style="width:48px;height:48px;object-fit:contain">
+        <div style="font-size:1.1rem;font-weight:900;color:var(--gold);line-height:1.7;text-align:right">
+          （${ep ? ep.muscle : ''}の上部にあるツボ…）<br>
+          <span style="font-size:1.2rem;color:#fff">${ep ? ep.acupoint : ''}だ！</span>
+        </div>
+      </div>
+      <button class="btn-next-full" style="margin-top:16px;background:var(--gold);color:#0a1628" onclick="sfxClick(); closeCardOverlay()">⚡ 秘孔をつく！</button>
+    `;
+    showCardOverlay(epDeclareHtml, () => showHw2Step());
   } else {
     btns[i].classList.add('incorrect');
     btns[i].disabled = true;
@@ -2773,6 +2809,23 @@ function goToClear() {
   if (patEl && currentEp) patEl.innerHTML = currentEp.clearPatientText;
   const msgEl = document.getElementById('clear-player-name-msg');
   if (msgEl) msgEl.textContent = 'よくやった、' + pName() + '。';
+  const heroMsgEl = document.getElementById('clear-hero-msg');
+  if (heroMsgEl) heroMsgEl.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:10px;width:100%">
+      <div style="display:flex;align-items:flex-start;gap:10px;flex-direction:row-reverse">
+        <img class="char-img hero-img" src="${heroImg()}" style="flex-shrink:0">
+        <div style="background:rgba(74,255,127,0.08);border:1px solid var(--correct);border-radius:12px;padding:10px 14px;font-size:0.9rem;line-height:1.7;text-align:right">
+          これが、ツボ探偵治療家の仕事か。<br>もっと、上手くなりたい。
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <img class="char-img" src="./bon_shocho.png" style="flex-shrink:0">
+        <div style="background:rgba(74,158,255,0.1);border:1px solid var(--accent);border-radius:12px;padding:10px 14px;font-size:0.9rem;line-height:1.7">
+          それでよい。次の事件が待っておるぞ。
+        </div>
+      </div>
+    </div>
+  `;
   setTimeout(animateClear, 400);
 }
 
@@ -2923,7 +2976,7 @@ function replayGame() {
 }
 
 function _cleanupOldKeys() {
-  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18','rinsho_ep1_v19','rinsho_ep1_v20','rinsho_ep1_v21','rinsho_ep1_v22','rinsho_ep1_v23','rinsho_ep1_v24','rinsho_ep1_v25','rinsho_ep1_v26','rinsho_ep1_v27','rinsho_ep1_v28','rinsho_ep1_v29','rinsho_ep1_v30','rinsho_ep1_v31'].forEach(k => {
+  ['rinsho_ep1_v1','rinsho_ep1_v2','rinsho_ep1_v3','rinsho_ep1_v4','rinsho_ep1_v5','rinsho_ep1_v6','rinsho_ep1_v7','rinsho_ep1_v8','rinsho_ep1_v9','rinsho_ep1_v10','rinsho_ep1_v11','rinsho_ep1_v12','rinsho_ep1_v13','rinsho_ep1_v14','rinsho_ep1_v15','rinsho_ep1_v16','rinsho_ep1_v17','rinsho_ep1_v18','rinsho_ep1_v19','rinsho_ep1_v20','rinsho_ep1_v21','rinsho_ep1_v22','rinsho_ep1_v23','rinsho_ep1_v24','rinsho_ep1_v25','rinsho_ep1_v26','rinsho_ep1_v27','rinsho_ep1_v28','rinsho_ep1_v29','rinsho_ep1_v30','rinsho_ep1_v31','rinsho_ep1_v32'].forEach(k => {
     localStorage.removeItem(k);
   });
 }
