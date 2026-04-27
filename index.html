@@ -1346,7 +1346,7 @@
           </div>
         </div>
         <div style="font-size:0.78rem;color:#aaa;line-height:1.6;margin-bottom:12px;text-align:center">
-          サロン開設時にLINEでお知らせします
+          オンラインサロンに変更
         </div>
         <a href="https://lin.ee/r2uGtAB"
            target="_blank"
@@ -1756,6 +1756,8 @@ const EPISODES = [
     clearPatientText: 'あ…！<br>肩が…軽くなっていく…！<br>この感覚…3ヶ月ぶりです…！<br>私…また全力で仕事できる気がします。<br>ありがとうございます、先生…！',
     clearPatientName: '田中さん',
     hw2ContextText: '原因筋は特定した。<br>あとは秘孔を突くだけじゃ。<br>僧帽筋の秘孔——どれかのう！',
+    declareReason: 'デスクワークで収縮し続け、夕方に疲弊する。症状と一致する。',
+    clearHeroMsg: 'これが、ツボ探偵治療家の仕事か。\nもっと、上手くなりたい。',
   },
   {
     id: 2,
@@ -1765,15 +1767,21 @@ const EPISODES = [
     acupoint: '腎兪',
     dialogues: [
       { imgSrc: './bon_shocho.png', speaker: 'ボーン院長', charType: 'npc',
-        text: (p) => `${p}よ、また一人——\n困っている者が来た。\n今度の訴えは——腰じゃ。` },
+        text: (p) => `${p}よ、また事件じゃ。\n患者が来ておる。` },
+      { imgSrc: heroImg, speaker: () => pName(), charType: 'hero',
+        text: '（今度は何だ…）' },
       { imgSrc: './bon_shocho.png', speaker: 'ボーン院長', charType: 'npc',
-        text: '腰の訴えは複数の筋が絡む。\n焦らず情報を集めるのじゃ。\n症状・タイミング・職業——\nそれが原因筋を絞り込む手がかりじゃ。' },
+        text: 'まず話を聞いてみろ。\nお主はどう見る？' },
       { imgSrc: './patient.png', speaker: '患者さん', charType: 'patient',
-        text: '腰が…もう\nずっと重くて。\n仕事中も\n腰がじんわり重い感じで…' },
+        text: '腰が…もうずっと重くて。\n仕事中も腰がじんわり重い感じで…' },
       { imgSrc: './patient.png', speaker: '患者さん', charType: 'patient',
-        text: '休みの日は\n結局、家で寝てるだけで…\n何もできない。\nそれが一番、しんどいです。' },
+        text: '休みの日は結局、家で寝てるだけで…\n何もできない。\nそれが一番、しんどいです。' },
+      { imgSrc: heroImg, speaker: () => pName(), charType: 'hero',
+        text: '（立ち仕事、前かがみ姿勢…\n絞れてきた）' },
       { imgSrc: './bon_shocho.png', speaker: 'ボーン院長', charType: 'npc',
-        text: (p) => `${p}よ、聞いたか。\nこの患者さんには——\n取り戻すべき笑顔がある。\nまず情報を集めるのじゃ。\n原因筋を絞り込むのじゃ。` },
+        text: (p) => `どうじゃ、${p}よ。\n当たりはついたか？` },
+      { imgSrc: heroImg, speaker: () => pName(), charType: 'hero',
+        text: 'ああ、見えてきた。' },
     ],
     choiceData: [
       { label: '痛みはどこですか？',
@@ -1786,7 +1794,7 @@ const EPISODES = [
     quiz1Data: {
       options: ['A. 腰方形筋', 'B. 脊柱起立筋', 'C. 多裂筋', 'D. 大臀筋'],
       correct: 1,
-      correctMsg: '正解じゃ。\n長時間の立ち仕事で収縮し続け、\n疲弊する——まさに脊柱起立筋の仕業じゃ。\n原因筋の特定——完了じゃ。\n次は秘孔を突くのじゃ。',
+      correctMsg: '正解じゃ。筋が良い。',
       wrongExplanations: [
         '腰方形筋は側屈動作で主に使われる筋じゃ。今回の「背骨両脇の重さ・立ち仕事での悪化」とは症状パターンが一致せん。',
         null,
@@ -1882,6 +1890,8 @@ const EPISODES = [
     clearPatientText: 'あ…腰が<br>軽くなってきた気がします。<br>久しぶりに——<br>仕事中も笑顔でいられそうで…<br>ありがとうございます、先生…！',
     clearPatientName: '山田さん',
     hw2ContextText: '原因筋は特定した。<br>あとは秘孔を突くだけじゃ。<br>脊柱起立筋の秘孔——どれかのう！',
+    declareReason: '長時間の立ち仕事で収縮し続け、疲弊する。症状と一致する。',
+    clearHeroMsg: '笑顔が戻った。\nこれがツボ探偵治療家の仕事か。',
   },
 ];
 
@@ -2619,13 +2629,14 @@ function answerQuiz1(i) {
     state.quiz1Done = true; saveState();
     sfxCorrect();
     showXpGain(10);
+    const reasonText = ep ? (ep.declareReason || 'この筋肉が原因じゃ。症状と一致する。') : '';
     const declareHtml = `
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-direction:row-reverse">
         <img src="${heroImg()}" style="width:48px;height:48px;object-fit:contain">
         <div style="font-size:1rem;font-weight:900;color:var(--correct);line-height:1.7;text-align:right">
           これだ。${ep ? ep.muscle : ''}だ。<br>
           <span style="font-size:0.85rem;font-weight:400;color:#ccc">
-            デスクワークで収縮し続け、夕方に疲弊する。<br>症状と一致する。
+            ${reasonText}
           </span>
         </div>
       </div>
@@ -2808,7 +2819,7 @@ function goToClear() {
       <div style="display:flex;align-items:flex-start;gap:10px;flex-direction:row-reverse">
         <img class="char-img hero-img" src="${heroImg()}" style="flex-shrink:0">
         <div style="background:rgba(74,255,127,0.08);border:1px solid var(--correct);border-radius:12px;padding:10px 14px;font-size:0.9rem;line-height:1.7;text-align:right">
-          これが、ツボ探偵治療家の仕事か。<br>もっと、上手くなりたい。
+          ${(currentEp && currentEp.clearHeroMsg ? currentEp.clearHeroMsg : 'これが、ツボ探偵治療家の仕事か。\nもっと、上手くなりたい。').replace(/\n/g,'<br>')}
         </div>
       </div>
       <div style="display:flex;align-items:flex-start;gap:10px">
